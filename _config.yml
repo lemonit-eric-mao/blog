@@ -1,6 +1,16 @@
 theme: jekyll-theme-minimal
 title: 个人博客
 description: 专注于技术分享!
+lsi: false
+safe: true
+source: ['/blog']
+incremental: false
+highlighter: rouge
+gist:
+  noscript: false
+kramdown:
+  math_engine: mathjax
+  syntax_highlighter: rouge
 
 plugins:
   - jekyll-paginate
