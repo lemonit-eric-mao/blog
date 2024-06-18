@@ -1,0 +1,120 @@
+---
+title: "Python 动态加载模块，动态执行函数"
+date: "2021-01-13"
+categories: 
+  - "python"
+---
+
+# Python 的反射应用
+
+```python
+import sys  # 导入sys模块，用于获取当前模块信息
+
+# 定义一个函数get_test，接受一个参数name，类型为str，带有注解"姓名"，并且为必填参数
+def get_test(name: Annotated[str, "姓名", True]):
+    return f"你好，{name}！"  # 返回一个拼接了参数name的字符串
+
+if __name__ == '__main__':
+    # 获取当前模块的引用，用于访问当前模块中定义的函数、变量等
+    function_path = sys.modules[__name__]
+
+    function_name = "get_test"  # 函数名为"get_test"
+    function_arguments = {"name": "张三"}  # 函数调用时的参数，包含一个name参数，值为"张三"
+
+    # 使用getattr函数通过模块路径和函数名获取函数对象，如果不存在则返回None
+    function = getattr(function_path, function_name, None)
+
+    # 调用获取到的函数，并传入参数
+    result = function(**function_arguments)
+
+    # 打印函数调用的结果
+    print(result)
+
+```
+
+* * *
+
+* * *
+
+* * *
+
+# Python 的扫描应用
+
+**目录结构：**
+
+```bash
+.
+├─ extends
+│   ├─ extend_1.py
+│   ├─ extend_2.py
+│   ├─ extend_3.py
+│   └─ __init__.py
+└─ app.py
+```
+
+**extend\_1.py:**
+
+```python
+def show(p1, p2):
+    print(f'extend_1 = {p1, p2}')
+```
+
+**extend\_2.py:**
+
+```python
+def show(p1, p2):
+    print(f'extend_2 = {p1, p2}')
+```
+
+**extend\_3.py:**
+
+```python
+def show(p1, p2):
+    print(f'extend_3 = {p1, p2}')
+```
+
+**app.py:**
+
+```python
+import os
+import glob
+
+# 切换工作目录为当前目录
+os.chdir(os.path.dirname(__file__))
+
+# 动态加载所有以 extend_ 开头的模块
+module_pool = []
+for module_file in glob.glob('extends/extend_*.py'):
+    module_name = os.path.splitext(os.path.basename(module_file))[0]
+    module = __import__(f'extends.{module_name}', fromlist=[''])
+    module_pool.append(module)
+
+# 测试动态扩展组件写法
+if __name__ == '__main__':
+    # 读取池中所有的模块
+    for module in module_pool:
+        # 使用直接调用函数的方式执行 show(p1, p2) 函数
+        module.show('参数1', '参数2')
+```
+
+**运行示例:**
+
+```bash
+python app.py
+```
+
+运行后应该会输出类似以下结果：
+
+```bash
+extend_1 = ('参数1', '参数2')
+extend_2 = ('参数1', '参数2')
+extend_3 = ('参数1', '参数2')
+```
+
+这段代码会动态加载所有以 `extend_` 开头的模块，并依次调用每个模块中的 `show()` 函数，输出相应的结果。
+
+* * *
+
+* * *
+
+* * *

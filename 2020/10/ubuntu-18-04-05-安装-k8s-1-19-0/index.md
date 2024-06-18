@@ -1,0 +1,267 @@
+---
+title: "Ubuntu 18.04.05 安装 k8s 1.19.0"
+date: "2020-10-19"
+categories: 
+  - "k8s"
+---
+
+##### Ubuntu 18.04.05 离线安装 Docker
+
+**[官方文档](https://docs.docker.com/engine/install/ubuntu/ "官方文档")**
+
+**[官方下载](https://download.docker.com/linux/ubuntu/dists/bionic/pool/stable/amd64/ "官方下载")**
+
+* * *
+
+###### 关闭防火墙
+
+```ruby
+systemctl disable ufw && systemctl stop ufw
+```
+
+* * *
+
+###### 解决flannel下k8s pod及容器无法跨主机互通问题
+
+搭建k8s集群并整合flannel时，`即使关闭了防火墙`跨主机间容器、pod始终无法ping通。 这是由于linux还有底层的iptables，所以在node上分别执行
+
+```ruby
+iptables -P INPUT ACCEPT
+iptables -P FORWARD ACCEPT
+iptables -F
+iptables -L -n
+```
+
+* * *
+
+###### 删除旧版本
+
+```ruby
+apt-get remove docker docker-engine docker.io containerd runc
+```
+
+* * *
+
+###### 下载离线包
+
+```ruby
+wget -P /home/deploy/deb/docker/ https://download.docker.com/linux/ubuntu/dists/bionic/pool/stable/amd64/docker-ce_19.03.13~3-0~ubuntu-bionic_amd64.deb
+wget -P /home/deploy/deb/docker/ https://download.docker.com/linux/ubuntu/dists/bionic/pool/stable/amd64/containerd.io_1.3.7-1_amd64.deb
+wget -P /home/deploy/deb/docker/ https://download.docker.com/linux/ubuntu/dists/bionic/pool/stable/amd64/docker-ce-cli_19.03.13~3-0~ubuntu-bionic_amd64.deb
+```
+
+* * *
+
+###### 离线安装 docker
+
+```ruby
+dpkg -i /home/deploy/deb/docker/*.deb
+```
+
+* * *
+
+###### 卸载 Docker
+
+```ruby
+apt-get purge -y docker-ce docker-ce-cli containerd.io
+
+rm -rf /var/lib/docker
+```
+
+* * *
+
+###### 添加配置文件
+
+```ruby
+cat > /etc/docker/daemon.conf << ERIC
+{
+  "insecure-registries": [""],
+  "exec-opts": ["native.cgroupdriver=cgroupfs"],
+  "data-root": "/data/docker",
+  "live-restore": true,
+  "max-concurrent-downloads": 10
+}
+ERIC
+
+systemctl daemon-reload
+```
+
+* * *
+
+###### 启动
+
+```ruby
+systemctl enable docker.service
+systemctl restart docker
+```
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+###### Ubuntu 18.04.05 离线安装 kubeadm、kubelet 和 kubectl
+
+```ruby
+apt-get update && apt-get install -y apt-transport-https
+
+curl https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add -
+
+cat > /etc/apt/sources.list.d/kubernetes.list << ERIC
+deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
+ERIC
+
+apt-get update
+
+```
+
+* * *
+
+###### 离线安装 k8s
+
+```ruby
+apt-cache madison kubeadm
+
+VERSION=1.19.0-00
+###### 将包下载到本地
+apt-get install -y --download-only -o dir::cache::archives=/home/deploy/deb/k8s kubelet=$VERSION kubeadm=$VERSION kubectl=$VERSION
+
+
+###### 离线安装 k8s
+dpkg -i /home/deploy/deb/k8s/*.deb
+```
+
+* * *
+
+##### 下载镜像
+
+###### 查看镜像依赖版本
+
+```ruby
+# kubeadm config images list --kubernetes-version=v1.19.0
+
+k8s.gcr.io/kube-apiserver:v1.19.0
+k8s.gcr.io/kube-controller-manager:v1.19.0
+k8s.gcr.io/kube-scheduler:v1.19.0
+k8s.gcr.io/kube-proxy:v1.19.0
+k8s.gcr.io/pause:3.2
+k8s.gcr.io/etcd:3.4.9-1
+k8s.gcr.io/coredns:1.7.0
+```
+
+###### 编写脚本
+
+```ruby
+cat > download_image.sh << ERIC
+#!/bin/bash
+images=(
+    kube-apiserver:v1.19.0
+    kube-controller-manager:v1.19.0
+    kube-scheduler:v1.19.0
+    kube-proxy:v1.19.0
+    pause:3.2
+    etcd:3.4.9-1
+    coredns:1.7.0
+)
+
+proxy=registry.cn-hangzhou.aliyuncs.com/google_containers/
+
+echo '+----------------------------------------------------------------+'
+for img in \${images[@]};
+do
+    docker pull \$proxy\$img
+    docker tag  \$proxy\$img k8s.gcr.io/\$img
+    docker rmi  \$proxy\$img
+    echo '+----------------------------------------------------------------+'
+    echo ''
+done
+
+ERIC
+
+chmod -R 755 download_image.sh
+
+```
+
+* * *
+
+###### 初始化配置文件
+
+```ruby
+cat > kubeadm-init.yaml << ERIC
+
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: ClusterConfiguration
+kubernetesVersion: v1.19.0
+
+localAPIEndpoint:
+  advertiseAddress: 192.168.20.104
+  bindPort: 6443
+
+networking:
+  # 告诉k8s，集群内部都基于cluster.local这个域名解析
+  dnsDomain: cluster.local
+  podSubnet: 10.244.0.0/16
+  serviceSubnet: 10.96.0.0/12
+scheduler: {}
+
+ERIC
+
+```
+
+* * *
+
+###### 关闭Swap
+
+```ruby
+swapoff -a && sed -ri 's/.*swap.*/#&/' /etc/fstab
+```
+
+* * *
+
+###### 启动
+
+```ruby
+kubeadm init --config kubeadm-init.yaml
+
+# 省略......
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 192.168.20.104:6443 --token 0mj488.h6v5r010bfhlq9b1 \
+    --discovery-token-ca-cert-hash sha256:3ea2cc19ceb0f109834f82bde13f5d29c534aba115cd41f8d3719db6b8ec074b
+root@master01:/home/deploy/deb/yaml#
+
+```
+
+* * *
+
+* * *
+
+* * *
+
+###### **[安装 metrics-server](http://www.dev-share.top/2020/10/25/k8s-%e5%ae%b9%e5%99%a8%e6%80%a7%e8%83%bd%e6%8c%87%e6%a0%87-metrics-server/ "安装 metrics-server")**
+
+* * *
+
+* * *
+
+* * *

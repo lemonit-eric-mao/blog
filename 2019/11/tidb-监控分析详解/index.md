@@ -1,0 +1,286 @@
+---
+title: "TIDB 监控分析详解"
+date: "2019-11-28"
+categories: 
+  - "tidb"
+---
+
+##### 一、Cluster-Overview 面板
+
+###### System Info
+
+- `CPU Usage`：CPU 使用率，最大为 100%
+- `IO Util`：磁盘使用率，最高为 100%，一般到 80%-90% 就需要考虑加节点(**原因TiKV的磁盘负载太高，并`不是因为硬盘空间不足`**)
+- `Memory Available`：剩余内存大小
+- `Network Traffic`：网卡流量统计
+- `TCP Retrans`：网络监控，TCP 相关信息统计
+- `Vcores`：CPU 核心数量
+- `Memory`：内存总大小
+- `Load [1m]`：1 分钟的负载情况
+
+###### TiDB
+
+- **`Statement OPS`：SQL 执行数量统计（包含 select、insert、update 等）**
+- **`Duration`：SQL 执行的时间（主看99 95按照百分位计算方式——把这一段时间所有sql的响应时间放到一个列表里排序，第99%响应时间是……s）**
+- `QPS By Instance`：每个 TiDB 上的 QPS
+- `Failed Query OPM`：失败 SQL 的统计，例如语法错误、主键冲突等
+    
+    | **异常类型** | **异常码** | **引发异常的IP地址** | **异常发生次数(最大值)** | **异常发生次数(当前值)** |
+    | :-- | :-: | :-: | :-: | :-: |
+    | parser | `1064` | 172.160.180.33:10080 | 1.333 | 0 |
+    | planner | `1055` | 172.160.180.33:10080 | 5.333 | 0 |
+    | schema | `1146` | 172.160.180.33:10080 | 1.333 | 0 |
+    | ... | ... | ... | ... | ... |
+    
+- **`Connection count`：每个 TiDB 的连接数（负载不均匀原因有1、可能是配置HA配置原因导致的-如会话保持等2、后期可能会详细化如running状态的waiting状态的sleeping等）**
+    
+- `Heap Memory Usage`：每个 TiDB 使用的堆内存大小
+- `Transaction OPS`：事务执行数量统计
+- `Transaction Duration`：事务执行的时间
+- `KV Cmd OPS`：KV 命令执行数量统计
+- `KV Cmd Duration 99`：KV 命令执行的时间
+- `PD TSO OPS`：TiDB 从 PD 获取 TSO 的数量
+- **`PD TSO Wait Duration`：TiDB 从 PD 获取 TS 的时间（正常情况下99%应该为ms级，参数飘升pdserver瓶颈或是发杂的sql解析——每个sql都要到pd拿一个tso）**100ms
+- `TiClient Region Error OPS`：TiKV 返回 Region 相关错误信息的数量
+- `Load Schema Duration`：TiDB 从 TiKV 获取 Schema 的时间
+- **`Lock Resolve OPS`：事务冲突相关的数量（锁冲突数量超过两位数几百或是更高不正常，事务锁等待）**
+    
+    | 属性 | 含义 |
+    | --- | --- |
+    | \--- | 从`lock resolve ops`以及`kv backoff ops`两个界面中可以发现当前系统存在锁冲突的情况 |
+    | expired | 重试次数已过期的事务数 |
+    | not\_expired | 未过期的事务数 |
+    | query\_resolve\_lock\_lite |  |
+    | query\_resolve\_locks |  |
+    | query\_txn\_status |  |
+    | query\_txn\_status\_committed |  |
+    | query\_txn\_status\_rolled\_back |  |
+    | resolve | 重试成功的事务数 |
+    | wait\_expired | 等待重试的事务数 |
+    
+- **`KV Backoff OPS`：TiKV 因事务冲突，导致事务重试的次数**; 会受到TiKV的 **[server report failures](#jump)** 模块数据影响
+    
+    | 属性 | 含义 |
+    | --- | --- |
+    | pdRPC |  |
+    | regionMiss |  |
+    | tikvLockFast | 表示`读写`冲突 |
+    | tikvRPC |  |
+    | txnLock | 表示遇到`写写`冲突 |
+    | updateLeader |  |
+    
+
+###### PD
+
+- `Storage Capacity`：TiDB 集群总可用数据库空间大小
+- `Current Storage Size`：TiDB 集群目前已用数据库空间大小
+- `Number of Regions`：当前集群的 Region 总量
+- `Leader Balance Ratio`：Leader 数量最多和最少节点相差的百分比，一般小于 5%，节点重启时会有比较大的波动
+- `Region Balance Ratio`：Region 数量最多和最少节点相差的百分比，一般小于 5%，新增/下线节点时相差比较大
+- `Store Status`：集群 TiKV 节点的状态
+- `Up Stores`：正常运行的 TiKV 节点数量
+- `Disconnect Stores`：短时间内通信异常的 TiKV 节点数量
+- `LowSpace Stores`：剩余可用空间小于 20% 的 TiKV 节点数量
+- `Down Stores`：停止工作的 TiKV 节点数量，如果大于 0，说明有节点不正常
+- **`Offline Stores`：正在下线的 TiKV 节点数量（正在下线的 TiKV 节点还在提供服务）**
+- `Tombstone Stores`：下线成功的 TiKV 节点数量
+- `99% completed_cmds_duration_seconds`：单位时间内，99% 的 pd-server 请求执行时间小于监控曲线的值，一般 <= 5ms
+- `handle_requests_duration_seconds`：PD 发送请求的网络耗时
+- **`Region Health`：（正常情况下应该都是0）**
+    
+    | **参数** | **max** | **avg** | **current** | **说明** |
+    | :-- | --- | --- | --- | --- |
+    | down-peer-region-count | 0 | 0 | 0 | 有副本状态为 down 的 region 总数 |
+    | empty-region-count | 2.867 K | 2.864 K | 2.859 K | 有副本状态为 空 的 region 总数, 如果数量小暂时没有影响, 数量大要进行合并处理：**[参考文档](https://asktug.com/t/topic/2407/4 "参考文档")** |
+    | extra-peer-region-count | 0 | 0 | 0 | 多副本的 Region 总数 |
+    | incorrect-namespace-region-count | 0 | 0 | 0 | 有副本不符合 namespace 约束的 Region 总数 |
+    | learner-peer-region-count | 0 | 0 | 0 | 状态为 learner 的 region 总数 |
+    | miss-peer-region-count | 0 | 0 | 0 | 缺副本的 Region 总数 |
+    | offline-peer-region-count | 0 | 0 | 0 | 状态为 offline 的 region 总数 |
+    | pending-peer-region-count | 0 | 0 | 0 | 有副本状态为 Pending 的 Region 的总数 |
+    
+- `Hot write region's leader distribution`：写热点
+    
+- `Hot read region's leader distribution`：读热点
+
+###### TiKV
+
+- `leader`：各个 TiKV 节点上 Leader 的数量分布
+- `region`：各个 TiKV 节点上 Region 的数量分布
+- `CPU`：各个 TiKV 节点的 CPU 使用率
+- `Memory`：各个 TiKV 节点的内存使用量
+- `store size`：各个 TiKV 节点存储的数据量
+- `cf size`：集群不同 CF 存储的数据量
+- **`channel full`：正常情况显示 No data，如果有了监控值，说明对应 TiKV 节点的消息处理不过来了（堵塞不应该有数据）**
+- **server report failures：正常情况显示 No data，如果出现了 Unreachable，说明 TiKV 之间通信有问题（不应该有数据）; 一般重启TiKV时也会产生数据。**
+- **`scheduler pending commands`：写入堆积的数量，偶尔出现峰值属于正常现象（热点情况，硬件I/O或是内存导致堆积）**
+- `coprocessor pending requests`：正常情况监控为 0 或者数量很少
+- `coprocessor executor count`：不同类型的查询操作数量
+- `coprocessor request duration`：TiKV 中查询消耗的时间
+- `raft store CPU`：raftstore 线程的 CPU 使用率，线程数量默认为 2 (通过 raftstore.store-pool-size 配置)。如果单个线程使用率超过 80%，说明使用率很高，在`TiKV-Details --> Thread CPU` 模块中也可查看; **[详见官方文档](https://pingcap.com/docs-cn/stable/reference/best-practices/massive-regions/#%E6%80%A7%E8%83%BD%E9%97%AE%E9%A2%98 "详见官方文档")**
+- `Coprocessor CPU`：TiKV 查询线程的 CPU 使用率，和业务相关，复杂查询会使用大量的 CPU 资源
+
+* * *
+
+* * *
+
+##### 二、Cluster-TiKV-Details 面板
+
+###### Thread CPU
+
+- **`Raft store CPU`：raftstore 线程的 CPU 使用率，通常应低于 80%（2.0版本80-90%，3.0版本多线程默认两个线程可以调整:180-190%瓶颈，添加kv服务器）**
+- `Async apply CPU`：async apply 线程的 CPU 使用率，通常应低于 90%
+- `Scheduler CPU`：scheduler 线程的 CPU 使用率，通常应低于 80%
+- `Scheduler worker CPU`：scheduler worker 线程的 CPU 使用率
+- `Storage ReadPool CPU`：Readpool 线程的 CPU 使用率
+- **`Coprocessor CPU`：coprocessor 线程的 CPU 使用率（负责处理region扫描的线程，低于80%，增高可能是热点现象导致的）**
+- `Snapshot worker CPU`：snapshot worker 线程的 CPU 使用率
+- `Split check CPU`：split check 线程的 CPU 使用率
+- `RocksDB CPU`：RocksDB 线程的 CPU 使用率
+- **`gRPC poll CPU`：gRPC 线程的 CPU 使用率，通常应低于 80%（负责kv节点之间通信，默认4个线程，可以调整，sql 对应的region节点离散数量多导致增高）**
+- **`Lock manager --> Detect error`：查看是否存在死锁**
+    
+    | **参数** | **max** | **avg** | **说明** |
+    | :-- | --- | --- | --- |
+    | deadlock | 0 ops | 0 ops | 死锁数量 |
+    | dropped | 0.1 ops | 0.1 ops |  |
+    | leader\_not\_found | 0 ops | 0 ops |  |
+    | not\_leader | 15.2 ops | 7.6 ops |  |
+    | reconnect\_leader | 15.4 ops | 7.4 ops |  |
+    
+
+###### Coprocessor Detail
+
+**`Wait duration`**: 表示这个语句在 TiKV 的等待时间之和，**因为 TiKV 的 Coprocessor `线程数`是`有限`的，当所有的 Coprocessor 线程都在工作的时候，`请求会排队`** ；当队列中有某些请求耗时很长的时候，后面的请求的等待时间都会增加。**[解决方案](http://www.dev-share.top/2019/08/29/tidb-%E5%AE%9A%E4%BD%8D%E6%85%A2%E6%9F%A5%E8%AF%A2/ "解决方案")**
+
+* * *
+
+* * *
+
+##### 三、
+
+* * *
+
+* * *
+
+##### 告警
+
+TiDB的告警系统目前还是通过AlertManager组件是实现，具体配置的配置文件在 `tidb-ansile/roles/prometheus/files` 下面针对不同的监控对象对应 的配置文件 告警级别分为三种：**warning、emergency、critical**
+
+###### 常见的TiDB告警项识别和应对
+
+[官方告警参数参考](https://pingcap.com/docs-cn/stable/reference/alert-rules/)
+
+**主机级别：**
+
+|  |  |
+| :-- | :-- |
+| `NODE_disk_used_more_than_80%(emergency)` |   节点的磁盘空间使用 |
+| `NODE_disk_inode_more_than_80%(emergency)` |  |
+| `NODE_disk_redonly(emergency)` |  |
+| `NODE_memory_used_more_than_80%(critical)` |   节点的内存使用率 |
+| `NODE_node_overload(warning)` |  |
+| **以下参数针对pcre-SSD(自身的服务器可以适当提高)：** |  |
+| `NODE_cpu_used_more_than_80%(warning)` |  |
+| `NODE_tcp_estab_num_more_than_50000(warning)` |   tcp的建立超过50000个 |
+| `NODE_disk_read_latency_more_than_32ms(warning)` |   磁盘都延迟 |
+| `NODE_disk_write_larency_more_than_16ms(warning)` |   磁盘写延迟 |
+
+**tidb-server级别：**
+
+|  |  |
+| :-- | :-- |
+| `TiDB_schema_error(emergency)` |   获取源数据信息失败，可能会造成tidb不可用; eg:tidb和tikv之间网络隔离或是tikv节点cpu负载高 |
+| `TiDB_tikvclient_region_err_total(emergency)` |   increase\[10m\]>6000; 少量合理；短时间内大量的err，eg：节点挂掉 |
+| `TiDB_domain_load_schema_tatal(emergency)` |   increase{failed}\[10m\]>10 |
+| `TiDB_monitor_keep_alive(emergency)` |   increase\[10m\]<100; 十分钟之内增量小于100，检测tidb端口是否存活，硬件故障等等 |
+| `TiDB_server_panic_total(critical)` |   TiDB server panic; 不兼容mysql的语法 |
+| `TiDB_memory_abnormal(warning)` |   TiDB heap memory usage is over 10 GB; 一条sql使用内存 |
+| `TiDB_query_duration(warning)` |   99百分位duration>1s; 超过99>1不正常 |
+| `TiDB_server_event_error(warning)` |   increase{server\_start | server\_hang}\[15m\]>0 |
+| `TiDB_tikvclient_backoff_count(warning)` |   increase\[10m\]>10; tidb和tikv之间backoff |
+| `TiDB_monitor_time_jumpback_error(warning)` |   time\_jump\_back |
+| `TiDB_ddl_warting_jobs(warning)` |   sum(waiting jobs)>5 |
+
+**tikv-server级别：**
+
+|  |  |
+| :-- | :-- |
+| `TiKV_memory_used_too_fast(emergency)` |   tikv节点对应内存使用量过快 |
+| **`TiKV_GC_can_not_work(emergency)`** |   **tikv有mvcc机制（数据多版本）——如果GC出现问题会导致过期的数据无法清理空间增大** |
+| **`TiKV_server_report_failure_msg_total(critical)`** | **十分钟之内unreachable超过10次, 不断oom等状况导致** |
+| **`TiKV_channel_full_total(critical)`** |   **内部通道队列打满，典型写堆积或scheduler pending** |
+| **`TiKV_write_stall(critical)`** |   **I/O满等** |
+| **`TiKV_raft_log_lag(critical)`** |   **99百分位的raft\_log滞后>5000, 写入压力过大可能导致** |
+| `TiKV_async_request_snapshot_duration_seconds(criticl)` |   pd调度的时候 |
+| `TiKV_async_request_write_duration_seconds(critical)` |   推荐查看下磁盘状态 |
+| `TiKV_coprocessor_request_wait_seconds(critical)` |   99.99百分位wait超过10s |
+| **`TiKV_raftstore_thread_cpu_seconds_total(critica)`** |   **一分钟内的raftstore线程CPU使用率超过了80%，集群整体表现卡顿。  
+  处理办法tikv实例数太少，导致压力不分散，可以添加tikv实例，或是等待3.0的多线程版本** |
+| **`TiKV_raft_append_log_duration_secs(critical)`** |   **磁盘资源使用关系紧密一点** |
+| `TiKV_scheduler_latch_wait_duration_seconds(critical)` |   kv里等待锁的时间比较长 产生pending了 |
+| `TiKV_thread_apply_worker_cpu_seconds(critical)` |   对应的cpu的消耗，超过90% |
+| `TiKV_tickclient_gc_action_fail(critical)` |   gc长时间执行失败 |
+
+**pd-server级别：**
+
+|  |  |
+| :-- | :-- |
+| **`PD_cluster_offline_tikv_nums(emergency)`** |   **pd长时间（默认配置是 30 分钟）没有收到tikv的心跳,处理方法：检查 TiKV 进程是否正常、网络是否隔离以及负载是否过高，并尽可能地恢复服务。  
+  如果确定 TiKV 无法恢复，可做下线处理。** |
+| `PD_etcd_write_disk_latency(critical)` |   etcd写盘99 duration>1s |
+| **`PD_miss_peer_region_count(critical)`** |   **缺失副本的region数量超过100 #Region 的副本数小于 max-replicas 配置的值。  
+  这通常是由于 TiKV 宕机等问题导致一段时间内一些 Region 缺副本，下线 TiKV 节点也会导致少量 Region 缺副本（对于有 pending peer 的 Region 会走先减后加的流程）。  
+  解决方法：查看是否有 TiKV 宕机或在做下线操作，尝试定位问题产生的原因。观察 region health 面板，查看 miss\_peer\_region\_count 是否在不断减少。** |
+
+* * *
+
+* * *
+
+##### 常见问题对应的面板 **[常见问题](http://www.dev-share.top/2019/08/21/tidb-%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98/ "常见问题")**
+
+###### 1、压测时 QPS上不去?
+
+- 首先需要查看 OverView 面板上，集群的资源使用情况，比如`CPU是否超过80%`，网络流量是否快达到阈值，`磁盘IO使用率是否超过80%`等。
+    
+- 如果是压测偏TP点查写的业务逻辑，大概率瓶颈会出在 `tidb-server` 上， 如果是压偏 AP 的范围查询业务逻辑，有可能瓶颈会出在 `tikv-server 的 Coprocessor` 上， 如果是压测集中写入场景，有可能瓶颈会出在 `tikv-server 的 raft-store_cpu` 或 `scheduler task pending` 上
+    
+- 如果确认集群资源没有瓶颈，需要往前排查，例如 proxy 负载是否开启多线程转发，压测程序是否会出现瓶颈，以及压测逻辑是否存在串行队列引起堵塞等
+    
+
+###### 2、遇到热点情况?
+
+- 热点情况可以通过前面介绍的 `raft/coprocessor CPU` 监控指标判断出来，如果发现 tikv 各节点的 CPU使用情况非常不均匀，几乎可以判断是遇到了热点情况。
+    
+- 至于热点的原因可能有很多种，需要具体分析，常见有自增主键引起的热点写入，基于时间戳的索引字段也会引起写热点现象，业务逻辑查询存在热点数据集中在一个 region 上引起读热点
+    
+- 需要查看监控面板 `Cluster-PD --> Statistics-hotspot`, 具体参数解释参照 **[官方文档说明](https://pingcap.com/docs-cn/stable/reference/key-monitoring-metrics/pd-dashboard/#statistics---hotspot "官方文档说明")**
+    
+
+###### 3、数据冲突严重？
+
+- 通过 `Lock Reslove OPS` 指标可以判断是否遇到冲突的场景，一般是需要在业务侧考点如何避免冲突的场景，或者尝试降低事务提交的 batch 的大小。
+    
+- 另外事务在二阶段提交时，如果读取这些 key 也是可能会引起 `lock reslove` 的动作，所以查询的时候尽量缩小范围只查必要的数据也有助于降低遇到冲突的概率
+    
+- 另外如果提交过慢也会加大冲突的概率，需要判断当前事务提交的耗时是否合理也有助于分析冲突的场景
+    
+
+###### 4、查询慢？
+
+- 通过 TiDB 面板的 `Duration` 指标可以大概得出 SQL 的响应时间是否符合预期
+    
+- 另外通过 TiKV 面板的 `Coprocessor` 子页，可以查询到更具体的信息，例如 `Scan keys` 是否符合预期、`Request Duration` 高还是 `Wait Duration` 高？
+    
+- 再结合 `RocksDB-kv` 子页上的 `Get/Seek duration` 以及 `block cache hit` 来辅助判断, 如果发现命中率出现大幅度下降或抖动，基本可以定位为`慢 SQL`问题；否则倾向于怀疑是`小表的大量并发`读取导致的。**[官方文档-热点处理思路](https://book.tidb.io/session4/chapter7/hotspot-resolved.html "官方文档-热点处理思路")**
+    
+- 另外分析 `slow-log`，找到最慢或占比最高的 SQL， 再结合 explain 方法来查看执行计划是否合理
+    
+
+###### 5、写入慢？
+
+- 通过 TiDB 面板的 `Trasaction` 子页上面的 `Duration` 可以得出当前事务处理的时间是否符合预期
+    
+- 结合 TiKV 面板的 `Thead CPU` 子页上的 `Raft store CPU` 情况看是否快达到默认的 200% 阈值，以及是否存在热点写入的情况
+    
+- 一般来说，更快的磁盘，`100左右的 batch commit`, 更高的并发写入会得到更优的写入吞吐
