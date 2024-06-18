@@ -4,4 +4,4 @@
 
 # 技术博客
 
-[Get Started](_sidebar.md)
+[Get Started](README.md)
