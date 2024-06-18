@@ -1,7 +1,5 @@
 <!-- 封面-配置文件 -->
 
-![logo](_media/icon.svg)
-
-# 技术博客
+![logo](_media/icon.svg) 
 
 [Get Started](README.md)
