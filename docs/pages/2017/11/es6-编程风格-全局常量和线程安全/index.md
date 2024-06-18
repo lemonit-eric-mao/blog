@@ -1,0 +1,33 @@
+---
+title: "ES6 编程风格-全局常量和线程安全"
+date: "2017-11-16"
+categories: 
+  - "javascript"
+---
+
+转载: [ECMAScript 6 入门](http://es6.ruanyifeng.com/)
+
+### 全局常量和线程安全
+
+在let和const之间，建议优先使用const，尤其是在全局环境，不应该设置变量，只应设置常量。
+
+const优于let有几个原因。一个是const可以提醒阅读程序的人，这个变量不应该改变；另一个是const比较符合函数式编程思想，运算不改变值，只是新建值，而且这样也有利于将来的分布式运算；最后一个原因是 JavaScript 编译器会对const进行优化，所以多使用const，有利于提供程序的运行效率，也就是说let和const的本质区别，其实是编译器内部的处理不同。
+
+```javascript
+// bad
+var a = 1, b = 2, c = 3;
+
+// good
+const a = 1;
+const b = 2;
+const c = 3;
+
+// best
+const [a, b, c] = [1, 2, 3];
+```
+
+const声明常量还有两个好处，一是阅读代码的人立刻会意识到不应该修改这个值，二是防止了无意间修改变量值所导致的错误。
+
+所有的函数都应该设置为常量。
+
+长远来看，JavaScript可能会有多线程的实现（比如Intel的River Trail那一类的项目），这时let表示的变量，只应出现在单线程运行的代码中，不能是多线程共享的，这样有利于保证线程安全。

@@ -1,0 +1,85 @@
+---
+title: "Maven 系列一 安装部署"
+date: "2020-02-03"
+categories: 
+  - "maven"
+---
+
+## 1 下载 maven
+
+- **[安装JDK1.8](http://www.dev-share.top/2018/03/15/centos7-%e5%ae%89%e8%a3%85jdk1-8/ "安装JDK1.8")**
+    
+- **[官方下载地址](https://archive.apache.org/dist/maven/maven-3/?C=M;O=D "官方下载地址")**
+    
+
+* * *
+
+## 2 配置环境变量
+
+**2.1 linux 配置方法**
+
+```ruby
+# 创建目录
+mkdir maven/
+# 下载
+wget -P maven/ http://qiniu.dev-share.top/apache-maven-3.6.3-bin.tar.gz
+# 下载后解压
+tar -zxvf maven/apache-maven-3.6.3-bin.tar.gz -C maven/
+
+# 进入 apache-maven-3.6.3/
+cd maven/apache-maven-3.6.3/
+
+# 添加到当前用户的环境变量
+cat >>  ~/.bashrc << ERIC
+# Maven 环境变量
+export MAVEN_HOME=$PWD/
+export PATH=\$PATH:\$MAVEN_HOME/bin
+
+ERIC
+
+```
+
+**2.2 windows 配置方法**
+
+- 创建`MAVEN_HOME`值为`D:\apache-maven-3.5.3`
+- 加入到`PATH`中`%MAVEN_HOME%\bin`
+
+* * *
+
+## 3\. maven的配置文件settings.xml 简单配置方法
+
+**Linux 文件所在路径： `$MAVEN_HOME/conf/settings.xml`** **Windows 文件所在路径： `%MAVEN_HOME%\conf\settings.xml`**
+
+```markup
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+  <!-- 第一步： 告诉 Maven从哪儿下载文件 -->
+  <mirrors>
+
+    <!-- 让Maven 使用阿里云镜像仓库 -->
+    <mirror>
+      <id>nexus-aliyun</id>
+      <mirrorOf>central</mirrorOf>
+      <name>Nexus aliyun</name>
+      <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+    </mirror>
+
+  </mirrors>
+
+  <!-- 第二步： 告诉 Maven下载下来的文件放到哪儿 -->
+  <localRepository>/home/deploy/maven/repository</localRepository>
+
+
+</settings>
+
+```
+
+* * *
+
+* * *
+
+* * *

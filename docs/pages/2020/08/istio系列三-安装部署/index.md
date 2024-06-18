@@ -1,0 +1,124 @@
+---
+title: "Istio系列三 安装部署"
+date: "2020-08-03"
+categories: 
+  - "istio"
+---
+
+##### 前置条件
+
+###### **[安装K8S](http://www.dev-share.top/2020/08/24/ansible-playbook-%e6%8e%a7%e5%88%b6-kubeadm%e9%83%a8%e7%bd%b2k8s-%e5%a0%86%e5%8f%a0etcd/ "安装K8S")**
+
+* * *
+
+##### Istio 安装部署
+
+- 下载 Istio，下载内容将包含：安装文件、示例和 istioctl 命令行工具。
+- **[github 下载地址](https://github.com/istio/istio/tags/ "github 下载地址")**
+- **[istioctl 常用命令](https://istio.io/latest/zh/docs/reference/commands/istioctl/ "istioctl 常用命令")**
+- **[用于生产安装文档](https://istio.io/latest/zh/docs/setup/install/istioctl/ "用于生产安装文档")**
+
+* * *
+
+##### **[查看安装配置](https://istio.io/latest/zh/docs/setup/additional-setup/config-profiles/ "查看安装配置")**
+
+* * *
+
+```ruby
+mkdir /home/deploy/istio && cd /home/deploy/istio
+
+wget https://github.com/istio/istio/releases/download/1.7.0/istio-1.7.0-linux-amd64.tar.gz && tar -zxvf istio-1.7.0-linux-amd64.tar.gz && cp istio-1.7.0/bin/istioctl /usr/local/bin/
+
+```
+
+* * *
+
+* * *
+
+* * *
+
+##### 创建命名空间
+
+```ruby
+kubectl create ns istio-system
+```
+
+* * *
+
+##### **`第一种`** 直接安装。 这种做法安装简单，相当于一键部署
+
+```ruby
+istioctl manifest install -y
+```
+
+* * *
+
+##### **`第二种`** 使用清单文件进行安装
+
+**[配置第三方服务帐户令牌](https://istio.io/latest/docs/ops/best-practices/security/#configure-third-party-service-account-tokens "配置第三方服务帐户令牌")** **`--set values.global.jwtPolicy=first-party-jwt` 加上这个参数，暂时可以不用另外配置证书了**
+
+###### 可以在安装 Istio 之前使用 manifest generate 子命令生成清单，而不是 manifest apply，我认为这样比较可控。 例如，使用以下命令为 default 配置文件生成清单
+
+```ruby
+istioctl manifest generate \
+--set profile=default \
+--set values.global.jwtPolicy=first-party-jwt \
+  > generated-manifest.yaml
+```
+
+* * *
+
+###### 使用清单文件进行安装
+
+```ruby
+[root@master istio]# kubectl apply -f generated-manifest.yaml
+
+# 卸载 default 配置文件安装的集群
+[root@master istio]# kubectl delete -f generated-manifest.yaml
+
+```
+
+###### 验证安装是否成功
+
+```ruby
+[root@master istio]# istioctl verify-install -f generated-manifest.yaml
+```
+
+* * *
+
+* * *
+
+* * *
+
+###### **[安装MetalLB来解决K8S service LoadBalancer问题](http://www.dev-share.top/2020/08/14/%e4%bd%bf%e7%94%a8metallb%e6%9d%a5%e8%a7%a3%e5%86%b3k8s-service-loadbalancer%e9%97%ae%e9%a2%98/ "安装MetalLB来解决K8S service LoadBalancer问题")**
+
+* * *
+
+###### 查看pod
+
+```ruby
+[root@master istio]# kubectl get svc -n istio-system
+NAME                   TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)                                                      AGE
+istio-ingressgateway   LoadBalancer   10.222.73.189   192.168.20.106   15021:31797/TCP,80:32578/TCP,443:31676/TCP,15443:31801/TCP   98s
+istiod                 ClusterIP      10.222.18.230   <none>           15010/TCP,15012/TCP,443/TCP,15014/TCP,853/TCP                2m57s
+[root@master istio]#
+[root@master istio]#
+[root@master istio]# kubectl get pods -n istio-system
+NAME                                    READY   STATUS    RESTARTS   AGE
+istio-ingressgateway-746548c687-fwpkl   1/1     Running   0          106s
+istiod-6c5f6f55ff-cfrd7                 1/1     Running   0          3m5s
+[root@master istio]#
+[root@master istio]#
+```
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *

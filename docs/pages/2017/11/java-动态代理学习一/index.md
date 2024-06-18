@@ -1,0 +1,180 @@
+---
+title: "Java 动态代理学习(一)"
+date: "2017-11-27"
+categories: 
+  - "java"
+---
+
+```null
+Proxy
+└── scr
+    └── main
+        └── java
+            ├── main
+            │   └── Main.java
+            └── proxy
+                ├── Moveable.java
+                ├── Proxy.java
+                └── Tank.java
+```
+
+### 应用JDK版本 1.7
+
+### Main.java
+
+```java
+package main;
+
+import proxy.Proxy;
+
+/**
+ * 初级 动态代理实现思路
+ *
+ * @author mao_siyu
+ */
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+
+        Proxy.newProxyInstance();
+    }
+}
+```
+
+### Moveable.java 接口
+
+```java
+package proxy;
+
+public interface Moveable {
+
+    void move();
+}
+```
+
+### Proxy.java 动态创建代理类
+
+```java
+package proxy;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.lang.reflect.Constructor;
+import java.net.URL;
+import java.net.URLClassLoader;
+
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
+import javax.tools.JavaCompiler.CompilationTask;
+
+/**
+ * 马士兵 自定义 动态代理
+ * 初级 动态代理实现思路
+ *
+ * @author mao_siyu
+ */
+public class Proxy {
+
+    /**
+     * java 动态创建类 基于 jdk_1.6 新特性 JavaCompiler
+     *
+     * @throws Exception
+     */
+    public static void newProxyInstance() throws Exception {
+
+        String rt = "\r\n";
+
+        StringBuffer sbuffer = new StringBuffer();
+
+        sbuffer.append("       package proxy;                                                                             ").append(rt);
+        sbuffer.append("                                                                                                  ").append(rt);
+        sbuffer.append("       import java.util.Random;                                                                   ").append(rt);
+        sbuffer.append("                                                                                                  ").append(rt);
+        sbuffer.append("       public class Tank2 implements Moveable {                                                   ").append(rt);
+        sbuffer.append("                                                                                                  ").append(rt);
+        sbuffer.append("           public Tank2(Moveable moveable) {                                                      ").append(rt);
+        sbuffer.append("               super();                                                                           ").append(rt);
+        sbuffer.append("           }                                                                                      ").append(rt);
+        sbuffer.append("                                                                                                  ").append(rt);
+        sbuffer.append("           @Override                                                                              ").append(rt);
+        sbuffer.append("           public void move() {                                                                   ").append(rt);
+        sbuffer.append("                                                                                                  ").append(rt);
+        sbuffer.append("               long start = System.currentTimeMillis();                                           ").append(rt);
+        sbuffer.append("               System.out.println(\"tank2 move........\");                                        ").append(rt);
+        sbuffer.append("               try {                                                                              ").append(rt);
+        sbuffer.append("                   Thread.sleep(new Random().nextInt(10000));                                     ").append(rt);
+        sbuffer.append("               } catch (InterruptedException e) {                                                 ").append(rt);
+        sbuffer.append("                   e.printStackTrace();                                                           ").append(rt);
+        sbuffer.append("               }                                                                                  ").append(rt);
+        sbuffer.append("               System.out.println(\"移动时间tank2：\" + (start - System.currentTimeMillis()));    ").append(rt);
+        sbuffer.append("           }                                                                                      ").append(rt);
+        sbuffer.append("                                                                                                  ").append(rt);
+        sbuffer.append("       }                                                                                          ").append(rt);
+
+        String fileName = System.getProperty("user.dir") + "/scr/main/java/proxy/Tank2.java";
+
+        File f = new File(fileName);
+
+        FileWriter fw = new FileWriter(f);
+        fw.write(sbuffer.toString());
+        fw.flush();
+        fw.close();
+
+        /************************************************* 编译文件 *************************************************************/
+
+        // 拿到系统默认的编译器（javac）
+        JavaCompiler systemJavaCompiler = ToolProvider.getSystemJavaCompiler();
+        // 文件管理器(管理动态生成的文件)
+        StandardJavaFileManager fileManager = systemJavaCompiler.getStandardFileManager(null, null, null);
+        Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjects(fileName);
+        // 编译任务，一次可以编译很多任务
+        CompilationTask task = systemJavaCompiler.getTask(null, fileManager, null, null, null, compilationUnits);
+        task.call();
+        fileManager.close();
+
+        /************************************************* 将文件加载到内存 *************************************************************/
+        /**
+         * 注意 用classLoader 往内存中load文件的时候， 必须保证这个class 是在classpath里面
+         * 所以 这里使用一个特殊的 classLoader
+         */
+        URL[] urls = new URL[] { new URL("file:/" + System.getProperty("user.dir") + "/scr") };
+        @SuppressWarnings("resource")
+        URLClassLoader urlLoader = new URLClassLoader(urls);
+        Class<?> loadClass = urlLoader.loadClass("proxy.Tank2");
+        System.out.println(loadClass);
+
+        /************************************************* 初始化Class *************************************************************/
+        // 因为这个类中没有 无参构造方法，所以不能直接使用 newInstance() 初始化;
+        Constructor<?> constructor = loadClass.getConstructor(Moveable.class);
+        Moveable obj = (Moveable) constructor.newInstance(new Tank());
+        obj.move();
+    }
+}
+```
+
+### Tank.java
+
+```java
+package proxy;
+
+import java.util.Random;
+
+public class Tank implements Moveable {
+
+    @Override
+    public void move() {
+
+        long start = System.currentTimeMillis();
+        System.out.println("tank move........");
+        try {
+            Thread.sleep(new Random().nextInt(10000));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("移动时间：" + (start - System.currentTimeMillis()));
+    }
+
+}
+```

@@ -1,0 +1,740 @@
+---
+title: "Python 常见问题与解决方案"
+date: "2019-10-12"
+categories: 
+  - "python"
+---
+
+#### Python 常见问题
+
+* * *
+
+* * *
+
+* * *
+
+###### 获取文件编码
+
+> 如果文件很大，可以只读取文件的一部分内容来检测编码。通常，文件`前几 KB 的内容`就足够判断编码了。 使用较小的 sample\_size 确实可以进一步提高速度，但也有一些权衡需要考虑：
+> 
+> - **准确性**：文件编码检测通常依赖于足够多的样本数据。对于某些文件，如果样本数据太少，可能无法准确判断编码格式。例如，包含多种字符集的文件，或以不同语言编写的文件，可能需要更多数据来正确检测编码。
+>     
+> - **文件类型**：如果文件的前几 KB 内容包含足够多的信息（例如纯文本文件），1 KB 的样本大小可能已经足够。但如果文件是非文本文件（如 PDF）或包含大量元数据，前 1 KB 可能不足以包含代表性的内容。
+>     
+
+```python
+import chardet
+
+
+def detect_encoding(file_path: str, sample_size: int = 1024 * 10) -> str:
+    """
+    自动检测文件的编码格式。
+
+    Args:
+        file_path (str): 文件路径。
+        sample_size (int): 读取的文件字节数，用于检测编码。默认读取前10KB。
+
+    Returns:
+        str: 文件的编码格式。
+    """
+    with open(file_path, "rb") as file:
+        raw_data = file.read(sample_size)
+        result = chardet.detect(raw_data)
+        encoding = result['encoding']
+    return encoding
+
+```
+
+* * *
+
+* * *
+
+* * *
+
+###### Python 装饰器如何使用？
+
+> 装饰器的适用场景： 装饰器是 Python 中非常强大且灵活的功能，它主要用于修改或扩展函数或类的行为，而无需修改它们的源代码。装饰器的适用场景包括但不限于以下几个方面：
+> 
+> | 场景 | 描述 |
+> | --- | --- |
+> | 日志记录 | 你可以使用装饰器来记录函数的调用情况，包括参数、返回值等信息，以便进行调试或性能分析。 |
+> | 权限控制 | 装饰器可以用于实现权限验证，例如限制只有特定用户或用户组才能调用某些函数。 |
+> | 缓存 | 你可以使用装饰器来添加缓存功能，以提高函数的性能，避免重复计算。 |
+> | 参数验证 | 装饰器可以用来验证函数的参数是否符合预期，以确保输入的有效性。 |
+> | 计时器 | 通过装饰器可以实现函数调用的计时功能，从而评估函数的性能。 |
+> | 事务处理 | 装饰器可以用来处理事务，例如在函数调用前后执行事务的开始和提交或回滚。 |
+> | 日志记录 | 装饰器可以用来在函数执行前后记录日志信息，以便了解函数的执行情况。 |
+> | API 认证和授权 | 装饰器可以用于对 API 请求进行认证和授权，以确保只有合法用户才能访问受保护的端点。 |
+> 
+> 总的来说，装饰器提供了一种简洁而灵活的方式来修改函数或类的行为，使得代码更加模块化、可复用和易于维护。
+
+```python
+def my_decorator(func: callable):
+    tool_name = func.__name__
+    print(f"{tool_name}调用了装饰器。")
+
+    def wrapper():
+        print("在函数调用之前发生一些事情。")
+        func()
+        print("在函数调用之后发生一些事情。")
+
+    # 装饰器必须返回一个函数。
+    # 在 Python 中，装饰器是一个高阶函数，它接受一个函数作为参数，并返回一个新的函数。
+    return wrapper
+
+
+@my_decorator
+def say_hello():
+    print("你好！")
+
+
+say_hello()
+
+```
+
+* * *
+
+* * *
+
+* * *
+
+###### 指定 Python 安装源
+
+异常：`'SSLError("Can't connect to HTTPS URL because the SSL module is not available.")'`
+
+```ruby
+sudo pip install -i http://mirrors.aliyun.com/pypi/simple/ \
+                 --trusted-host mirrors.aliyun.com \
+                 --timeout 0 \
+                 -r ./requirements.txt
+
+```
+
+* * *
+
+###### 创建项目依赖清单文件
+
+1. freeze: 会把整个环境中的包都列出来， 有虚拟环境时推荐适用这个。
+2. pipreqs: 只会扫描本项目列出此项目中使用了类库，自动生成依赖清单。
+
+```ruby
+pip3 freeze > requirements.txt
+```
+
+```ruby
+pip3 install pipreqs
+
+## 在项目根目录执行
+pipreqs ./ --encoding=utf8 --force
+
+```
+
+###### 使用
+
+```ruby
+pip3 install -r requirements.txt
+```
+
+* * *
+
+##### 明确项目依赖（pipdeptree）
+
+pip list 或 pip freeze 打印出来的依赖有一个问题，就是并没有明确依赖关系。
+
+```bash
+$ pip install pipdeptree
+...
+$ pipdeptree
+certifi==2020.6.20
+Flask==1.1.2
+  - click [required: >=5.1, installed: 7.1.2]
+  - itsdangerous [required: >=0.24, installed: 1.1.0]
+  - Jinja2 [required: >=2.10.1, installed: 2.11.3]
+    - MarkupSafe [required: >=0.23, installed: 1.1.1]
+  - Werkzeug [required: >=0.15, installed: 1.0.1]
+pipdeptree==2.0.0
+  - pip [required: >=6.0.0, installed: 19.3.1]
+setuptools==44.0.0.post20200106
+wheel==0.36.2
+
+```
+
+```bash
+## -w, --warn选项用于控制警告的行为。它有三个可能的值：
+#    silence：不显示警告信息，但是返回0。
+#    suppress：显示警告信息，但是无论是否存在警告，都会返回0。
+#    fail：显示警告信息，并且如果存在警告，则返回1。
+## -d 限制树的深度
+#    `-d 0`表示只显示项目中直接依赖的包
+pipdeptree -w silence -d 0
+```
+
+* * *
+
+##### 项目依赖治理（pip-autoremove）
+
+那么问题来了，如果我忽然不想依赖 Flask 了，我们需要怎么做呢？ 无脑的做法是 pip uninstall flask -y 。
+
+```bash
+$ pip uninstall flask -y
+...
+$ pipdeptree
+certifi==2020.6.20
+click==7.1.2
+itsdangerous==1.1.0
+Jinja2==2.11.3
+  - MarkupSafe [required: >=0.23, installed: 1.1.1]
+pipdeptree==2.0.0
+  - pip [required: >=6.0.0, installed: 19.3.1]
+setuptools==44.0.0.post20200106
+Werkzeug==1.0.1
+wheel==0.36.2
+```
+
+> Flask 虽然被卸载了，但是他的依赖包并没有卸载干净。你可能需要重新一个一个判断你是否需要剩下的包，然后再递归删除。。。
+
+我们可以用 `pip-autoremove` 工具来做这件事。我们重新安装Flask，再用这个工具删除试试：
+
+```bash
+$ pip install flask
+$ pip install pip-autoremove
+$ pip-autoremove flask -y
+$ pipdeptree
+certifi==2020.6.20
+pip-autoremove==0.9.1
+pipdeptree==2.0.0
+  - pip [required: >=6.0.0, installed: 19.3.1]
+setuptools==44.0.0.post20200106
+wheel==0.36.2
+```
+
+* * *
+
+* * *
+
+* * *
+
+###### 使用命令行向venv中安装依赖
+
+`pip3 install 依赖包名称 --target=当前项目下的 venv/lib64/python3.6/site-packages/`
+
+```ruby
+pip3 install nest_asyncio --target=venv/lib64/python3.6/site-packages/
+```
+
+* * *
+
+* * *
+
+* * *
+
+###### 单例 ansible工具类源码学习
+
+```python
+# Copyright (c) 2017 Ansible Project
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+# Make coding more python3-ish
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
+from threading import RLock
+
+
+class Singleton(type):
+    """Metaclass for classes that wish to implement Singleton
+    functionality.  If an instance of the class exists, it's returned,
+    otherwise a single instance is instantiated and returned.
+    """
+    def __init__(cls, name, bases, dct):
+        super(Singleton, cls).__init__(name, bases, dct)
+        cls.__instance = None
+        cls.__rlock = RLock()
+
+    def __call__(cls, *args, **kw):
+        if cls.__instance is not None:
+            return cls.__instance
+
+        with cls.__rlock:
+            if cls.__instance is None:
+                cls.__instance = super(Singleton, cls).__call__(*args, **kw)
+
+        return cls.__instance
+
+```
+
+* * *
+
+* * *
+
+* * *
+
+###### Python 在普通函数中调用异步函数 **`异常`**
+
+```python
+# 测试
+async def main():
+    print('11111111111')
+
+
+if __name__ == '__main__':
+    main()
+    print('==============')
+
+
+# 输出结果
+==============                                                                 # 依然输出结果
+RuntimeWarning: coroutine 'main' was never awaited                             # 但是有警告
+  main()
+RuntimeWarning: Enable tracemalloc to get the object allocation traceback
+
+```
+
+**`RuntimeWarning: coroutine '....省略...' was never awaited`** **原因： 它的意思是说我执行了一个异步的函数， 但是没有等待它返回结果， 所以出现这个警告**
+
+```python
+# 测试
+import asyncio
+
+
+async def main():
+    print('11111111111')
+
+
+if __name__ == '__main__':
+    asyncio.get_event_loop().run_until_complete(main())
+    print('==============')
+
+
+# 输出结果
+11111111111
+==============
+```
+
+**`注`: (如果不使用 `async/await`)在普通函数中调用异步函数的做法是，`asyncio.get_event_loop().run_until_complete(函数调用)`**
+
+* * *
+
+* * *
+
+* * *
+
+##### FastAPI 提供PDF下载
+
+###### 先生成PDF tools/build\_pdf.py
+
+```python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# @Time    : 2020/11/29 22:28
+# @Author  : Eric.Mao
+# @FileName: build_pdf.py
+# @Software: PyCharm
+# @Blog    : http://www.dev-share.top/
+
+
+import os
+import pdfkit
+import tempfile
+from tools.tmp_file import TmpFile
+
+
+# 生成PDF
+class BuildPdf(object):
+
+    @staticmethod
+    def html_to_pdf():
+        # 将wkhtmltopdf.exe程序绝对路径传入config对象
+        config = pdfkit.configuration(wkhtmltopdf=r'G:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+
+        basedir = os.path.abspath(os.path.dirname(''))
+        # 获取模板文件
+        file_path = '%s/template/report.html' % basedir
+        file_content = open(file_path, mode='r', encoding='utf-8').read()
+
+        # 源数据
+        temp_src = {
+            'title': '上海裕隆医学检验所检验报告单',
+            'username': '吴瑾瑜',
+            'patient_type': '',
+            'specimen_type': '鼻咽拭子 Nasopharyngeal swabs',
+            'id_number': '310229198205124422',
+            'sex': '女female',
+            'bed_number': 'PE2101280',
+            'sending_physician': '',
+            'clinical_diagnosis': '',
+            'age': '38 岁',
+            'category': '',
+            'inspection_unit': '个人体检',
+            'rows': '''
+                <tr>
+                    <td>01.</td>
+                    <td>2019-nCoV新型冠状病毒核酸定性检测</td>
+                    <td>阴性Negative</td>
+                    <td></td>
+                    <td>阴性Negative</td>
+                    <td>实时荧光PCR法</td>
+                </tr>
+                '''
+        }
+
+        # 填充数据
+        html = TmpFile.str_replace(file_content, temp_src)
+        # 将填充好的html模板文件放到 临时目录中
+        html_path = TmpFile.temp_file(html)
+
+        # 基于模板文件生成pdf到临时目录， 返回路径
+        with tempfile.NamedTemporaryFile(mode='w+t', suffix='.pdf', encoding='utf-8', delete=False) as temp:
+            pdfkit.from_file(html_path, temp.name, configuration=config)
+            temp.flush()
+            print(temp.name)
+            return temp.name
+
+```
+
+* * *
+
+###### 提供PDF下载接口 download.py
+
+```python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# @Time    : 2020/11/30 01:28
+# @Author  : Eric.Mao
+# @FileName: download.py
+# @Software: PyCharm
+# @Blog    : http://www.dev-share.top/
+
+# 使用全局路由
+from fastapi import APIRouter
+from tools.build_pdf import BuildPdf
+from starlette.responses import FileResponse
+
+router = APIRouter()
+
+
+# 下载PDF
+@router.get("/download/")
+def download():
+    # 生成Pdf到临时目录
+    file_path = BuildPdf.html_to_pdf()
+
+    # 这种做会浏览器会直接下载， 访问中文乱码的做法 '中国.pdf'.encode("utf-8").decode("latin1")
+    # response = FileResponse(file_path, headers={'Content-Disposition': 'attachment;filename=%s' % file_path})
+
+    # 这种做法，浏览器会优先预览
+    response = FileResponse(file_path)
+    return response
+```
+
+* * *
+
+* * *
+
+* * *
+
+###### python 拼接 批量删除语句(支持`单删`与`多删`)
+
+**注意不能使用`tuple`因为元组的特性，单个元组会多出一个逗号，所以这里采用 `list`**
+
+```python
+sql = "DELETE FROM inventory WHERE id IN (%s);" % str(list(entity.text_ids)).strip("[|]")
+# 执行SQL语句
+self.cursor.execute(sql)
+self.db.commit()
+```
+
+* * *
+
+* * *
+
+* * *
+
+###### 向数据库中写入数据异常， 处理字符串中含有 单引号(`'`) 引发异常的问题
+
+```python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import pymysql
+
+# 打开数据库连接
+db = pymysql.connect(host='localhost', port=3306, user='root', passwd='youpasswd', db='ansible', charset='utf8')
+# db, 建立默认游标, 建立返回值为字典的游标
+db.cursor()
+db.cursor(cursor=pymysql.cursors.DictCursor)
+
+###### 使用
+text = pymysql.escape_string(text)
+# 或者
+text = self.db.escape_string(text)
+
+```
+
+* * *
+
+* * *
+
+* * *
+
+##### Python 字典填充
+
+###### 自定义工具类
+
+```python
+from string import Template
+# 临时文件系统对象中
+class TmpFile(object):
+    # 字典填充, 字符串替换, data数据, 只支持字典
+    @staticmethod
+    def str_replace(src, data):
+        tmp = Template(src)
+        return tmp.substitute(data)
+```
+
+* * *
+
+###### BaseModel
+
+```python
+from pydantic import BaseModel
+
+
+# 实体
+class InventoryEntity(BaseModel):
+    id: str
+    text_name: str
+    text_ini: str
+    update_user: str = ''
+    update_time: str = ''
+    version: str = ''
+```
+
+* * *
+
+###### 用法
+
+```python
+from tools.tmp_file import TmpFile
+def update_inventory(self, entity: InventoryEntity):
+
+    sql = """
+        UPDATE
+            inventory
+        SET
+            text_ini='${text_ini}'
+            , update_user='${update_user}'
+            , update_time='${update_time}'
+            , version='${version}'
+        WHERE
+            id='${id}';
+    """
+    # 替换字符串
+    sql = TmpFile.str_replace(sql, dict(entity))
+```
+
+* * *
+
+* * *
+
+* * *
+
+##### 这个做法与 js 的或的用法`（'' || 'Result'）`道理相同
+
+**三元运算** ：`result = (布尔 and '结果1' or '结果2')`
+
+```python
+(True and 'Result_1' or 'Result_2')
+'Result_1'
+(False and 'Result_1' or 'Result_2')
+'Result_2'
+```
+
+* * *
+
+* * *
+
+* * *
+
+###### 如何格式化系统时间？ test.py
+
+```ruby
+from datetime import datetime
+
+
+def main():
+    print(datetime.now().strftime('%Y-%m-%d %H:%M:%S'));
+
+
+if __name__ == '__main__':
+    main()
+
+```
+
+* * *
+
+* * *
+
+* * *
+
+###### Python3标准库：tempfile临时文件系统对象
+
+```python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import tempfile
+
+
+# Python3标准库：tempfile临时文件系统对象
+def main():
+    # (mode='w+t',                                                encoding='utf-8',                               suffix='.ini',                            delete=False)
+    # (mode='以文本模式打开文件',               encoding='utf-8',                               suffix='文件后缀名',            delete=退出时保留该文件)
+    with tempfile.NamedTemporaryFile(mode='w+t', encoding='utf-8', suffix='.ini', delete=False) as temp:
+        print('写文件:')
+        temp.write('Some data')
+        temp.flush()
+        temp.close()
+
+        print('获取临时文件名:')
+        print(temp.name)
+
+        print('读取临时文件内容:')
+        print(open(temp.name, 'r').read())
+
+
+if __name__ == '__main__':
+    main()
+
+```
+
+* * *
+
+* * *
+
+* * *
+
+###### 如何导入自己写的类
+
+```ruby
+cn-ansible
+├── opt_ansible
+│   ├── playbook.py
+│   └── README.md
+├── opt_database
+│   └── mariadb.py
+└── README.md
+```
+
+* * *
+
+###### mariadb.py
+
+```python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import pymysql
+
+class GetMariaDB(object):
+    def __init__(self):
+        pass
+
+    @classmethod
+    def instance(cls):
+        # 打开数据库连接
+        db = pymysql.connect(host='localhost', port=3306, user='root', passwd='youpasswd', db='ansible', charset='utf8')
+        # db, 建立默认游标, 建立返回值为字典的游标
+        return db, db.cursor(), db.cursor(cursor=pymysql.cursors.DictCursor)
+
+```
+
+* * *
+
+###### playbook.py
+
+```python
+# from 文件夹.文件名 import 类名
+from opt_database.mariadb import GetMariaDB
+```
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+#### Python 常用命令
+
+##### 1\. 获取操作系统命令结果 commands.getstatusoutput
+
+```ruby
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import commands
+
+# 解构赋值 (命令执行的返回码, 命令执行后的返回结果)
+(code, data) = commands.getstatusoutput("docker ps | grep storage | awk '{print $11}'")
+# data的结果是 字符串
+# storage2
+# storage1
+# storage0
+
+# 将字符串结果转为 数组、集合、字典
+list = data.split('\n')
+print(list)
+
+# 输出字典长度
+print(len(list))
+```
+
+##### 2\. 扫描整个字符串并返回第一个成功的匹配 re.search
+
+```python
+#!/usr/bin/python
+import re
+
+line = "home/are/smarter/than/dogs";
+
+searchObj = re.search( r'(.*)/%s/(.*)' % 'are', line)
+
+if searchObj:
+   # 把与正则相匹配的字符串，根据正则进行分组
+   print "searchObj.group() : ", searchObj.group()
+   print "searchObj.group(1) : ", searchObj.group(1)
+   print "searchObj.group(2) : ", searchObj.group(2)
+else:
+   print "Nothing found!!"
+```
+
+##### 3\. 不等于
+
+```python
+# str 不为 NoneType
+if str is not None:
+
+# 字符串中不包含 eric
+if 'eric' not in file:
+
+```
+
+##### 4\. 补零
+
+```python
+# 六位数字，如果不够前面补零
+num  = '16'.zfill(6)
+print(num) # 000016
+```

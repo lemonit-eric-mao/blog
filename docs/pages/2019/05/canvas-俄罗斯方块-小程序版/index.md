@@ -1,0 +1,418 @@
+---
+title: "Canvas 俄罗斯方块 小程序版"
+date: "2019-05-10"
+categories: 
+  - "移动端"
+---
+
+```markup
+<!--pages/tetris/tetris.wxml-->
+<canvas canvas-id="gamesConsole" bindtouchstart="touchendEvent" bindtouchmove="moveEvent" class="games-console" style="background-color: #2b2b2b"></canvas>
+
+```
+
+```javascript
+// pages/tetris/tetris.js
+// 添加  async await 支持
+const regeneratorRuntime = require('../../utils/runtime.js');
+const tool = require('../../utils/tools.js');
+
+let dataSource = {
+  intervalId: 0,
+  gmCanvas: {}
+}
+
+/**
+ * 初始化 Context
+ */
+class GMCanvas {
+
+  constructor(ctx) {
+
+    this.ctx = ctx;
+    this.width = 300;
+    this.height = 150;
+    // 记录向下移动的步骤
+    this.distance = 10;
+    // 方块的历史记录
+    this.history = [];
+    //
+    this.temp = [];
+  }
+
+  generateGraph() {
+    // I 横
+    let IH = [{
+      x: 0,
+      y: 0,
+      w: 8,
+      h: 8
+    }, {
+      x: 10,
+      y: 0,
+      w: 8,
+      h: 8
+    }, {
+      x: 20,
+      y: 0,
+      w: 8,
+      h: 8
+    }, {
+      x: 30,
+      y: 0,
+      w: 8,
+      h: 8
+    }];
+    // I 竖
+    let IV = [{
+      x: 0,
+      y: 0,
+      w: 8,
+      h: 8
+    }, {
+      x: 0,
+      y: 10,
+      w: 8,
+      h: 8
+    }, {
+      x: 0,
+      y: 20,
+      w: 8,
+      h: 8
+    }, {
+      x: 0,
+      y: 30,
+      w: 8,
+      h: 8
+    }];
+    // L 横
+    let LH = [{
+      x: 0,
+      y: 0,
+      w: 8,
+      h: 8
+    }, {
+      x: 10,
+      y: 0,
+      w: 8,
+      h: 8
+    }, {
+      x: 20,
+      y: 0,
+      w: 8,
+      h: 8
+    }, {
+      x: 20,
+      y: -10,
+      w: 8,
+      h: 8
+    }];
+    // L 竖
+    let LV = [{
+      x: 0,
+      y: 0,
+      w: 8,
+      h: 8
+    }, {
+      x: 0,
+      y: 10,
+      w: 8,
+      h: 8
+    }, {
+      x: 0,
+      y: 20,
+      w: 8,
+      h: 8
+    }, {
+      x: 10,
+      y: 20,
+      w: 8,
+      h: 8
+    }];
+
+    let libs = [IH, IH, IH, IH];
+
+    let random = Math.floor(Math.random() * (libs.length - 1));
+    this.temp = libs[random];
+  }
+
+  /**
+   * 1.生成背景网格
+   * @param x
+   * @param y
+   * @param w
+   * @param h
+   */
+  gmFillRectGrid(x, y, w, h) {
+    this.ctx.save();
+    this.ctx.lineWidth = 0.2;
+    this.ctx.strokeStyle = '#FFF';
+    this.ctx.strokeRect(x, y, w, h);
+    this.ctx.restore();
+  }
+
+  /**
+   * 2.生成方块
+   * @param x
+   * @param y
+   * @param w
+   * @param h
+   */
+  gmFillRect(x, y, w, h) {
+    this.ctx.save();
+    // 设置画布 坐标系原点位置（注：是画笔相对的位置，即：每次画新的图都会便宜）
+    this.ctx.translate(1, 1);
+    // 设置方块填充色
+    this.ctx.strokeStyle = 'red';
+    // 绘制空心方块，默认黑色
+    this.ctx.strokeRect(x, y, w, h);
+    this.ctx.restore();
+  }
+
+  /**
+   * 3.生成网格 游戏背景
+   */
+  generateGrid() {
+    let temp = 30;
+    for (let i = 0; i < 450; i++) {
+      this.gmFillRectGrid((i % temp) * 10, Math.floor(i / temp) * 10, 10, 10);
+    }
+  }
+
+  /**
+   * 4.重绘方块
+   */
+  repaintRect(callback) {
+    this.temp.map((rect) => {
+      if (callback) {
+        callback(rect);
+      }
+      this.gmFillRect(rect.x, rect.y, rect.w, rect.h);
+    });
+    this.ctx.draw();
+  }
+
+  /**
+   * 5.更新方块
+   */
+  gmUpdateRect() {
+    this.ctx.clearRect(0, 0, this.width, this.height);
+    this.generateGrid();
+    // 载入历史方块
+    this.history.map((arr) => {
+      arr.map((rect) => {
+        this.gmFillRect(rect.x, rect.y, rect.w, rect.h);
+      });
+    });
+  }
+
+  /**
+   * 6.历史记录(记录已经完成的方块)
+   *
+   * @param arr 数据
+   */
+  saveHistory(arr) {
+    if (Object.prototype.toString.call(arr) === '[object Array]') {
+      this.history.push(arr);
+    }
+  }
+
+  /**
+   * 左移
+   */
+  gmMoveLeft() {
+    this.gmUpdateRect();
+    // 计算 是否位移
+    let result = this.temp.every((rect) => {
+      // 如果有一个方块越界，其余的将不在进行计算
+      if (rect.x > 0) {
+        return true;
+      }
+      // 越界
+      return false;
+    });
+
+    // 重绘方块
+    this.repaintRect((rect) => {
+      if (result) {
+        rect.x -= this.distance;
+      }
+    });
+  }
+
+  /**
+   * 右移
+   */
+  gmMoveRight() {
+    this.gmUpdateRect();
+    // 计算 是否位移
+    let result = this.temp.every((rect) => {
+      // 如果有一个方块越界，其余的将不在进行计算
+      if (rect.x < this.width - this.distance) {
+        return true;
+      }
+      // 越界
+      return false;
+    });
+
+    // 重绘方块
+    this.repaintRect((rect) => {
+      if (result) {
+        rect.x += this.distance;
+      }
+    });
+  }
+
+  /**
+   * 下移
+   */
+  gmMoveDown() {
+    this.gmUpdateRect();
+    // 计算 是否位移
+    let result = this.temp.every((rect) => {
+      // 如果有一个方块越界，其余的将不在进行计算
+      if (rect.y >= this.height - this.distance) {
+        // 越界
+        return false;
+      }
+      return true;
+    });
+
+    // 重绘方块
+    this.repaintRect((rect) => {
+      if (result) {
+        rect.y += this.distance;
+      }
+    });
+
+    // 如果发生越界表示，就让方块变为历史
+    if (!result) {
+      // 保存为历史方块
+      this.saveHistory(this.temp);
+      // 重新随机生成模型
+      this.generateGraph();
+    }
+  }
+
+  gmTimer() {
+    // 每秒执行一次
+    this.intervalId = setInterval(() => {
+      this.gmMoveDown();
+    }, 1000);
+  }
+
+}
+/********************************** */
+Page({
+
+  /**
+   * 页面的初始数据
+   */
+  data: dataSource,
+
+  /**
+   * 生命周期函数--监听页面加载
+   */
+  onLoad(options) {
+    let ctx = wx.createCanvasContext('gamesConsole');
+    let gmCanvas = new GMCanvas(ctx);
+    this.gmCanvas = gmCanvas;
+
+    function startGame() {
+      // 绘制背景网格
+      gmCanvas.generateGrid();
+      // 生成图形模型
+      gmCanvas.generateGraph();
+      // 重绘图形
+      gmCanvas.repaintRect();
+      // 开启定时器
+      gmCanvas.gmTimer();
+    }
+
+    startGame();
+  },
+
+  /**
+   * 手指按下事件
+   */
+  touchendEvent(event) {
+    let touche = event.touches[0];
+    this.touchX = touche.x;
+    this.touchY = touche.y;
+  },
+
+  /**
+   * 手指触发移动事件
+   */
+  moveEvent(event) {
+    let move = event.touches[0];
+
+    if (move.y < this.touchY) {
+      // 上
+      console.log(move.y)
+    } else if (move.y > this.touchY) {
+      // 下
+      console.log(move.y)
+      this.gmCanvas.gmMoveDown();
+    }
+
+    if (move.x < this.touchX) {
+      // 左
+      this.gmCanvas.gmMoveLeft();
+    } else if (move.x > this.touchX) {
+      // 右
+      this.gmCanvas.gmMoveRight();
+    }
+
+  },
+
+  /**
+   * 生命周期函数--监听页面初次渲染完成
+   */
+  onReady() {
+
+  },
+
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow() {
+
+  },
+
+  /**
+   * 生命周期函数--监听页面隐藏
+   */
+  onHide() {
+
+  },
+
+  /**
+   * 生命周期函数--监听页面卸载
+   */
+  onUnload() {
+    clearInterval(this.intervalId);
+  },
+
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh() {
+
+  },
+
+  /**
+   * 页面上拉触底事件的处理函数
+   */
+  onReachBottom() {
+
+  },
+
+  /**
+   * 用户点击右上角分享
+   */
+  onShareAppMessage() {
+
+  }
+})
+```

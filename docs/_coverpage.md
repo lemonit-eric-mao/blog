@@ -2,6 +2,6 @@
 
 ![logo](_media/icon.svg)
 
-# Go 语言入门文档
+# 技术博客
 
-[Get Started](preface.md)
+[Get Started](pages/)

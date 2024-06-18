@@ -1,0 +1,750 @@
+---
+title: "离线部署 K8S 高可用 外部etcd"
+date: "2020-08-12"
+categories: 
+  - "k8s"
+---
+
+###### **[官网高可用部署方案](https://kubernetes.io/zh/docs/setup/production-environment/tools/kubeadm/ha-topology/ "官网高可用部署方案")**
+
+###### **[为 kube-apiserver 选择负载均衡器](https://kubernetes.io/zh/docs/setup/production-environment/tools/kubeadm/high-availability/#%E4%B8%BA-kube-apiserver-%E5%88%9B%E5%BB%BA%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%99%A8 "为 kube-apiserver 选择负载均衡器")**
+
+###### **[官方推荐高可用负载均衡选择](https://github.com/kubernetes/kubeadm/blob/master/docs/ha-considerations.md#options-for-software-load-balancing "官方推荐高可用负载均衡选择")**
+
+###### **[Kuboard 提供的文档](https://kuboard.cn/install/install-kubernetes.html#%E5%AE%89%E8%A3%85kubernetes%E9%AB%98%E5%8F%AF%E7%94%A8 "Kuboard 提供的文档")**
+
+* * *
+
+###### 环境
+
+| IP地址 | 应用部署 |
+| --- | --- |
+| 192.168.20.90 | Control(主控机) |
+| 192.168.20.91 | master1 |
+| 192.168.20.92 | master2 |
+| 192.168.20.93 | master3 |
+| 192.168.20.91 | etcd1 |
+| 192.168.20.92 | etcd2 |
+| 192.168.20.93 | etcd3 |
+| 192.168.20.94 | worker |
+| 192.168.20.95 | HAProxy1 |
+| 192.168.20.96 | HAProxy2 |
+| 192.168.20.97 | Virtual IP |
+
+* * *
+
+###### **`创建目录`**
+
+```ruby
+[root@Control ~]# mkdir -p /home/deploy/offline_setup/
+```
+
+###### 提前准备所需要的 `rpm`、`docker image`
+
+- 使用 `yumdownloader --resolve --downloadonly --downloaddir=$PWD 程序包名称` 工具 将 rpm包下载到本地
+- 将k8s所需要的 镜像 `docker save xxxx:vv > xxx-vv.docker` 到本地
+- [修改主机名](http://www.dev-share.top/2018/10/10/linux-%E4%BF%AE%E6%94%B9%E4%B8%BB%E6%9C%BA%E5%90%8D/ "修改主机名")
+
+**大概要这么多**
+
+```ruby
+[root@Control ~]# tree /home/deploy/offline_setup/
+/home/deploy/offline_setup/
+├── etcd
+│   ├── etcdadm
+│   └── etcd-v3.3.8-linux-amd64.tar.gz
+├── images
+│   ├── calico-cni-v3.15.1.docker
+│   ├── calico-node-v3.15.1.docker
+│   ├── calico-pod2daemon-flexvol-v3.15.1.docker
+│   ├── calico/kube-controllers:v3.15.1
+│   ├── flanneld-v0.11.0-amd64.docker
+│   ├── k8s.gcr.io-coredns-1.6.2.docker
+│   ├── k8s.gcr.io-kube-apiserver-v1.16.6.docker
+│   ├── k8s.gcr.io-kube-controller-manager-v1.16.6.docker
+│   ├── k8s.gcr.io-kube-proxy-v1.16.6.docker
+│   ├── k8s.gcr.io-kube-scheduler-v1.16.6.docker
+│   └── k8s.gcr.io-pause-3.1.docker
+├── rpm-lib
+│   ├── ansible
+│   │   ├── ansible-2.9.10-1.el7.noarch.rpm
+│   │   ├── libyaml-0.1.4-11.el7_0.x86_64.rpm
+│   │   ├── python2-cryptography-1.7.2-2.el7.x86_64.rpm
+│   │   ├── python2-httplib2-0.18.1-3.el7.noarch.rpm
+│   │   ├── python2-jmespath-0.9.4-2.el7.noarch.rpm
+│   │   ├── python2-pyasn1-0.1.9-7.el7.noarch.rpm
+│   │   ├── python-babel-0.9.6-8.el7.noarch.rpm
+│   │   ├── python-backports-1.0-8.el7.x86_64.rpm
+│   │   ├── python-backports-ssl_match_hostname-3.5.0.1-1.el7.noarch.rpm
+│   │   ├── python-cffi-1.6.0-5.el7.x86_64.rpm
+│   │   ├── python-enum34-1.0.4-1.el7.noarch.rpm
+│   │   ├── python-idna-2.4-1.el7.noarch.rpm
+│   │   ├── python-ipaddress-1.0.16-2.el7.noarch.rpm
+│   │   ├── python-jinja2-2.7.2-4.el7.noarch.rpm
+│   │   ├── python-markupsafe-0.11-10.el7.x86_64.rpm
+│   │   ├── python-paramiko-2.1.1-9.el7.noarch.rpm
+│   │   ├── python-ply-3.4-11.el7.noarch.rpm
+│   │   ├── python-pycparser-2.14-1.el7.noarch.rpm
+│   │   ├── python-setuptools-0.9.8-7.el7.noarch.rpm
+│   │   ├── python-six-1.9.0-2.el7.noarch.rpm
+│   │   ├── PyYAML-3.10-11.el7.x86_64.rpm
+│   │   └── sshpass-1.06-2.el7.x86_64.rpm
+│   ├── docker
+│   │   ├── audit-2.8.5-4.el7.x86_64.rpm
+│   │   ├── audit-libs-2.8.5-4.el7.x86_64.rpm
+│   │   ├── audit-libs-python-2.8.5-4.el7.x86_64.rpm
+│   │   ├── checkpolicy-2.5-8.el7.x86_64.rpm
+│   │   ├── containerd.io-1.2.13-3.2.el7.x86_64.rpm
+│   │   ├── container-selinux-2.119.2-1.911c772.el7_8.noarch.rpm
+│   │   ├── docker-ce-19.03.9-3.el7.x86_64.rpm
+│   │   ├── docker-ce-cli-19.03.12-3.el7.x86_64.rpm
+│   │   ├── libcgroup-0.41-21.el7.x86_64.rpm
+│   │   ├── libseccomp-2.3.1-4.el7.x86_64.rpm
+│   │   ├── libsemanage-python-2.5-14.el7.x86_64.rpm
+│   │   ├── policycoreutils-2.5-34.el7.x86_64.rpm
+│   │   ├── policycoreutils-python-2.5-34.el7.x86_64.rpm
+│   │   ├── python-IPy-0.75-6.el7.noarch.rpm
+│   │   └── setools-libs-3.3.8-4.el7.x86_64.rpm
+│   ├── haproxy
+│   │   ├── haproxy22-2.2.1-1.el7.ius.x86_64.rpm
+│   │   └── pcre2-10.23-2.el7.x86_64.rpm
+│   ├── k8s
+│   │   ├── 029bc0d7b2112098bdfa3f4621f2ce325d7a2c336f98fa80395a3a112ab2a713-kubernetes-cni-0.8.6-0.x86_64.rpm
+│   │   ├── 0bfd3f23e53d4663860cd89b9304fba5a7853d7b02a8985e4d3c240d10bf6587-kubectl-1.16.6-0.x86_64.rpm
+│   │   ├── 0eeb459890b1c8f07c91a9771ce5f4df6c2b318ff2e8902ed9228bf01944cfd7-kubeadm-1.16.6-0.x86_64.rpm
+│   │   └── 6f0d57f3271c856b9790f6628d0fa2f2d51e5e5c33faf2d826f3fc07a1907cde-kubelet-1.16.6-0.x86_64.rpm
+│   ├── keepalived
+│   │   ├── keepalived-1.3.5-16.el7.x86_64.rpm
+│   │   ├── lm_sensors-libs-3.4.0-8.20160601gitf9185e5.el7.x86_64.rpm
+│   │   ├── net-snmp-agent-libs-5.7.2-48.el7_8.1.x86_64.rpm
+│   │   └── net-snmp-libs-5.7.2-48.el7_8.1.x86_64.rpm
+│   ├── ntp
+│   │   ├── autogen-libopts-5.18-5.el7.x86_64.rpm
+│   │   ├── ntp-4.2.6p5-29.el7.centos.2.x86_64.rpm
+│   │   └── ntpdate-4.2.6p5-29.el7.centos.2.x86_64.rpm
+│   └── tools
+│       ├── gpm-libs-1.20.7-6.el7.x86_64.rpm
+│       ├── net-tools-2.0-0.25.20131004git.el7.x86_64.rpm
+│       ├── perl-5.16.3-295.el7.x86_64.rpm
+│       ├── perl-Carp-1.26-244.el7.noarch.rpm
+│       ├── perl-constant-1.27-2.el7.noarch.rpm
+│       ├── perl-Encode-2.51-7.el7.x86_64.rpm
+│       ├── perl-Exporter-5.68-3.el7.noarch.rpm
+│       ├── perl-File-Path-2.09-2.el7.noarch.rpm
+│       ├── perl-File-Temp-0.23.01-3.el7.noarch.rpm
+│       ├── perl-Filter-1.49-3.el7.x86_64.rpm
+│       ├── perl-Getopt-Long-2.40-3.el7.noarch.rpm
+│       ├── perl-HTTP-Tiny-0.033-3.el7.noarch.rpm
+│       ├── perl-libs-5.16.3-295.el7.x86_64.rpm
+│       ├── perl-macros-5.16.3-295.el7.x86_64.rpm
+│       ├── perl-parent-0.225-244.el7.noarch.rpm
+│       ├── perl-PathTools-3.40-5.el7.x86_64.rpm
+│       ├── perl-Pod-Escapes-1.04-295.el7.noarch.rpm
+│       ├── perl-podlators-2.5.1-3.el7.noarch.rpm
+│       ├── perl-Pod-Perldoc-3.20-4.el7.noarch.rpm
+│       ├── perl-Pod-Simple-3.28-4.el7.noarch.rpm
+│       ├── perl-Pod-Usage-1.63-3.el7.noarch.rpm
+│       ├── perl-Scalar-List-Utils-1.27-248.el7.x86_64.rpm
+│       ├── perl-Socket-2.010-5.el7.x86_64.rpm
+│       ├── perl-Storable-2.45-3.el7.x86_64.rpm
+│       ├── perl-Text-ParseWords-3.29-4.el7.noarch.rpm
+│       ├── perl-threads-1.87-4.el7.x86_64.rpm
+│       ├── perl-threads-shared-1.43-6.el7.x86_64.rpm
+│       ├── perl-Time-HiRes-1.9725-3.el7.x86_64.rpm
+│       ├── perl-Time-Local-1.2300-2.el7.noarch.rpm
+│       ├── vim-common-7.4.629-6.el7.x86_64.rpm
+│       ├── vim-enhanced-7.4.629-6.el7.x86_64.rpm
+│       └── vim-filesystem-7.4.629-6.el7.x86_64.rpm
+└── yaml
+    ├── 1_init.yaml
+    ├── 2_deploy_ntp.yaml
+    ├── 3_deploy_docker.yaml
+    ├── 4_deploy.yaml
+    ├── 5_start.yaml
+    ├── 6_stop.yaml
+    ├── 7_destory.yaml
+    ├── ansible.cfg
+    ├── canal.yaml
+    ├── hosts.ini
+    └── inventory.ini
+
+[root@Control ~]#
+```
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+###### 安装 ansible
+
+```ruby
+rpm -ivh --force --nodeps /home/deploy/offline_setup/rpm-lib/ansible/*
+```
+
+* * *
+
+###### ansible-playbook 设置 ssh
+
+###### 主控机，需要提前执行 `ssh-keygen -t rsa`
+
+```ruby
+cat > init.yaml << ERIC
+######################################################
+# ansible-playbook -i hosts.ini init.yaml -u root -k #
+######################################################
+
+- hosts: servers
+  tasks:
+    - name: 建立 SSH互信
+      authorized_key:
+        user: "{{ username }}"
+        key: "{{ lookup('file', lookup('env','HOME')+ '/.ssh/id_rsa.pub') }}"
+        state: present
+
+    - name: 设置 hostame
+      shell: hostnamectl set-hostname {{ inventory_hostname }}
+
+    - name: 添加 hosts
+      blockinfile:
+        path: /etc/hosts
+        # ansible：jinja2的for和if的使用
+        # 如果想获取index, 使用 loop.index
+        block: |-
+          {% for item in (groups.servers) %}
+          {{ hostvars[item].ansible_ssh_host }}  {{ item }}
+          {% endfor %}
+        state: present
+        create: yes
+        backup: yes
+        unsafe_writes: yes
+
+    - name: 关闭 防火墙
+      service:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    - name: 关闭 Swap
+      shell: swapoff -a && sed -ri 's/.*swap.*/#&/' /etc/fstab
+
+    - name: 关闭 SELinux
+      lineinfile:
+        dest: '/etc/selinux/config'
+        line: 'SELINUX=permissive'
+        regexp: 'SELINUX=enforcing'
+        state: present
+
+ERIC
+
+```
+
+* * *
+
+###### 所有节点 NTP 同步 (使用 ansible-playbook)
+
+```yaml
+###################################################
+# ansible-playbook -i hosts.ini deploy_ntp.yaml #
+###################################################
+
+- hosts: all
+  tasks:
+    - name: get facts
+      setup:
+
+    - name: '将本地文件拷贝至各主机'
+      copy:
+        src: '{{ deploy_dir }}/rpm-lib/ntp-client'
+        dest: '{{ deploy_dir }}/rpm-lib/'
+
+    - name: '离线安装NTP客户端'
+      shell: rpm -ivh {{ deploy_dir }}/rpm-lib/ntp-client/* --force --nodeps
+
+    - name: 启动 ntpdate
+      service:
+        name: ntpdate
+        state: started
+        enabled: yes
+
+    - name: '同步'
+      shell: ntpdate {{ ntp_server }}
+
+```
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+###### [安装 HAProxy](http://www.dev-share.top/2020/08/12/centos-7-%e4%ba%8c%e8%bf%9b%e5%88%b6%e5%ae%89%e8%a3%85-haproxy/ "安装 HAProxy") **(`192.168.20.95`, `192.168.20.96`)**
+
+```ruby
+# 安装 HAProxy 必须要闭关 SELinux
+setenforce 0
+sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+
+mkdir -p /home/deploy/haproxy && cd /home/deploy/haproxy
+
+# 使用离线包 安装
+rpm -ivh /home/deploy/offline_setup/rpm-lib/haproxy/* --force --nodeps
+
+# 配置日志
+echo 'local2=debug     /var/log/haproxy.log' > /etc/rsyslog.d/haproxy.conf
+
+systemctl restart rsyslog
+
+mv /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg-bak
+
+# 创建文件
+cat > /etc/haproxy/haproxy.cfg << ERIC
+global
+  maxconn 10000                 # 最大同时10000连接
+  daemon                        # 以daemon方式在后台运行
+
+defaults
+  log     127.0.0.1 local2      # local2 在 /etc/rsyslog.d/haproxy.conf 文件中配置
+  # mode http                   # 默认的模式mode { tcp|http|health }，tcp是4层，http是7层，health只会返回OK
+  retries         3             # 连接后端服务器失败重试次数，超过3次后会将失败的后端服务器标记为不可用。
+  timeout client  1h            # 客户端响应超时             1小时
+  timeout server  1h            # server端响应超时           1小时
+  timeout connect 1h            # 连接server端超时           1小时
+  timeout check   10s           # 对后端服务器的检测超时时间 10秒
+
+listen stats                    # 定义监控页面
+  mode  http
+  bind  *:1080                  # Web界面的1080端口
+  stats refresh 1s              # 每1秒更新监控数据
+  stats uri /stats              # 访问监控页面的uri
+  stats realm HAProxy\ Stats    # 监控页面的认证提示
+  stats auth admin:654321       # 监控页面的用户名和密码
+
+frontend kube_apiserver_front
+  mode  tcp
+  bind  *:6443                  # 监听6443端口
+  default_backend kube_apiserver_back
+
+backend kube_apiserver_back
+
+  mode    tcp
+  option  tcp-check
+  balance roundrobin
+
+  server kube-apiserver-1 192.168.20.91:6443 check inter 10s rise 3 fall 3 weight 1
+  server kube-apiserver-2 192.168.20.92:6443 check inter 10s rise 3 fall 3 weight 1
+  server kube-apiserver-3 192.168.20.93:6443 check inter 10s rise 3 fall 3 weight 1
+
+ERIC
+
+# 检查修改后的配置文件是否有效
+haproxy -f /etc/haproxy/haproxy.cfg -c
+
+systemctl start haproxy && systemctl enable haproxy && systemctl status haproxy
+
+```
+
+* * *
+
+* * *
+
+* * *
+
+###### 安装 Keepalived **(`192.168.20.95`, `192.168.20.96`)**
+
+```ruby
+# 使用离线包 安装
+rpm -ivh /home/deploy/offline_setup/rpm-lib/keepalived/* --force --nodeps
+
+cat > /etc/keepalived/scripts/check_haproxy.sh << ERIC
+#!/bin/bash
+# 不要忘记给文件授权
+
+# HAProxy 的监听端口已经改为6443, 所以查看6443端口是否有进程来确认，HAProxy是否宕机
+line=\$(netstat -lntp | grep 6443 | wc -l)
+# 如果HAProxy已经宕机，将停止keepalived运行
+if [ "\${line}" = "0" ]; then
+     systemctl stop keepalived
+fi
+
+ERIC
+
+chmod -R 777 /etc/keepalived/scripts/check_haproxy.sh
+
+cat > /etc/keepalived/keepalived.conf << ERIC
+
+# 1 全局块
+global_defs {
+   # 接收邮件的邮箱列表
+   notification_email {
+     eric.mao@sinoeyes.com
+   }
+   notification_email_from eric@qq.com          # 发送邮件的人
+   smtp_server smtp.exmail.qq.com               # smtp服务器地址
+   smtp_connect_timeout 30                      # smtp超时时间
+   router_id eric_keepalived_master             # 机器标识
+   vrrp_skip_check_adv_addr
+   vrrp_garp_interval 0
+   vrrp_gna_interval 0
+}
+
+# 2 添加监控脚本(注意：脚本块，必须要在引用它的块的上面，这是有顺序的)
+vrrp_script check_haproxy {
+    script "/etc/keepalived/scripts/check_haproxy.sh"
+    interval 1                                  # 调用脚本两次之间的间隔，默认为1秒
+    weight 2                                    # 修改权重，默认是2
+}
+
+# 3 VRRP协议 实例块
+vrrp_instance ERIC_VI_1 {
+
+    nopreempt                                   # 设置 nopreempt 非抢占模式; (允许低优先级计算机保持主角色，即使高优先级计算机重新联机。如果保持抢占模式，只需要删除 nopreempt)
+    state MASTER                                # 定义当前安装keepalived软件的服务器是 主节点(MASTER) 还是 备份节点(BACKUP)。只在抢占模式时起作用。
+    virtual_router_id 56                        # 虚拟路由编号，主备要一致，范围是0-255
+    priority 160                                # 优先级，谁的优先级高，谁更容易成为主节点
+    advert_int 1                                # 主备服务器之间的通信间隔，单位是秒。
+    # 服务器之间的认证方式
+    authentication {
+        auth_type PASS                          # 指定认证方式。PASS简单密码认证(推荐),AH:IPSEC认证(不推荐)。
+        auth_pass 1111                          # 指定认证所使用的密码。最多8位。
+    }
+
+    interface ens160                            # 指定虚拟IP定义在那个网卡上面(本机指定为 ens160 网卡)
+    # 定义虚拟IP块。客户通过该ip访问服务器
+    virtual_ipaddress {
+        172.160.180.168/24                      # 与指定的网卡是同一网段虚拟IP(使用ip add进行查看ens160 网卡的网段)
+    }
+
+    # 添加监控脚本
+    track_script {                              # 执行监控nginx进程的脚本
+        check_haproxy
+    }
+}
+
+ERIC
+
+systemctl start keepalived.service && systemctl enable keepalived.service && systemctl status keepalived.service
+
+
+```
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+###### **[使用 etcdadm 安装 etcd集群](http://www.dev-share.top/2020/08/12/%e4%bd%bf%e7%94%a8-etcdadm-%e5%ae%89%e8%a3%85-etcd%e9%9b%86%e7%be%a4/ "使用 etcdadm 安装 etcd集群")**
+
+```ruby
+ssh 192.168.20.91 yum -y install rsync
+ssh 192.168.20.92 yum -y install rsync
+ssh 192.168.20.93 yum -y install rsync
+
+scp /home/deploy/offline_setup/etcd/etcdadm 192.168.20.91:/usr/local/bin/ && ssh 192.168.20.91 chmod +x /usr/local/bin/etcdadm
+scp /home/deploy/offline_setup/etcd/etcdadm 192.168.20.92:/usr/local/bin/ && ssh 192.168.20.92 chmod +x /usr/local/bin/etcdadm
+scp /home/deploy/offline_setup/etcd/etcdadm 192.168.20.93:/usr/local/bin/ && ssh 192.168.20.93 chmod +x /usr/local/bin/etcdadm
+
+ssh 192.168.20.91 mkdir -p /var/cache/etcdadm/etcd/v3.3.8
+ssh 192.168.20.92 mkdir -p /var/cache/etcdadm/etcd/v3.3.8
+ssh 192.168.20.93 mkdir -p /var/cache/etcdadm/etcd/v3.3.8
+
+scp /home/deploy/offline_setup/etcd/etcd-v3.3.8-linux-amd64.tar.gz 192.168.20.91:/var/cache/etcdadm/etcd/v3.3.8
+scp /home/deploy/offline_setup/etcd/etcd-v3.3.8-linux-amd64.tar.gz 192.168.20.92:/var/cache/etcdadm/etcd/v3.3.8
+scp /home/deploy/offline_setup/etcd/etcd-v3.3.8-linux-amd64.tar.gz 192.168.20.93:/var/cache/etcdadm/etcd/v3.3.8
+
+ssh 192.168.20.91 etcdadm init
+ssh 192.168.20.91 rsync -avR /etc/etcd/pki/ca.* 192.168.20.92:/
+ssh 192.168.20.91 rsync -avR /etc/etcd/pki/ca.* 192.168.20.93:/
+
+ssh 192.168.20.92 etcdadm join https://192.168.20.91:2379
+ssh 192.168.20.93 etcdadm join https://192.168.20.91:2379
+
+# 校验etcd集群
+/opt/bin/etcdctl.sh member list
+
+```
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+###### 离线安装 docker
+
+```ruby
+ssh 192.168.20.91 mkdir -p /home/deploy/offline_setup/rpm-lib/docker/
+ssh 192.168.20.92 mkdir -p /home/deploy/offline_setup/rpm-lib/docker/
+ssh 192.168.20.93 mkdir -p /home/deploy/offline_setup/rpm-lib/docker/
+ssh 192.168.20.94 mkdir -p /home/deploy/offline_setup/rpm-lib/docker/
+
+scp /home/deploy/offline_setup/rpm-lib/docker 192.168.20.91:/home/deploy/offline_setup/rpm-lib/
+scp /home/deploy/offline_setup/rpm-lib/docker 192.168.20.92:/home/deploy/offline_setup/rpm-lib/
+scp /home/deploy/offline_setup/rpm-lib/docker 192.168.20.93:/home/deploy/offline_setup/rpm-lib/
+scp /home/deploy/offline_setup/rpm-lib/docker 192.168.20.94:/home/deploy/offline_setup/rpm-lib/
+
+rpm -ivh /home/deploy/offline_setup/rpm-lib/docker/* --force --nodeps
+
+systemctl start docker && systemctl enable docker && systemctl status docker
+```
+
+* * *
+
+###### 将本地镜像文件拷贝至各主机
+
+```ruby
+ssh 192.168.20.91 mkdir -p /home/deploy/offline_setup/images/
+ssh 192.168.20.92 mkdir -p /home/deploy/offline_setup/images/
+ssh 192.168.20.93 mkdir -p /home/deploy/offline_setup/images/
+ssh 192.168.20.94 mkdir -p /home/deploy/offline_setup/images/
+
+scp /home/deploy/offline_setup/images 192.168.20.91:/home/deploy/offline_setup/
+scp /home/deploy/offline_setup/images 192.168.20.92:/home/deploy/offline_setup/
+scp /home/deploy/offline_setup/images 192.168.20.93:/home/deploy/offline_setup/
+scp /home/deploy/offline_setup/images 192.168.20.94:/home/deploy/offline_setup/
+
+```
+
+* * *
+
+* * *
+
+* * *
+
+###### 离线安装 kubeadm、kubelet、kubectl
+
+```ruby
+ssh 192.168.20.91 mkdir -p /home/deploy/offline_setup/rpm-lib/k8s/
+ssh 192.168.20.92 mkdir -p /home/deploy/offline_setup/rpm-lib/k8s/
+ssh 192.168.20.93 mkdir -p /home/deploy/offline_setup/rpm-lib/k8s/
+ssh 192.168.20.94 mkdir -p /home/deploy/offline_setup/rpm-lib/k8s/
+
+scp /home/deploy/offline_setup/rpm-lib/k8s 192.168.20.91:/home/deploy/offline_setup/rpm-lib/
+scp /home/deploy/offline_setup/rpm-lib/k8s 192.168.20.92:/home/deploy/offline_setup/rpm-lib/
+scp /home/deploy/offline_setup/rpm-lib/k8s 192.168.20.93:/home/deploy/offline_setup/rpm-lib/
+scp /home/deploy/offline_setup/rpm-lib/k8s 192.168.20.95:/home/deploy/offline_setup/rpm-lib/
+
+rpm -ivh /home/deploy/offline_setup/rpm-lib/k8s/* --force --nodeps
+
+systemctl start kubelet && systemctl enable kubelet && systemctl status kubelet
+```
+
+* * *
+
+##### 在所有 master、worker 节点配置
+
+```ruby
+cat > /etc/sysctl.d/k8s.conf << ERIC
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+ERIC
+
+sysctl -p /etc/sysctl.d/k8s.conf && sysctl --system
+
+echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
+echo 'KUBELET_EXTRA_ARGS=--fail-swap-on=false' > /etc/sysconfig/kubelet
+```
+
+* * *
+
+##### 安装 master
+
+###### 创建`kubeadm`配置文件
+
+```ruby
+cat > kubeadm-init.yaml << ERIC
+
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: ClusterConfiguration
+kubernetesVersion: v1.16.6
+
+# 配置从哪个镜像仓库拉取镜像，先下载好所需镜像，这个可以不配置
+#imageRepository: registry.cn-hangzhou.aliyuncs.com/google_containers
+
+controlPlaneEndpoint: 192.168.20.97:6443          # "LOAD_BALANCER_IP:LOAD_BALANCER_PORT"
+
+# 配置 apiServer
+apiServer:
+  certSANs:
+    - 192.168.20.97                                #- "LOAD_BALANCER_IP"
+
+# 配置集群内部网段
+networking:
+  dnsDomain: cluster.local
+  podSubnet: 10.244.0.0/16                        # 设定pod 网段
+  serviceSubnet: 10.222.0.0/16                    # 设定service 网段
+
+# 配置 etcd
+etcd:
+  external:
+    endpoints:
+      - https://192.168.20.91:2379                 #- https://ETCD_0_IP:2379
+      - https://192.168.20.92:2379                 #- https://ETCD_1_IP:2379
+      - https://192.168.20.93:2379                 #- https://ETCD_2_IP:2379
+    # 指定 etcd证书，创建etcd时已经创建好了
+    caFile: /etc/etcd/pki/ca.crt
+    certFile: /etc/etcd/pki/apiserver-etcd-client.crt
+    keyFile: /etc/etcd/pki/apiserver-etcd-client.key
+
+ERIC
+
+# 将文件拷贝到远程master1主机
+scp kubeadm-init.yaml 192.168.20.91:~/
+```
+
+* * *
+
+###### 安装 k8s master, 它是先装好一个master，然后在用命令添加其它节点为master
+
+`所有 master节点先上传所依赖的docker镜像` `kubeadm init --config=kubeadm-init.yaml`
+
+```ruby
+[root@master1 ~]# kubeadm init --config=kubeadm-init.yaml
+[init] Using Kubernetes version: v1.16.6
+...... 省略
+[control-plane] Creating static Pod manifest for "kube-scheduler"
+[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory "/etc/kubernetes/manifests". This can take up to 4m0s
+[apiclient] All control plane components are healthy after 37.012487 seconds
+...... 省略
+[bootstrap-token] Creating the "cluster-info" ConfigMap in the "kube-public" namespace
+[kubelet-check] Initial timeout of 40s passed.
+[addons] Applied essential addon: CoreDNS
+[addons] Applied essential addon: kube-proxy
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+You can now join any number of control-plane nodes by copying certificate authorities
+and service account keys on each node and then running the following as root:
+
+  # 使用此命令来添加 master (要先推送k8s证书)
+  kubeadm join 192.168.20.97:6443 --token b100tp.p9851f68jrkqadx0 \
+    --discovery-token-ca-cert-hash sha256:59606d87b0c9cb5020d1395cc8f1e9714f3a46c255993a1da76c9359d9b76c7e \
+    --control-plane
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+  # 使用此命令来添加 worker
+  kubeadm join 192.168.20.97:6443 --token b100tp.p9851f68jrkqadx0 \
+    --discovery-token-ca-cert-hash sha256:59606d87b0c9cb5020d1395cc8f1e9714f3a46c255993a1da76c9359d9b76c7e
+
+[root@master1 ~]#
+
+```
+
+###### 添加master节点需要证书, 将证书发给其它 master节点
+
+```ruby
+ssh 192.168.20.91 rsync -avR /etc/kubernetes/pki/* 192.168.20.92:/
+ssh 192.168.20.92 rm -rf /etc/kubernetes/pki/apiserver*
+
+ssh 192.168.20.91 rsync -avR /etc/kubernetes/pki/* 192.168.20.93:/
+ssh 192.168.20.93 rm -rf /etc/kubernetes/pki/apiserver*
+```
+
+* * *
+
+###### 添加 master节点
+
+```ruby
+[root@master2 ~]# kubeadm join 192.168.20.97:6443 --token b100tp.p9851f68jrkqadx0 \
+    --discovery-token-ca-cert-hash sha256:59606d87b0c9cb5020d1395cc8f1e9714f3a46c255993a1da76c9359d9b76c7e \
+    --control-plane
+
+
+[root@master3 ~]# kubeadm join 192.168.20.97:6443 --token b100tp.p9851f68jrkqadx0 \
+    --discovery-token-ca-cert-hash sha256:59606d87b0c9cb5020d1395cc8f1e9714f3a46c255993a1da76c9359d9b76c7e \
+    --control-plane
+```
+
+* * *
+
+###### 安装 网络插件
+
+```ruby
+[root@master1 ~]# kubectl apply -f /home/deploy/offline_setup/yaml/canal.yaml
+```
+
+* * *
+
+###### 查看结果
+
+```ruby
+[root@master1 ~]# kubectl get nodes
+NAME         STATUS   ROLES    AGE     VERSION
+master1      Ready    master   7m39s   v1.16.6
+master2      Ready    master   3m4s    v1.16.6
+master3      Ready    master   2m54s   v1.16.6
+[root@master1 ~]#
+```
+
+* * *
+
+* * *
+
+* * *
+
+###### 添加 worker节点
+
+`所有 worker节点先上传所依赖的docker镜像`
+
+```ruby
+[root@worker ~]# kubeadm join 192.168.20.97:6443 --token b100tp.p9851f68jrkqadx0 \
+    --discovery-token-ca-cert-hash sha256:59606d87b0c9cb5020d1395cc8f1e9714f3a46c255993a1da76c9359d9b76c7e
+
+
+[root@worker ~]# kubectl get nodes
+NAME         STATUS   ROLES    AGE     VERSION
+master1      Ready    master   7m39s   v1.16.6
+master2      Ready    master   3m4s    v1.16.6
+master3      Ready    master   2m54s   v1.16.6
+worker       Ready    <none>   15m     v1.16.6
+[root@worker ~]#
+```
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *
+
+* * *

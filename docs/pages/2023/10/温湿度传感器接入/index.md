@@ -1,0 +1,205 @@
+---
+title: "温湿度传感器接入"
+date: "2023-10-29"
+categories: 
+  - "树莓派"
+---
+
+# 温湿度传感器
+
+```bash
+## 安装名为Adafruit_DHT的Python库。
+## 这个库是由Adafruit Industries开发的，用于与DHT系列湿度和温度传感器进行通信和数据读取的库。
+(dh11) [siyu.mao@raspberrypi (21:43:13) ~]
+└─$ pip install Adafruit_DHT
+
+```
+
+## 编写Python代码，获取温度与湿度 `dht_sensor.py`
+
+```python
+# dht_sensor.py
+import Adafruit_DHT
+import time  # 导入时间库
+
+# 选择DHT11或DHT22传感器(一般会写在传感器上)
+sensor = Adafruit_DHT.DHT11
+# 指定你的插线槽孔位
+# 根据你的连接配置选择正确的GPIO引脚
+pin = 4
+
+while True:  # 创建一个无限循环
+    # 获取数据
+    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
+
+    # 输出数据
+    if humidity is not None and temperature is not None:
+        print(f'温度: {temperature:.1f}°C')
+        print(f'湿度: {humidity:.1f}%')
+    else:
+        print('Failed to retrieve data from the sensor')
+
+    # 暂停一段时间（例如5秒），然后再次获取数据
+    time.sleep(5)
+
+```
+
+**执行效果**
+
+```bash
+(dh11) [siyu.mao@raspberrypi (21:56:16) /data/dh11]
+└─$ python dht_sensor.py
+
+温度: 23.0°C
+湿度: 72.0%
+温度: 24.0°C
+湿度: 81.0%
+温度: 25.0°C
+湿度: 81.0%
+
+
+```
+
+* * *
+
+# 使用MQTT客户端`发布`数据 `mqtt_publisher.py`
+
+```python
+# mqtt_publisher.py
+import random
+import time
+from paho.mqtt import client as mqtt_client
+import Adafruit_DHT
+
+# 选择DHT11或DHT22传感器(一般会写在传感器上)
+sensor = Adafruit_DHT.DHT11
+# 指定你的插线槽孔位
+# 根据你的连接配置选择正确的GPIO引脚
+pin = 4
+
+# -----------------------------------------------
+
+# 定义MQTT服务器的连接参数
+broker = 't8087fd4.ala.cn-hangzhou.emqxsl.cn'  # MQTT服务器地址
+port = 8883  # MQTT服务器端口
+client_id = f'publisher-mqtt-{random.randint(0, 1000)}'  # 随机生成客户端ID
+username = 'siyu.mao'  # MQTT服务器用户名
+password = '********'  # MQTT服务器密码
+
+# -----------------------------------------------
+
+# 创建MQTT客户端连接函数
+def connect_mqtt():
+    client = mqtt_client.Client(client_id)  # 创建MQTT客户端
+    client.username_pw_set(username, password)  # 设置用户名和密码
+    client.on_connect = on_connect  # 设置连接成功时的回调函数
+    client.tls_set()  # 添加TLS/SSL支持
+    client.connect(broker, port)  # 连接到MQTT服务器
+    return client
+
+# 定义连接成功时的回调函数
+def on_connect(client, userdata, flags, rc):
+    if rc == 0:
+        print("Connected to MQTT Broker!")  # 连接成功时的提示
+    else:
+        print("Failed to connect, return code %d\n", rc)  # 连接失败时的提示
+
+# 创建消息发布函数
+def publish(client):
+    while True:
+        # 从温度湿度获取模块导入温度和湿度数据
+        humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
+
+        if temperature is not None and humidity is not None:
+            # 将温度和湿度数据发布到指定的MQTT主题
+            client.publish("dht_sensor_topic/temperature", str(temperature))
+            client.publish("dht_sensor_topic/humidity", str(humidity))
+            print("发布温度: {}°C".format(temperature))
+            print("发布湿度: {}%".format(humidity))
+        else:
+            print("数据发送失败")
+
+        time.sleep(10)  # 每隔10秒发布一次数据
+
+# 主程序入口
+def run():
+    client = connect_mqtt()  # 创建MQTT客户端连接
+    client.loop_start()  # 启动MQTT客户端
+    publish(client)  # 连接成功后开始发布数据
+
+if __name__ == '__main__':
+    run()  # 执行主程序
+
+```
+
+**测试发布信息**
+
+```bash
+(dh11) [siyu.mao@raspberrypi (22:39:03) /data/dh11]
+└─$ python mqtt_publisher.py
+Connected to MQTT Broker!
+发布温度: 31.0°C
+发布湿度: 67.0%
+发布温度: 31.0°C
+发布湿度: 71.0%
+发布温度: 32.0°C
+发布湿度: 76.0%
+发布温度: 32.0°C
+发布湿度: 71.0%
+
+```
+
+* * *
+
+* * *
+
+# 使用MQTT客户端`订阅`数据 `mqtt_subscriber.py`
+
+```python
+# mqtt_subscriber.py
+import random
+import time
+from paho.mqtt import client as mqtt_client
+
+# 定义MQTT服务器的连接参数
+broker = 't8087fd4.ala.cn-hangzhou.emqxsl.cn'  # MQTT服务器地址
+port = 8883  # MQTT服务器端口
+client_id = f'subscriber-mqtt-{random.randint(0, 100)}'
+username = 'siyu.mao'  # MQTT服务器用户名
+password = '********'  # MQTT服务器密码
+
+# 订阅主题
+topic = "dht_sensor_topic/#"  # 使用通配符 "#" 来订阅所有以 "dht_sensor_topic/" 开头的主题
+
+# 定义MQTT客户端连接函数
+def connect_mqtt():
+    client = mqtt_client.Client(client_id)  # 创建MQTT客户端
+    client.username_pw_set(username, password)  # 设置用户名和密码
+    client.on_connect = on_connect  # 设置连接成功时的回调函数
+    client.tls_set()  # 添加TLS/SSL支持
+    client.connect(broker, port)  # 连接到MQTT服务器
+    return client
+
+# 定义连接成功时的回调函数
+def on_connect(client, userdata, flags, rc):
+    if rc == 0:
+        print("Connected to MQTT Broker!")  # 连接成功时的提示
+        client.subscribe(topic)  # 订阅指定主题
+        client.on_message = on_message  # 设置消息接收的回调函数
+    else:
+        print("Failed to connect, return code %d\n", rc)  # 连接失败时的提示
+
+# 定义消息接收的回调函数
+def on_message(client, userdata, message):
+    # 持续运行以接收消息
+    print(f"Received message on topic {message.topic}: {message.payload.decode()}")
+
+# 主程序入口
+def run():
+    client = connect_mqtt()  # 创建MQTT客户端连接
+    client.loop_forever()  # 启动MQTT客户端的消息循环
+
+if __name__ == '__main__':
+    run()  # 执行订阅程序
+
+```
