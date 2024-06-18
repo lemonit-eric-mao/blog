@@ -1,9 +1,13 @@
 theme: jekyll-theme-minimal
 title: 个人博客
 description: 专注于技术分享!
+
 plugins:
   - jekyll-paginate
   - jekyll-sitemap
   - jekyll-seo-tag
   - jekyll-feed
-  - _plugins/generate_blog_index.rb
+
+# 添加这一行来加载自定义插件
+exclude:
+  - _plugins

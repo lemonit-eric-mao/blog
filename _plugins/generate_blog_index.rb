@@ -4,7 +4,7 @@ module Jekyll
 
     def generate(site)
       years = {}
-      
+
       site.posts.docs.each do |post|
         year = post.date.strftime("%Y")
         years[year] ||= []
