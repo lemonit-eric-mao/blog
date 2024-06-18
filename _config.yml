@@ -1,23 +1,35 @@
-theme: jekyll-theme-minimal
-title: 个人博客
-description: 专注于技术分享!
+# _config.yml
+
+# 是否启用 Latent Semantic Indexing（潜在语义索引），一般设为 false
 lsi: false
+
+# 是否启用 Safe mode，一般设为 true
 safe: true
-source: ['/blog']
+
+# Jekyll 的源文件目录，默认为仓库的根目录
+source: .
+
+# 是否启用增量构建，一般设为 false
 incremental: false
+
+# 代码高亮使用的引擎，推荐使用 rouge
 highlighter: rouge
+
+# 是否在 gist 中生成不需要 JavaScript 的备选方案
 gist:
   noscript: false
+
+# Kramdown 渲染引擎的配置，用于处理 Markdown
 kramdown:
-  math_engine: mathjax
-  syntax_highlighter: rouge
+  math_engine: mathjax  # 数学公式引擎设为 MathJax
+  syntax_highlighter: rouge  # 代码高亮器设为 Rouge
 
+# 网站标题和描述
+title: 技术分享
+description: 欢迎来到 巳煜 的博客，这里分享我的思考和经验。
+
+# 使用的 Jekyll 主题和插件
+theme: jekyll-theme-minimal
 plugins:
-  - jekyll-paginate
-  - jekyll-sitemap
-  - jekyll-seo-tag
   - jekyll-feed
-
-# 添加这一行来加载自定义插件
-exclude:
-  - _plugins
+  - jekyll-seo-tag
