@@ -1,6 +1,8 @@
 # 是否启用 Latent Semantic Indexing（潜在语义索引），一般设为 false
 lsi: false
 
+toc: true
+
 # 是否启用 Safe mode，一般设为 true
 safe: true
 
