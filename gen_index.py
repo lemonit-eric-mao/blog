@@ -1,6 +1,5 @@
 import os
 
-
 def generate_readme(root_dir):
     # 初始化 README.md 内容
     readme_content = "# 博客目录\n\n"
@@ -39,7 +38,6 @@ def generate_readme(root_dir):
     with open(os.path.join('.', "README.md"), "w", encoding="utf-8") as readme_file:
         readme_file.write(readme_content)
 
-
 # 指定你的博客根目录
-blog_root_directory = "_posts/"  # 请将此路径修改为你的博客根目录路径
+blog_root_directory = "pages/"  # 请将此路径修改为你的博客根目录路径
 generate_readme(blog_root_directory)
