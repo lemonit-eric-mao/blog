@@ -4,4 +4,4 @@
 
 # 技术博客
 
-[Get Started](pages/)
+[Get Started](README.md)
