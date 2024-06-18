@@ -1,0 +1,62 @@
+---
+title: '安装 Docker-Compose'
+date: '2019-06-12T03:24:34+00:00'
+status: publish
+permalink: /2019/06/12/%e5%ae%89%e8%a3%85-docker-compose
+author: 毛巳煜
+excerpt: ''
+type: post
+id: 4796
+category:
+    - Docker
+tag: []
+post_format: []
+hestia_layout_select:
+    - sidebar-right
+wb_sst_seo:
+    - 'a:3:{i:0;s:0:"";i:1;s:0:"";i:2;s:0:"";}'
+---
+##### 安装 docker-compose
+
+###### [安装 Docker](http://www.dev-share.top/2017/11/16/%e5%ae%89%e8%a3%85-docker/ "安装 Docker")
+
+###### [官网地址](https://docs.docker.com/compose/install/ "官网地址")
+
+###### 官网下载地址(较慢)
+
+```ruby
+curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-<span class="katex math inline">(uname -s)-</span>(uname -m)" -o /usr/local/bin/docker-compose
+
+```
+
+###### 使用自己的七牛云
+
+```rby
+# 下载V1
+curl http://qiniu.dev-share.top/docker-compose-1.26.2-Linux-x86_64 -o /usr/local/bin/docker-compose && chmod -R 777 /usr/local/bin/docker-compose
+
+# 下载V2
+curl http://qiniu.dev-share.top/docker-compose-2.23.3-linux-x86_64 -o /usr/local/bin/docker-compose && chmod -R 777 /usr/local/bin/docker-compose
+
+```
+
+##### 常用命令
+
+```ruby
+# 启动容器
+[root@k8s-master ~]# docker-compose up
+# 后台启动容器
+[root@k8s-master ~]# docker-compose up -d
+# 停止并删除启动容器
+[root@k8s-master ~]# docker-compose down
+
+# 根据指定的配置文件 启动容器
+[root@k8s-master ~]# docker-compose -f docker-compose.yml up
+# 根据指定的配置文件 后台启动容器
+[root@k8s-master ~]# docker-compose -f docker-compose.yml up -d
+# 根据指定的配置文件 停止并删除启动容器
+[root@k8s-master ~]# docker-compose -f docker-compose.yml down
+# 根据指定的配置文件 查看容器的运行状态
+[root@k8s-master ~]# docker-compose -f docker-compose.yml ps
+
+```
