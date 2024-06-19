@@ -8,8 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <!-- 基础CSS -->
     <link rel="stylesheet" href="_lib/css/vue.css">
-    <!-- 扩展CSS-菜单栏 -->
-    <!-- <link rel="stylesheet" href="_lib/css/sidebar.min.css"> -->
+    <!-- 扩展CSS-目录 -->
+    <link rel="stylesheet" href="_lib/css/toc.css">
     <!-- 扩展CSS-菜单栏 -->
     <link rel="stylesheet" href="_lib/css/sidebar-folder.min.css">
 
@@ -23,6 +23,12 @@
     window.$docsify = {
         // 文档标题，会显示在侧边栏顶部。
         name: '技术博客',
+
+        toc: {
+            scope: '.markdown-section',
+            headings: 'h1, h2, h3, h4, h5, h6',
+            title: 'Table of Contents',
+        },
 
         // 开启渲染封面的功能
         coverpage: true,
@@ -70,6 +76,8 @@
 <script src="_lib/javascript/docsify-copy-code.min.js"></script>
 <!--扩展JS库-搜索-->
 <script src="_lib/javascript/search.min.js"></script>
+<!--扩展JS库-目录-->
+<script src="_lib/javascript/toc.js"></script>
 <!--扩展JS库-折叠菜单栏-->
 <script src="_lib/javascript/docsify-sidebar-collapse.min.js"></script>
 <!--扩展JS库-Go语言高亮插件-->
