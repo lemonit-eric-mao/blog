@@ -1,5 +1,5 @@
 <!-- 封面-配置文件 -->
 
-![logo](_media/icon.svg) 
+![logo](_media/icon.ico) 
 
-[Get Started](README.md)
+[进入博客](README.md)
