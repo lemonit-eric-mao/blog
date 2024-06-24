@@ -11,8 +11,7 @@ layout: default
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; }
         .container { width: 80%; margin: 0 auto; padding: 20px; }
-        h2 { color: #333; }
-        .content { margin-top: 20px; }
+        .search-box { margin-top: 20px; }
         .search-results { list-style: none; padding: 0; }
         .search-results li { padding: 10px; border-bottom: 1px solid #ddd; }
         .search-results li:last-child { border-bottom: none; }
@@ -21,18 +20,18 @@ layout: default
 <body>
     <main class="container">
         <section>
-            <div class="content">
-                <h2>搜索结果</h2>
+            <h2>搜索</h2>
+            <div class="search-box">
                 <input type="text" id="search-input" placeholder="输入关键字进行搜索">
-                <ul id="search-results" class="search-results"></ul>
             </div>
+            <ul id="search-results" class="search-results"></ul>
         </section>
     </main>
 
     <script>
         async function fetchData() {
-            let response = await fetch('{{ site.baseurl }}/index.json');
-            let data = await response.json();
+            const response = await fetch('{{ site.baseurl }}/index.json');
+            const data = await response.json();
             return data;
         }
 
@@ -41,7 +40,7 @@ layout: default
         }
 
         function displayResults(results) {
-            let resultsContainer = document.getElementById('search-results');
+            const resultsContainer = document.getElementById('search-results');
             resultsContainer.innerHTML = '';
 
             if (results.length === 0) {
@@ -50,17 +49,17 @@ layout: default
             }
 
             results.forEach(post => {
-                let li = document.createElement('li');
+                const li = document.createElement('li');
                 li.innerHTML = `<a href="{{ site.baseurl }}${post.url}">${post.title}</a><br><small>${post.date}</small>`;
                 resultsContainer.appendChild(li);
             });
         }
 
         document.getElementById('search-input').addEventListener('input', async function () {
-            let query = this.value.trim().toLowerCase();
+            const query = this.value.trim().toLowerCase();
             if (query.length > 0) {
-                let data = await fetchData();
-                let results = search(query, data);
+                const data = await fetchData();
+                const results = search(query, data);
                 displayResults(results);
             } else {
                 document.getElementById('search-results').innerHTML = '';

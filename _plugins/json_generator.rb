@@ -5,17 +5,17 @@ module Jekyll
     safe true
 
     def generate(site)
-      data = site.posts.docs.map do |post|
+      posts = site.posts.docs.map do |post|
         {
           title: post.data['title'],
-          date: post.data['date'],
+          date: post.data['date'].to_s,
           url: post.url,
           content: post.content
         }
       end
 
-      File.open(File.join(site.dest, 'index.json'), 'w') do |f|
-        f.write(JSON.pretty_generate(data))
+      File.open(File.join(site.dest, 'index.json'), 'w') do |file|
+        file.write(JSON.pretty_generate(posts))
       end
     end
   end

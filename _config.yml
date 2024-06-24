@@ -15,14 +15,11 @@ plugins:
   - jekyll-remote-theme
   - jekyll-sitemap
   - jekyll-feed
-  - jekyll-jsonify
   - jekyll-seo-tag
   - jekyll-paginate
-  - jekyll-sitemap
-  - jekyll-feed
   - jekyll-archives
   - jekyll-toc
-  - jekyll-minimal-json
+  - json_generator
 
 
 jsonify:
