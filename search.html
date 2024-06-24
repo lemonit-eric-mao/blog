@@ -53,5 +53,46 @@ layout: default
     </section>
 </main>
 
+<script>
+    let db;
+    let request = indexedDB.open('blogDB', 1);
+
+    request.onerror = function (event) {
+        console.error('IndexedDB error:', event.target.errorCode);
+    };
+
+    request.onsuccess = function (event) {
+        db = event.target.result;
+        console.log('IndexedDB opened successfully');
+    };
+
+    request.onupgradeneeded = function (event) {
+        db = event.target.result;
+        let objectStore = db.createObjectStore('titles', {keyPath: 'id', autoIncrement: true});
+        objectStore.createIndex('title', 'title', {unique: false});
+        objectStore.createIndex('url', 'url', {unique: false});
+    };
+
+    function search() {
+        let searchInput = document.getElementById('search-input').value.trim().toLowerCase();
+        let transaction = db.transaction(['titles'], 'readonly');
+        let objectStore = transaction.objectStore('titles');
+        let resultsList = document.getElementById('search-results');
+        resultsList.innerHTML = '';
+
+        objectStore.openCursor().onsuccess = function (event) {
+            let cursor = event.target.result;
+            if (cursor) {
+                if (cursor.value.title.toLowerCase().includes(searchInput)) {
+                    let li = document.createElement('li');
+                    li.innerHTML = `<a href="${cursor.value.url}">${cursor.value.title}</a>`;
+                    resultsList.appendChild(li);
+                }
+                cursor.continue();
+            }
+        };
+    }
+</script>
+
 </body>
 </html>
