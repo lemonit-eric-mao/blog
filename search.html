@@ -36,7 +36,7 @@ layout: default
         }
 
         function search(query, data) {
-            return data.filter(post => post.title.includes(query) || post.content.includes(query));
+            return data.filter(post => post.title.includes(query) || post.url.includes(query));
         }
 
         function displayResults(results) {
