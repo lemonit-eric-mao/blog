@@ -116,21 +116,33 @@ layout: default
 </main>
 
 <script>
-    // 打开或创建名为blogDB的数据库
+    // 打开或创建名为blogDB的IndexedDB数据库，版本为1
     let db;
     let request = indexedDB.open('blogDB', 1);
 
+    // 处理数据库打开错误
     request.onerror = function (event) {
         console.error('IndexedDB error:', event.target.errorCode);
     };
 
+    // 数据库升级事件，用于初始化数据库结构
+    request.onupgradeneeded = function (event) {
+        db = event.target.result;
+        // 创建名为titles的对象存储空间，使用title作为主键
+        let objectStore = db.createObjectStore('titles', {keyPath: 'title'});
+        // 创建url索引，允许重复
+        objectStore.createIndex('url', 'url', {unique: false});
+    };
+
+    // 数据库成功打开时的处理
     request.onsuccess = function (event) {
         db = event.target.result;
 
-        // 加载并显示文章列表
+        // 获取所有文章列表项
         let postList = document.querySelectorAll(".post-list li");
         let titles = [];
 
+        // 遍历所有文章，生成包含标题和URL的数组
         postList.forEach(function (post) {
             let title = post.querySelector("a").textContent;
             let url = post.querySelector("a").href;
@@ -140,37 +152,33 @@ layout: default
             });
         });
 
-        // 将数据存储到IndexedDB
+        // 将数据存储到IndexedDB中
         storeData(titles);
     };
 
-    request.onupgradeneeded = function (event) {
-        // 创建对象存储空间titles，存储生成的JSON数据
-        db = event.target.result;
-        let objectStore = db.createObjectStore('titles', {keyPath: 'title'});
-        objectStore.createIndex('url', 'url', {unique: false});
-    };
-
+    // 将文章标题和URL数据存储到IndexedDB的titles对象存储空间中
     function storeData(titles) {
         let transaction = db.transaction(['titles'], 'readwrite');
         let objectStore = transaction.objectStore('titles');
 
+        // 使用put方法插入或更新数据
         titles.forEach(function (title, index) {
-            // 使用put方法，如果主键存在则更新，否则插入新记录
             let request = objectStore.put({
                 title: title.title,
                 url: title.url
             });
 
+            // 处理存储错误
             request.onerror = function (event) {
                 console.error('Error storing data:', event.target.error);
             };
         });
     }
 
-    // 点击按钮展开和关闭
+    // 获取所有折叠按钮元素
     let accordions = document.getElementsByClassName("accordion");
 
+    // 为每个折叠按钮添加点击事件，控制面板的展开和关闭
     for (let i = 0; i < accordions.length; i++) {
         accordions[i].addEventListener("click", function () {
             this.classList.toggle("active");
