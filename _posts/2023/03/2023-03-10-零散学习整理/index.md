@@ -1,3 +1,10 @@
+---
+title: "同GPT零散学习整理"
+date: "2023-03-10"
+categories: 
+  - "非技术文档"
+---
+
 ## markdown新用法
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
