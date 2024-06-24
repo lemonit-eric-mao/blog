@@ -53,33 +53,5 @@ layout: default
     </section>
 </main>
 
-<script>
-    function fetchData(url) {
-        return fetch(url)
-            .then(response => response.json())
-            .catch(error => {
-                console.error('获取数据时出错：', error);
-            });
-    }
-
-    function search() {
-        let searchTerm = document.getElementById('search-input').value.trim().toLowerCase();
-        let resultsDiv = document.getElementById('search-results');
-        resultsDiv.innerHTML = ''; // 清空之前的搜索结果
-
-        fetchData('index.json').then(data => {
-            let filteredData = data.titles.filter(item => item.title.toLowerCase().includes(searchTerm));
-            filteredData.forEach(item => {
-                resultsDiv.innerHTML += `<li><a href="${item.url}">${item.title}</a></li>`;
-            });
-
-            if (filteredData.length === 0) {
-                resultsDiv.innerHTML = '<p>未找到匹配的文章标题。</p>';
-            }
-        }).catch(error => {
-            console.error('搜索时出错：', error);
-        });
-    }
-</script>
 </body>
 </html>

@@ -9,131 +9,118 @@ layout: default
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ site.title }}</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        h2 {
-            color: #333;
-        }
-
-        .content {
-            margin-top: 20px;
-        }
-
-        .post {
-            margin-bottom: 20px;
-        }
-
-        .post-title {
-            font-size: 16px;
-            margin: 0;
-        }
-
-        .post-date {
-            font-size: 0.9em;
-            color: #666;
-        }
-
-        .post-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .post-list li {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .post-list li:last-child {
-            border-bottom: none;
-        }
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; }
+        .container { width: 80%; margin: 0 auto; padding: 20px; }
+        h2 { color: #333; }
+        .content { margin-top: 20px; }
+        .post { margin-bottom: 20px; }
+        .post-title { font-size: 16px; margin: 0; }
+        .post-date { font-size: 0.9em; color: #666; }
+        .category { margin-bottom: 20px; }
+        .accordion { background-color: #f1f1f1; color: #333; cursor: pointer; padding: 18px; width: 100%; border: 1px solid #ccc; border-radius: 4px; text-align: left; outline: none; font-size: 1em; transition: 0.4s; margin-bottom: 10px; }
+        .active, .accordion:hover { background-color: #ddd; }
+        .panel { padding: 0 18px; display: none; background-color: white; overflow: hidden; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-bottom: 1px solid #ccc; border-radius: 0 0 4px 4px; margin-bottom: 10px; }
+        .post-list { list-style: none; padding: 0; }
+        .post-list li { padding: 10px; border-bottom: 1px solid #ddd; }
+        .post-list li:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
-<main class="container">
-    <section>
-        <div class="content">
-            <ul class="post-list">
-                {% for post in site.posts %}
-                <li class="post">
-                    <h4 class="post-title">
-                        <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a>
-                        <br/>
-                        <span class="post-date">{{ post.date | date: "%Y-%m-%d" }}</span>
-                    </h4>
-                </li>
+    <main class="container">
+        <section>
+            <div class="content">
+                {% assign posts_by_year = site.posts | group_by_exp:"post", "post.date | date: '%Y'" %}
+                {% for year in posts_by_year %}
+                    <button class="accordion">{{ year.name }}</button>
+                    <div class="panel">
+                        <ul class="post-list">
+                            {% for post in year.items %}
+                                <li class="post">
+                                    <h4 class="post-title">
+                                        <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a>
+                                        <br/>
+                                        <span class="post-date">{{ post.date | date: "%Y-%m-%d" }}</span>
+                                    </h4>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 {% endfor %}
-            </ul>
-        </div>
-    </section>
-</main>
+            </div>
+        </section>
+    </main>
 
-<script>
-    // 打开或创建名为blogDB的数据库
-    let db;
-    let request = indexedDB.open('blogDB', 1);
+    <script>
+        // 打开或创建名为blogDB的数据库
+        let db;
+        let request = indexedDB.open('blogDB', 1);
 
-    request.onerror = function (event) {
-        console.error('IndexedDB error:', event.target.errorCode);
-    };
+        request.onerror = function(event) {
+            console.error('IndexedDB error:', event.target.errorCode);
+        };
 
-    request.onupgradeneeded = function (event) {
-        // 创建对象存储空间titles，存储生成的JSON数据
-        db = event.target.result;
-        let objectStore = db.createObjectStore('titles', {keyPath: 'id', autoIncrement: true});
-        objectStore.createIndex('title', 'title', {unique: false});
-        objectStore.createIndex('url', 'url', {unique: false});
-    };
+        request.onupgradeneeded = function(event) {
+            // 创建对象存储空间titles，存储生成的JSON数据
+            db = event.target.result;
+            let objectStore = db.createObjectStore('titles', { keyPath: 'id', autoIncrement: true });
+            objectStore.createIndex('title', 'title', { unique: false });
+            objectStore.createIndex('url', 'url', { unique: false });
+        };
 
-    request.onsuccess = function (event) {
-        db = event.target.result;
+        request.onsuccess = function(event) {
+            db = event.target.result;
 
-        // 加载并显示文章列表
-        let postList = document.querySelectorAll(".post-list li");
-        let titles = [];
+            // 加载并显示文章列表
+            let postList = document.querySelectorAll(".post-list li");
+            let titles = [];
 
-        postList.forEach(function (post) {
-            let title = post.querySelector("a").textContent;
-            let url = post.querySelector("a").href.replace('{{ site.baseurl }}', '');
-            titles.push({
-                "title": title,
-                "url": url
-            });
-        });
-
-        // 将数据存储到IndexedDB
-        storeData(titles);
-    };
-
-    function storeData(titles) {
-        let transaction = db.transaction(['titles'], 'readwrite');
-        let objectStore = transaction.objectStore('titles');
-
-        titles.forEach(function (title, index) {
-            let request = objectStore.add({
-                title: title.title,
-                url: title.url
+            postList.forEach(function(post) {
+                let title = post.querySelector("a").textContent;
+                let url = post.querySelector("a").href.replace('{{ site.baseurl }}', '');
+                titles.push({
+                    "title": title,
+                    "url": url
+                });
             });
 
-            request.onsuccess = function (event) {
-                console.log('Data stored successfully');
-            };
+            // 将数据存储到IndexedDB
+            storeData(titles);
+        };
 
-            request.onerror = function (event) {
-                console.error('Error storing data:', event.target.error);
-            };
-        });
-    }
-</script>
+        function storeData(titles) {
+            let transaction = db.transaction(['titles'], 'readwrite');
+            let objectStore = transaction.objectStore('titles');
+
+            titles.forEach(function(title, index) {
+                let request = objectStore.add({
+                    title: title.title,
+                    url: title.url
+                });
+
+                request.onsuccess = function(event) {
+                    console.log('Data stored successfully');
+                };
+
+                request.onerror = function(event) {
+                    console.error('Error storing data:', event.target.error);
+                };
+            });
+        }
+
+        // 点击按钮展开和关闭
+        let accordions = document.getElementsByClassName("accordion");
+
+        for (let i = 0; i < accordions.length; i++) {
+            accordions[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                let panel = this.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                } else {
+                    panel.style.display = "block";
+                }
+            });
+        }
+    </script>
 </body>
 </html>
