@@ -47,6 +47,7 @@ layout: default
         <h2>搜索</h2>
         <div class="search-box">
             <input type="text" id="search-input" placeholder="输入关键字进行搜索">
+            <button onclick="search()">搜索</button>
         </div>
         <ul id="search-results" class="search-results"></ul>
     </section>
@@ -62,14 +63,14 @@ layout: default
     }
 
     function search() {
-        let searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
-        let resultsDiv = document.getElementById('searchResults');
+        let searchTerm = document.getElementById('search-input').value.trim().toLowerCase();
+        let resultsDiv = document.getElementById('search-results');
         resultsDiv.innerHTML = ''; // 清空之前的搜索结果
 
         fetchData('index.json').then(data => {
             let filteredData = data.titles.filter(item => item.title.toLowerCase().includes(searchTerm));
             filteredData.forEach(item => {
-                resultsDiv.innerHTML += `<p><a href="${item.url}">${item.title}</a></p>`;
+                resultsDiv.innerHTML += `<li><a href="${item.url}">${item.title}</a></li>`;
             });
 
             if (filteredData.length === 0) {
