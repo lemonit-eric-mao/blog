@@ -1,14 +1,56 @@
+---
+layout: default
+---
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>搜索结果</title>
+    <title>{{ site.title }} - 搜索</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .search-box {
+            margin-top: 20px;
+        }
+
+        .search-results {
+            list-style: none;
+            padding: 0;
+        }
+
+        .search-results li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .search-results li:last-child {
+            border-bottom: none;
+        }
+    </style>
 </head>
 <body>
-<input type="text" id="searchInput" placeholder="搜索文章标题">
-<button onclick="search()">搜索</button>
-<div id="searchResults"></div>
+<main class="container">
+    <section>
+        <h2>搜索</h2>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="输入关键字进行搜索">
+        </div>
+        <ul id="search-results" class="search-results"></ul>
+    </section>
+</main>
 
 <script>
     function fetchData(url) {
