@@ -34,7 +34,7 @@ layout: default
         <p>&copy; 2024 毛巳煜. All rights reserved.</p>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
+    <script src="lunr.min.js"></script>
     <script>
         let idx;
         let data;
@@ -61,22 +61,26 @@ layout: default
 
         function search() {
             const query = document.getElementById('search-input').value;
-            const results = idx.search(query);
             const resultsContainer = document.getElementById('search-results');
             resultsContainer.innerHTML = '';
 
-            if (results.length) {
-                results.forEach(result => {
-                    const item = data.find(post => post.url === result.ref);
-                    const div = document.createElement('div');
-                    const a = document.createElement('a');
-                    a.href = item.url;
-                    a.textContent = item.title;
-                    div.appendChild(a);
-                    resultsContainer.appendChild(div);
-                });
+            if (typeof idx !== 'undefined') {
+                const results = idx.search(query);
+                if (results.length) {
+                    results.forEach(result => {
+                        const item = data.find(post => post.url === result.ref);
+                        const div = document.createElement('div');
+                        const a = document.createElement('a');
+                        a.href = item.url;
+                        a.textContent = item.title;
+                        div.appendChild(a);
+                        resultsContainer.appendChild(div);
+                    });
+                } else {
+                    resultsContainer.textContent = '未找到匹配的结果。';
+                }
             } else {
-                resultsContainer.textContent = '未找到匹配的结果。';
+                resultsContainer.textContent = '正在加载搜索索引，请稍候...';
             }
         }
     </script>

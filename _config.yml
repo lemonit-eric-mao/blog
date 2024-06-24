@@ -1,6 +1,6 @@
 title: 毛巳煜的个人主页
 description: 高级解决方案全栈架构师
-baseurl: "/blog" # 确保 baseurl 设置正确
+baseurl: "/blog" 
 url: "https://lemonit-eric-mao.github.io/blog"
 markdown: kramdown
 theme: minima
@@ -15,6 +15,4 @@ jsonify:
 collections:
   posts:
     output: true
-    permalink: /:year/:month/:title/
-    sources:
-      - _posts
+    permalink: /:categories/:title/

@@ -22,6 +22,7 @@ layout: default
         .post { margin-bottom: 20px; }
         .post-title { font-size: 1.5em; margin: 0; }
         .post-date { font-size: 0.9em; color: #666; }
+        .category { margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -54,19 +55,30 @@ layout: default
             <h2>静态博客</h2>
             <div class="content">
                 <p>欢迎访问我的博客，以下是我分享的技术文章和项目案例。</p>
-                <ul>
-                    {% for post in site.posts %}
-                    <li class="post">
-                        <h3 class="post-title">
-                            <a href="{{ post.url }}">{{ post.title }}</a>
-                        </h3>
-                        <p class="post-date">{{ post.date | date: "%Y-%m-%d" }}</p>
-                        <div class="post-excerpt">
-                            {{ post.excerpt | strip_html | truncate: 200 }}
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
+
+                {% assign posts_by_year = site.posts | group_by_exp:"post", "post.date | date: '%Y'" %}
+                {% for year in posts_by_year %}
+                    <div class="category">
+                        <h3>{{ year.name }}</h3>
+                        {% assign posts_by_month = year.items | group_by_exp:"post", "post.date | date: '%m'" %}
+                        {% for month in posts_by_month %}
+                            <h4>{{ month.name }}</h4>
+                            <ul>
+                                {% for post in month.items %}
+                                    <li class="post">
+                                        <h3 class="post-title">
+                                            <a href="{{ post.url }}">{{ post.title }}</a>
+                                        </h3>
+                                        <p class="post-date">{{ post.date | date: "%Y-%m-%d" }}</p>
+                                        <div class="post-excerpt">
+                                            {{ post.excerpt | strip_html | truncate: 200 }}
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
             </div>
         </section>
     </div>
