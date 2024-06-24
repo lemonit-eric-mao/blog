@@ -1,70 +1,44 @@
----
-layout: default
----
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ site.title }} - 搜索</title>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; }
-        .container { width: 80%; margin: 0 auto; padding: 20px; }
-        .search-box { margin-top: 20px; }
-        .search-results { list-style: none; padding: 0; }
-        .search-results li { padding: 10px; border-bottom: 1px solid #ddd; }
-        .search-results li:last-child { border-bottom: none; }
-    </style>
+    <title>搜索结果</title>
 </head>
 <body>
-    <main class="container">
-        <section>
-            <h2>搜索</h2>
-            <div class="search-box">
-                <input type="text" id="search-input" placeholder="输入关键字进行搜索">
-            </div>
-            <ul id="search-results" class="search-results"></ul>
-        </section>
-    </main>
+<input type="text" id="searchInput" placeholder="搜索文章标题">
+<button onclick="search()">搜索</button>
+<div id="searchResults"></div>
 
-    <script>
-        async function fetchData() {
-            const response = await fetch('{{ site.baseurl }}/index.json');
-            const data = await response.json();
-            return data;
-        }
-
-        function search(query, data) {
-            return data.filter(post => post.title.includes(query) || post.url.includes(query));
-        }
-
-        function displayResults(results) {
-            const resultsContainer = document.getElementById('search-results');
-            resultsContainer.innerHTML = '';
-
-            if (results.length === 0) {
-                resultsContainer.innerHTML = '<li>没有找到匹配的结果。</li>';
-                return;
-            }
-
-            results.forEach(post => {
-                const li = document.createElement('li');
-                li.innerHTML = `<a href="{{ site.baseurl }}${post.url}">${post.title}</a><br><small>${post.date}</small>`;
-                resultsContainer.appendChild(li);
+<script>
+    function fetchData(url) {
+        return fetch(url)
+            .then(response => response.json())
+            .catch(error => {
+                console.error('获取数据时出错：', error);
             });
-        }
+    }
 
-        document.getElementById('search-input').addEventListener('input', async function () {
-            const query = this.value.trim().toLowerCase();
-            if (query.length > 0) {
-                const data = await fetchData();
-                const results = search(query, data);
-                displayResults(results);
-            } else {
-                document.getElementById('search-results').innerHTML = '';
-            }
-        });
-    </script>
+    function search() {
+        let searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+        let resultsDiv = document.getElementById('searchResults');
+        resultsDiv.innerHTML = ''; // 清空之前的搜索结果
+
+        fetchData('index.json')
+            .then(data => {
+                let filteredData = data.titles.filter(item => item.title.toLowerCase().includes(searchTerm));
+                filteredData.forEach(item => {
+                    resultsDiv.innerHTML += `<p><a href="${item.url}">${item.title}</a></p>`;
+                });
+
+                if (filteredData.length === 0) {
+                    resultsDiv.innerHTML = '<p>未找到匹配的文章标题。</p>';
+                }
+            })
+            .catch(error => {
+                console.error('搜索时出错：', error);
+            });
+    }
+</script>
 </body>
 </html>
