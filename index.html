@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -13,6 +17,11 @@
         li { margin-bottom: 10px; }
         footer { text-align: center; padding: 20px 0; background: #f4f4f4; }
         .content { margin-top: 20px; }
+        nav ul { list-style: none; padding: 0; }
+        nav ul li { display: inline; margin-right: 10px; }
+        .post { margin-bottom: 20px; }
+        .post-title { font-size: 1.5em; margin: 0; }
+        .post-date { font-size: 0.9em; color: #666; }
     </style>
 </head>
 <body>
@@ -47,8 +56,14 @@
                 <p>欢迎访问我的博客，以下是我分享的技术文章和项目案例。</p>
                 <ul>
                     {% for post in site.posts %}
-                    <li>
-                        <a href="{{ post.url }}">{{ post.title }}</a>
+                    <li class="post">
+                        <h3 class="post-title">
+                            <a href="{{ post.url }}">{{ post.title }}</a>
+                        </h3>
+                        <p class="post-date">{{ post.date | date: "%Y-%m-%d" }}</p>
+                        <div class="post-excerpt">
+                            {{ post.excerpt | strip_html | truncate: 200 }}
+                        </div>
                     </li>
                     {% endfor %}
                 </ul>
