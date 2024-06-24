@@ -18,7 +18,7 @@ layout: default
         nav ul { list-style: none; padding: 0; }
         nav ul li { display: inline; margin-right: 10px; }
         .post { margin-bottom: 20px; }
-        .post-title { font-size: 1.5em; margin: 0; }
+        .post-title { font-size: 16px; margin: 0; }
         .post-date { font-size: 0.9em; color: #666; }
         .category { margin-bottom: 20px; }
         .accordion { background-color: #f1f1f1; color: #333; cursor: pointer; padding: 18px; width: 100%; border: none; text-align: left; outline: none; font-size: 1em; transition: 0.4s; }
@@ -53,11 +53,9 @@ layout: default
                                 <li class="post">
                                     <h4 class="post-title">
                                         <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a>
+										<br/>
+										<p class="post-date">{{ post.date | date: "%Y-%m-%d" }}</p>
                                     </h4>
-                                    <p class="post-date">{{ post.date | date: "%Y-%m-%d" }}</p>
-                                    <div class="post-excerpt">
-                                        {{ post.excerpt | strip_html | truncate: 200 }}
-                                    </div>
                                 </li>
                             {% endfor %}
                         </ul>
