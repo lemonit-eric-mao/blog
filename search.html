@@ -66,20 +66,18 @@ layout: default
         let resultsDiv = document.getElementById('searchResults');
         resultsDiv.innerHTML = ''; // 清空之前的搜索结果
 
-        fetchData('index.json')
-            .then(data => {
-                let filteredData = data.titles.filter(item => item.title.toLowerCase().includes(searchTerm));
-                filteredData.forEach(item => {
-                    resultsDiv.innerHTML += `<p><a href="${item.url}">${item.title}</a></p>`;
-                });
-
-                if (filteredData.length === 0) {
-                    resultsDiv.innerHTML = '<p>未找到匹配的文章标题。</p>';
-                }
-            })
-            .catch(error => {
-                console.error('搜索时出错：', error);
+        fetchData('index.json').then(data => {
+            let filteredData = data.titles.filter(item => item.title.toLowerCase().includes(searchTerm));
+            filteredData.forEach(item => {
+                resultsDiv.innerHTML += `<p><a href="${item.url}">${item.title}</a></p>`;
             });
+
+            if (filteredData.length === 0) {
+                resultsDiv.innerHTML = '<p>未找到匹配的文章标题。</p>';
+            }
+        }).catch(error => {
+            console.error('搜索时出错：', error);
+        });
     }
 </script>
 </body>
