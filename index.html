@@ -92,7 +92,7 @@ layout: default
             let objectStore = transaction.objectStore('titles');
 
             titles.forEach(function(title, index) {
-                let request = objectStore.add({
+                let request = objectStore.put({
                     title: title.title,
                     url: title.url
                 });
