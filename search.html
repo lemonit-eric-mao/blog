@@ -46,8 +46,7 @@ layout: default
     <section>
         <h3>搜索</h3>
         <div class="search-box">
-            <input type="text" id="search-input" placeholder="输入关键字进行搜索" oninput="delaySearch()">
-            <button onclick="search()">搜索</button>
+            <input type="text" id="search-input" placeholder="输入关键字进行自动搜索" oninput="delaySearch()">
         </div>
         <ul id="search-results" class="search-results"></ul>
     </section>
@@ -77,7 +76,7 @@ layout: default
 
     function delaySearch() {
         clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(search, 1000); // 等待1秒后执行搜索
+        searchTimeout = setTimeout(search, 500); // 等待1秒后执行搜索
     }
 
     function search() {
