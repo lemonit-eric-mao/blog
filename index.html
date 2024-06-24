@@ -17,9 +17,12 @@ layout: default
         .post-title { font-size: 16px; margin: 0; }
         .post-date { font-size: 0.9em; color: #666; }
         .category { margin-bottom: 20px; }
-        .accordion { background-color: #f1f1f1; color: #333; cursor: pointer; padding: 18px; width: 100%; border: none; text-align: left; outline: none; font-size: 1em; transition: 0.4s; }
+        .accordion { background-color: #f1f1f1; color: #333; cursor: pointer; padding: 18px; width: 100%; border: 1px solid #ccc; border-radius: 4px; text-align: left; outline: none; font-size: 1em; transition: 0.4s; margin-bottom: 10px; }
         .active, .accordion:hover { background-color: #ddd; }
-        .panel { padding: 0 18px; display: none; background-color: white; overflow: hidden; }
+        .panel { padding: 0 18px; display: none; background-color: white; overflow: hidden; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-bottom: 1px solid #ccc; border-radius: 0 0 4px 4px; margin-bottom: 10px; }
+        .post-list { list-style: none; padding: 0; }
+        .post-list li { padding: 10px; border-bottom: 1px solid #ddd; }
+        .post-list li:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
@@ -30,7 +33,7 @@ layout: default
                 {% for year in posts_by_year %}
                     <button class="accordion">{{ year.name }}</button>
                     <div class="panel">
-                        <ul>
+                        <ul class="post-list">
                             {% for post in year.items %}
                                 <li class="post">
                                     <h4 class="post-title">
