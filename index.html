@@ -59,14 +59,6 @@ layout: default
             console.error('IndexedDB error:', event.target.errorCode);
         };
 
-        request.onupgradeneeded = function(event) {
-            // 创建对象存储空间titles，存储生成的JSON数据
-            db = event.target.result;
-            let objectStore = db.createObjectStore('titles', { keyPath: 'id', autoIncrement: true });
-            objectStore.createIndex('title', 'title', { unique: false });
-            objectStore.createIndex('url', 'url', { unique: false });
-        };
-
         request.onsuccess = function(event) {
             db = event.target.result;
 
@@ -76,7 +68,7 @@ layout: default
 
             postList.forEach(function(post) {
                 let title = post.querySelector("a").textContent;
-                let url = post.querySelector("a").href.replace('{{ site.baseurl }}', '');
+                let url = post.querySelector("a").href;
                 titles.push({
                     "title": title,
                     "url": url
@@ -87,19 +79,23 @@ layout: default
             storeData(titles);
         };
 
+        request.onupgradeneeded = function(event) {
+            // 创建对象存储空间titles，存储生成的JSON数据
+            db = event.target.result;
+            let objectStore = db.createObjectStore('titles', { keyPath: 'title' });
+            objectStore.createIndex('url', 'url', { unique: false });
+        };
+
         function storeData(titles) {
             let transaction = db.transaction(['titles'], 'readwrite');
             let objectStore = transaction.objectStore('titles');
 
             titles.forEach(function(title, index) {
+                // 使用put方法，如果主键存在则更新，否则插入新记录
                 let request = objectStore.put({
                     title: title.title,
                     url: title.url
                 });
-
-                // request.onsuccess = function(event) {
-                //     console.log('Data stored successfully');
-                // };
 
                 request.onerror = function(event) {
                     console.error('Error storing data:', event.target.error);
