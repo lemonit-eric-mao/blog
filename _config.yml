@@ -1,0 +1,20 @@
+title: 毛巳煜的个人主页
+description: 高级解决方案全栈架构师
+baseurl: "/blog"
+url: "https://lemonit-eric-mao.github.io/blog"
+markdown: kramdown
+theme: minima
+plugins:
+  - jekyll-sitemap
+  - jekyll-feed
+  - jekyll-jsonify
+
+jsonify:
+  collections:
+    posts
+collections:
+  posts:
+    output: true
+    permalink: /:path/
+    sources:
+      - _posts

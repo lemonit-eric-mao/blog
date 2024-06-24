@@ -1,9 +1,0 @@
-{
-    "name": "golang-static-document",
-    "version": "1.0.0",
-    "scripts": {
-        "start": "docsify serve docs"
-    },
-    "dependencies": {
-    }
-}

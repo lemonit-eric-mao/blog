@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site.title }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; }
+        header { background: #333; color: #fff; padding: 10px 0; text-align: center; }
+        .container { width: 80%; margin: 0 auto; padding: 20px; }
+        h1, h2, h3 { color: #333; }
+        ul { list-style: none; padding: 0; }
+        li { margin-bottom: 10px; }
+        footer { text-align: center; padding: 20px 0; background: #f4f4f4; }
+        .content { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>{{ site.title }}</h1>
+        <p>{{ site.description }}</p>
+        <nav>
+            <ul>
+                <li><a href="{{ site.baseurl }}/">主页</a></li>
+                <li><a href="{{ site.baseurl }}/search.html">搜索</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <section>
+            <h2>个人信息和职业背景</h2>
+            <p>我叫毛巳煜，从事软件开发已有17年，具备丰富的项目经验和全面的技术能力。</p>
+        </section>
+
+        <section>
+            <h2>技能和专长</h2>
+            <ul>
+                <li>编程语言: Java, Python, Go, Shell, JavaScript</li>
+                <li>技术栈: 分布式数据库, Kubernetes, Docker, 前端开发, 后端开发, DevOps, GitOps</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>静态博客</h2>
+            <div class="content">
+                <p>欢迎访问我的博客，以下是我分享的技术文章和项目案例。</p>
+                <ul>
+                    {% for post in site.posts %}
+                    <li>
+                        <a href="{{ post.url }}">{{ post.title }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 毛巳煜. All rights reserved.</p>
+    </footer>
+</body>
+</html>
