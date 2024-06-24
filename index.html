@@ -13,8 +13,6 @@ layout: default
         header { background: #333; color: #fff; padding: 10px 0; text-align: center; }
         .container { width: 80%; margin: 0 auto; padding: 20px; }
         h1, h2, h3 { color: #333; }
-        ul { list-style: none; padding: 0; }
-        li { margin-bottom: 10px; }
         footer { text-align: center; padding: 20px 0; background: #f4f4f4; }
         .content { margin-top: 20px; }
         nav ul { list-style: none; padding: 0; }
@@ -23,6 +21,9 @@ layout: default
         .post-title { font-size: 1.5em; margin: 0; }
         .post-date { font-size: 0.9em; color: #666; }
         .category { margin-bottom: 20px; }
+        .accordion { background-color: #f1f1f1; color: #333; cursor: pointer; padding: 18px; width: 100%; border: none; text-align: left; outline: none; font-size: 1em; transition: 0.4s; }
+        .active, .accordion:hover { background-color: #ddd; }
+        .panel { padding: 0 18px; display: none; background-color: white; overflow: hidden; }
     </style>
 </head>
 <body>
@@ -39,44 +40,27 @@ layout: default
 
     <div class="container">
         <section>
-            <h2>个人信息和职业背景</h2>
-            <p>我叫毛巳煜，从事软件开发已有17年，具备丰富的项目经验和全面的技术能力。</p>
-        </section>
-
-        <section>
-            <h2>技能和专长</h2>
-            <ul>
-                <li>编程语言: Java, Python, Go, Shell, JavaScript</li>
-                <li>技术栈: 分布式数据库, Kubernetes, Docker, 前端开发, 后端开发, DevOps, GitOps</li>
-            </ul>
-        </section>
-
-        <section>
             <h2>静态博客</h2>
             <div class="content">
                 <p>欢迎访问我的博客，以下是我分享的技术文章和项目案例。</p>
 
                 {% assign posts_by_year = site.posts | group_by_exp:"post", "post.date | date: '%Y'" %}
                 {% for year in posts_by_year %}
-                    <div class="category">
-                        <h3>{{ year.name }}</h3>
-                        {% assign posts_by_month = year.items | group_by_exp:"post", "post.date | date: '%m'" %}
-                        {% for month in posts_by_month %}
-                            <h4>{{ month.name }}</h4>
-                            <ul>
-                                {% for post in month.items %}
-                                    <li class="post">
-                                        <h3 class="post-title">
-                                            <a href="{{ post.url }}">{{ post.title }}</a>
-                                        </h3>
-                                        <p class="post-date">{{ post.date | date: "%Y-%m-%d" }}</p>
-                                        <div class="post-excerpt">
-                                            {{ post.excerpt | strip_html | truncate: 200 }}
-                                        </div>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% endfor %}
+                    <button class="accordion">{{ year.name }}</button>
+                    <div class="panel">
+                        <ul>
+                            {% for post in year.items %}
+                                <li class="post">
+                                    <h4 class="post-title">
+                                        <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a>
+                                    </h4>
+                                    <p class="post-date">{{ post.date | date: "%Y-%m-%d" }}</p>
+                                    <div class="post-excerpt">
+                                        {{ post.excerpt | strip_html | truncate: 200 }}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 {% endfor %}
             </div>
@@ -86,5 +70,21 @@ layout: default
     <footer>
         <p>&copy; 2024 毛巳煜. All rights reserved.</p>
     </footer>
+
+    <script>
+        var accordions = document.getElementsByClassName("accordion");
+
+        for (var i = 0; i < accordions.length; i++) {
+            accordions[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                } else {
+                    panel.style.display = "block";
+                }
+            });
+        }
+    </script>
 </body>
 </html>
