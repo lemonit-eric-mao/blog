@@ -23,19 +23,6 @@ layout: default
     </style>
 </head>
 <body>
-    <!-- Global header from theme -->
-    <header class="page-header" role="banner">
-        <h1 class="project-name">{{ site.title }}</h1>
-        <h2 class="project-tagline">{{ site.description }}</h2>
-        <nav>
-            <ul>
-                <li><a href="{{ site.baseurl }}/">主页</a></li>
-                <li><a href="{{ site.baseurl }}/search.html">搜索</a></li>
-            </ul>
-        </nav>
-        <a href="https://github.com/lemonit-eric-mao/blog" class="btn">View on GitHub</a>
-    </header>
-
     <main class="container">
         <section>
             <h2>个人博客</h2>
@@ -66,12 +53,12 @@ layout: default
     </footer>
 
     <script>
-        var accordions = document.getElementsByClassName("accordion");
+        let accordions = document.getElementsByClassName("accordion");
 
-        for (var i = 0; i < accordions.length; i++) {
+        for (let i = 0; i < accordions.length; i++) {
             accordions[i].addEventListener("click", function() {
                 this.classList.toggle("active");
-                var panel = this.nextElementSibling;
+                let panel = this.nextElementSibling;
                 if (panel.style.display === "block") {
                     panel.style.display = "none";
                 } else {

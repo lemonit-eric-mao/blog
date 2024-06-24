@@ -1,9 +1,14 @@
 title: 毛巳煜的个人主页
 description: 高级解决方案全栈架构师
-baseurl: "/blog" 
+github_repo: "https://github.com/lemonit-eric-mao/blog"
 url: "https://lemonit-eric-mao.github.io/blog"
+baseurl: "/blog"
+links:
+  - title: "主页"
+    url: "/"
+  - title: "搜索"
+    url: "/search.html"
 markdown: kramdown
-theme: minima
 remote_theme: pages-themes/cayman@v0.2.0
 plugins:
   - jekyll-remote-theme
