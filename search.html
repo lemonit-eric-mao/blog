@@ -44,9 +44,9 @@ layout: default
 <body>
 <main class="container">
     <section>
-        <h2>搜索</h2>
+        <h3>搜索</h3>
         <div class="search-box">
-            <input type="text" id="search-input" placeholder="输入关键字进行搜索">
+            <input type="text" id="search-input" placeholder="输入关键字进行搜索" oninput="delaySearch()">
             <button onclick="search()">搜索</button>
         </div>
         <ul id="search-results" class="search-results"></ul>
@@ -72,6 +72,13 @@ layout: default
         objectStore.createIndex('title', 'title', {unique: false});
         objectStore.createIndex('url', 'url', {unique: false});
     };
+
+    let searchTimeout;
+
+    function delaySearch() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(search, 1000); // 等待1秒后执行搜索
+    }
 
     function search() {
         let searchInput = document.getElementById('search-input').value.trim().toLowerCase();

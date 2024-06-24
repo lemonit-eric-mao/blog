@@ -7,8 +7,6 @@
 │
 ├─Gemfile                  # RubyGem 配置文件，用于管理 Jekyll 依赖
 │
-├─lunr.min.js              # Lunr.js 文件，用于客户端搜索功能
-│
 ├─index.html               # 网站首页
 │
 ├─search.html              # 搜索结果页面
