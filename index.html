@@ -25,7 +25,6 @@ layout: default
 <body>
     <main class="container">
         <section>
-            <h2>个人博客</h2>
             <div class="content">
                 {% assign posts_by_year = site.posts | group_by_exp:"post", "post.date | date: '%Y'" %}
                 {% for year in posts_by_year %}
