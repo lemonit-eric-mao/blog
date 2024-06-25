@@ -41,7 +41,7 @@
     <h4 class="project-tagline">{{ page.description | default: site.description | default: site.github.project_tagline }}</h4>
     <nav>
         {% for link in site.links %}
-        <a href="{{ site.baseurl }}{{ link.url }}">{{ link.title }}</a>
+        <a href="{{ site.baseurl }}{{ link.url }}" class="btn">{{ link.title }}</a>
         {% endfor %}
         <br/>
         <a href="{{ site.github_repo }}/edit/main/{{ page.path }}" target="_blank" class="btn">Edit on GitHub</a>
