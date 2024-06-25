@@ -29,6 +29,8 @@
             }
         });
 
+
+
     </script>
 </head>
 <body>
@@ -41,7 +43,8 @@
         {% for link in site.links %}
         <a href="{{ site.baseurl }}{{ link.url }}">{{ link.title }}</a>
         {% endfor %}
-        <a href="{{ site.github_repo }}/edit/main/{{ page.path }}" target="_blank">编辑这个页面</a>
+        <br/>
+        <a href="{{ site.github_repo }}/edit/main/{{ page.path }}" target="_blank" class="btn">Edit on GitHub</a>
     </nav>
 </header>
 
