@@ -21,7 +21,7 @@ categories:
 
 > - **Exchange Federation**
 >     - `Exchange Federation` 它实现的是消息的**`复制`**功能，当消息进入到其中任意一个 **联邦 Exchange** 时， 两个 **联邦 Exchange** 之间的**消息是`复制`的**。
->     - 它更适用于**消息重复执行**的场景 [![](http://qiniu.dev-share.top/image/rabbitmq-exchange-federation.png)](http://qiniu.dev-share.top/image/rabbitmq-exchange-federation.png)
+>     - 它更适用于**消息重复执行**的场景 ![](images/rabbitmq-exchange-federation.png)
 
 * * *
 
@@ -43,7 +43,7 @@ categories:
 >             }
 >             ```
 >             
->     - 它类似主从的负载模式 [![](http://qiniu.dev-share.top/image/rabbitmq-queue-federation.png)](http://qiniu.dev-share.top/image/rabbitmq-queue-federation.png)
+>     - 它类似主从的负载模式 ![](images/rabbitmq-queue-federation.png)
 
 **[参考资料01](https://juejin.cn/post/7073669304603901983 "参考资料01")** **[参考资料02](https://www.modb.pro/db/138102 "参考资料02")**
 
@@ -110,11 +110,11 @@ ERIC
 
 * * *
 
-> - **打开浏览器查看** [![](http://qiniu.dev-share.top/image/rabbitmq-federation-01.png)](http://qiniu.dev-share.top/image/rabbitmq-federation-01.png)
+> - **打开浏览器查看** ![](images/rabbitmq-federation-01.png)
 
 * * *
 
-> - **创建联邦** [![](http://qiniu.dev-share.top/image/rabbitmq-federation-02.png)](http://qiniu.dev-share.top/image/rabbitmq-federation-02.png)
+> - **创建联邦** ![](images/rabbitmq-federation-02.png)
 
 * * *
 

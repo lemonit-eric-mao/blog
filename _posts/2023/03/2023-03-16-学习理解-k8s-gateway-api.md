@@ -19,7 +19,7 @@ categories:
 
 ##### **[跨命名空间路由](https://gateway-api.sigs.k8s.io/guides/multiple-ns/#cross-namespace-routing "跨命名空间路由")**
 
-[![](https://gateway-api.sigs.k8s.io/images/cross-namespace-routing.svg)](https://gateway-api.sigs.k8s.io/images/cross-namespace-routing.svg)
+![](https://gateway-api.sigs.k8s.io/images/cross-namespace-routing.svg)
 
 ##### **[HTTP 重定向与重写](https://gateway-api.sigs.k8s.io/guides/http-redirect-rewrite/ "HTTP 转发与重定向")**
 
