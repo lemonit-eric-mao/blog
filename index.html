@@ -94,6 +94,8 @@ layout: default
 <main class="container">
     <section>
         <div class="content">
+            {{site}}
+            {{site.posts}}
             {% assign posts_by_year = site.posts | group_by_exp:"post", "post.date | date: '%Y'" %}
             {% for year in posts_by_year %}
             <button class="accordion">{{ year.name }}</button>
