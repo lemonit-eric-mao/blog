@@ -17,4 +17,4 @@ plugins:
 collections:
   posts:
     output: true
-    permalink: /:year/:month/:title
+    permalink: /_posts/:year/:month/:title/
