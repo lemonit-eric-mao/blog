@@ -286,7 +286,7 @@ categories:
 
 ## 工作原理
 
-![](images/velero-01.png)
+![]({{ site.baseurl }}/images/velero-01.png)
 
 
 ## 一、备份
