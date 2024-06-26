@@ -17,8 +17,9 @@ plugins:
 jsonify:
   collections:
     posts
+
 collections:
   posts:
     output: true
-    #permalink: /:categories/:title/
-    permalink: /:categories/:year/:month/:day/:title/
+    permalink: /:categories/:slug/
+    #permalink: /:categories/:year/:month/:day/:title/
