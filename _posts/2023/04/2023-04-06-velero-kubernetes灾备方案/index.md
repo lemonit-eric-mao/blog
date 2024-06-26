@@ -286,7 +286,7 @@ categories:
 
 ## 工作原理
 
-![](https://github.com/lemonit-eric-mao/blog/blob/main/_posts/2023/04/2023-04-06-velero-kubernetes%E7%81%BE%E5%A4%87%E6%96%B9%E6%A1%88/images/velero-01.png)
+![]({{ site.baseurl }}/images/velero-01.png)
 
 ## 一、备份
 
