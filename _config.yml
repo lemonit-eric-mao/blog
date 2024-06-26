@@ -18,8 +18,8 @@ jsonify:
   collections:
     posts
 
-collections:
-  posts:
-    output: true
-    #permalink: /:categories/:slug/
-    permalink: /:categories/:year/:month/:day/:slug/
+#collections:
+#  posts:
+#    output: true
+#    permalink: /:categories/:slug/
+#    permalink: /:categories/:year/:month/:day/:slug/
