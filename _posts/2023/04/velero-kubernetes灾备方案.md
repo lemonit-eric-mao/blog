@@ -286,8 +286,7 @@ categories:
 
 ## 工作原理
 
-![]({{ site.baseurl }}/images/velero-01.png)
-
+![](images/velero-01.png)
 
 ## 一、备份
 
@@ -323,7 +322,7 @@ categories:
 ### 创建备份
 
 - > 备份`app-ns`命名空间下的所有应用程序 备份名称为:`app-ns-backup`
-  
+    
 - ```shell
     ## 开始备份
     velero -n velero-ns backup create app-ns-backup \
@@ -462,7 +461,7 @@ categories:
 ### 查看相关信息
 
 - 查看集群信息
-  
+    
 - ```shell
     [root@centos-01 (14:23:18) /data/siyu.mao/velero]
     └─# kubectl config get-contexts
@@ -474,7 +473,7 @@ categories:
     ```
     
 - 查看`k8s_01`中的备份
-  
+    
 - ```shell
     [root@centos-01 (14:23:22) /data/siyu.mao/velero]
     └─# kubectl -n velero-ns get backup
@@ -509,7 +508,7 @@ categories:
     >     
     >     1. 需要`重新申请`一个MinIO的`令牌`
     >     2. 要使用`同一个`MinIO的`存储桶`
-  
+    
 - ```shell
     velero -n velero-ns install \
       --provider aws \
