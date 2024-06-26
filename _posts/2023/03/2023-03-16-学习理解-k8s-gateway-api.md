@@ -11,11 +11,11 @@ categories:
 
 ##### **[简单的网关](https://gateway-api.sigs.k8s.io/guides/simple-gateway/#deploying-a-simple-gateway "简单的网关")**
 
-[![](images/single-service-gateway.png)](https://gateway-api.sigs.k8s.io/images/single-service-gateway.png)
+![](images/single-service-gateway.png)
 
 ##### **[HTTP 路由](https://gateway-api.sigs.k8s.io/guides/http-routing/ "HTTP 路由")**
 
-[![](images/http-routing.png)](https://gateway-api.sigs.k8s.io/images/http-routing.png)
+![](images/http-routing.png)
 
 ##### **[跨命名空间路由](https://gateway-api.sigs.k8s.io/guides/multiple-ns/#cross-namespace-routing "跨命名空间路由")**
 
@@ -25,7 +25,7 @@ categories:
 
 ##### **[gRPC路由](https://gateway-api.sigs.k8s.io/guides/grpc-routing/#grpc-routing "gRPC路由")**
 
-[![](images/grpc-routing.png)](https://gateway-api.sigs.k8s.io/images/grpc-routing.png)
+![](images/grpc-routing.png)
 
 ##### **[从Ingress迁移](https://gateway-api.sigs.k8s.io/guides/migrating-from-ingress/#migrating-from-ingress "从Ingress迁移")**
 

@@ -72,13 +72,13 @@ docker-compose up -d
 /usr/bin/svnadmin
 ```
 
-[![](images/svn-setting.png)](http://qiniu.dev-share.top/svn-setting.png)
+![](images/svn-setting.png)
 
 * * *
 
 ###### 为路径授权
 
-[![](images/svn-auth.png)](http://qiniu.dev-share.top/svn-auth.png)
+![](images/svn-auth.png)
 
 * * *
 

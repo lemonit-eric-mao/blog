@@ -209,9 +209,9 @@ total 52
 
 ###### gitlab 规范使用
 
-[![](images/gitlab-layer.png)](http://qiniu.dev-share.top/gitlab-layer.png)
+![](images/gitlab-layer.png)
 
-[![](images/gitlab-tree.png)](http://qiniu.dev-share.top/gitlab-tree.png)
+![](images/gitlab-tree.png)
 
 * * *
 

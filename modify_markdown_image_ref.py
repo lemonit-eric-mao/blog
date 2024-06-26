@@ -14,7 +14,7 @@ def update_markdown_images(directory):
                     content = f.read()
 
                 # 使用正则表达式进行替换
-                updated_content = re.sub(r'\[\!\[\]\(images/(.*?)\)\]\(http://.*?/image/.*?\)', r'![](images/\1)', content)
+                updated_content = re.sub(r'\[\!\[\]\(images/(.*?)\)\]\(http*.*?\)', r'![](images/\1)', content)
 
                 # 写回文件
                 with open(file_path, 'w', encoding='utf-8') as f:
