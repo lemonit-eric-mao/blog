@@ -24,3 +24,5 @@ def update_markdown_images(directory):
 # 指定你的Markdown文件所在目录
 markdown_directory = '_posts'
 update_markdown_images(markdown_directory)
+
+
