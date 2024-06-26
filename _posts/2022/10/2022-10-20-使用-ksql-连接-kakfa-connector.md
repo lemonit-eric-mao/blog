@@ -13,7 +13,7 @@ categories:
 
 > Kafka Connect 是 Apache Kafka 的一个组件，用于使其它系统，比如数据库、云服务、文件系统等能方便地连接到 Kafka。 数据既可以通过 Kafka Connect 从其它系统流向 Kafka, 也可以通过 Kafka Connect 从 Kafka 流向其它系统。 从其它系统读数据的插件称为 Source Connector, 写数据到其它系统的插件称为 Sink Connector。 Source Connector 和 Sink Connector 都不会直接连接 Kafka Broker，Source Connector 把数据转交给 Kafka Connect。Sink Connector 从 Kafka Connect 接收数据。
 
-[![](images/KafkaConnect.png)](http://qiniu.dev-share.top/image/kafka/KafkaConnect.png)
+![](images/KafkaConnect.png)
 
 * * *
 

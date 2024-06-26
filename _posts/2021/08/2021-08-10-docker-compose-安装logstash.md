@@ -7,7 +7,7 @@ categories:
 
 ### 工作原理图
 
-[![](images/Logstash.png)](http://qiniu.dev-share.top/image/Logstash.png)
+![](images/Logstash.png)
 
 > [Logstash 目前版本没有集群这一概念](https://elasticsearch.cn/question/5399) 因为logstash至少到目前为止，都是一个无状态的流处理软件。如果问logstash怎么集群配置，就好比问nginx怎么集群配置一样——横向扩展，自己用配置管理工具分发就是了，他们内部并没有交流。
 > 

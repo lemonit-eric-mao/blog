@@ -91,7 +91,7 @@ layout: default
             if (cursor) {
                 if (cursor.value.title.toLowerCase().includes(searchInput)) {
                     let li = document.createElement('li');
-                    li.innerHTML = `<a href="${cursor.value.url}">${cursor.value.title}</a>`;
+                    li.innerHTML = `<a href="${cursor.value.url}" target="_blank">${cursor.value.title}</a>`;
                     resultsList.appendChild(li);
                 }
                 cursor.continue();

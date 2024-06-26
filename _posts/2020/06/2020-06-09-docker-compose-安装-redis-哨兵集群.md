@@ -9,7 +9,7 @@ categories:
 
 什么是哨兵？ 哨兵作用是干什么的？ 如何实现的高可用？
 
-> [![](images/Redis.gif)](http://qiniu.dev-share.top/image/gif/Redis.gif)
+> ![](images/Redis.gif)
 
 * * *
 

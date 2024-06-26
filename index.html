@@ -94,7 +94,6 @@ layout: default
 <main class="container">
     <section>
         <div class="content">
-            {{site.categories}}
             {% assign posts_by_year = site.posts | group_by_exp:"post", "post.date | date: '%Y'" %}
             {% for year in posts_by_year %}
             <button class="accordion">{{ year.name }}</button>
@@ -103,7 +102,7 @@ layout: default
                     {% for post in year.items %}
                     <li class="post">
                         <h4 class="post-title">
-                            <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a>
+                            <a href="{{ site.baseurl }}{{ post.url }}" target="_blank">{{ post.title }}</a>
                             <br/>
                             <span class="post-date">{{ post.date | date: "%Y-%m-%d" }}</span>
                         </h4>

@@ -286,7 +286,7 @@ categories:
 
 ## 工作原理
 
-[![](images/velero-01.png)](http://qiniu.dev-share.top/image/velero-01.png)
+![](images/velero-01.png)
 
 ## 一、备份
 

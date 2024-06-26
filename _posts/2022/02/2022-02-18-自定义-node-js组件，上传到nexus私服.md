@@ -19,7 +19,7 @@ categories:
 
 * * *
 
-[![](images/nexus-lib.png)](http://qiniu.dev-share.top/image/nexus-lib.png)
+![](images/nexus-lib.png)
 
 * * *
 
@@ -212,7 +212,7 @@ npm ERR! Unable to authenticate, need: BASIC realm="Sonatype Nexus Repository Ma
 
 ###### 解决办法
 
-[![](images/nexus-security-realms.png)](http://qiniu.dev-share.top/image/nexus-security-realms.png)
+![](images/nexus-security-realms.png)
 
 * * *
 

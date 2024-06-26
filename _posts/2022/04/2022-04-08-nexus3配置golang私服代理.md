@@ -24,19 +24,19 @@ categories:
 
 ###### 新建 **`type`** 为 **`proxy`** 的 **`go repository`**
 
-[![](images/golang-nexus-01.png)](http://qiniu.dev-share.top/image/png/golang-nexus-01.png)
+![](images/golang-nexus-01.png)
 
-[![](images/golang-nexus-02.png)](http://qiniu.dev-share.top/image/png/golang-nexus-02.png)
+![](images/golang-nexus-02.png)
 
-[![](images/golang-nexus-03.png)](http://qiniu.dev-share.top/image/png/golang-nexus-03.png)
+![](images/golang-nexus-03.png)
 
-[![](images/golang-nexus-04.png)](http://qiniu.dev-share.top/image/png/golang-nexus-04.png) **阿里云代理地址：https://mirrors.aliyun.com/goproxy/**
+![](images/golang-nexus-04.png) **阿里云代理地址：https://mirrors.aliyun.com/goproxy/**
 
 * * *
 
 ###### 新建 **`type`** 为 **`group`** 的 **`go repository`**
 
-[![](images/golang-nexus-05.png)](http://qiniu.dev-share.top/image/png/golang-nexus-05.png) [![](images/golang-nexus-06.png)](http://qiniu.dev-share.top/image/png/golang-nexus-06.png) **内部使用的私服地址：http://172.16.15.205:8081/repository/go-group/**
+![](images/golang-nexus-05.png) ![](images/golang-nexus-06.png) **内部使用的私服地址：http://172.16.15.205:8081/repository/go-group/**
 
 * * *
 

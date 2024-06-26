@@ -35,7 +35,7 @@ categories:
 
 * * *
 
-[![](images/OLTP-OLAP.jpg)](http://qiniu.dev-share.top/image/jpg/OLTP-OLAP.jpg)
+![](images/OLTP-OLAP.jpg)
 
 * * *
 

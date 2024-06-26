@@ -27,7 +27,7 @@ categories:
 >     SELECT * FROM V$LOGFILE;
 >     ```
 >     
->     [![](images/redolog-01.png)](http://qiniu.dev-share.top/image/redolog-01.png)
+>     ![](images/redolog-01.png)
 >     
 >     - 所有的文件都是二进制内容
 
@@ -154,7 +154,7 @@ categories:
         
     - 查看结果
         
-    - [![](images/redolog-02.png)](http://qiniu.dev-share.top/image/redolog-02.png)
+    - ![](images/redolog-02.png)
         
 5. **结果分析**
     
@@ -282,7 +282,7 @@ categories:
         
         ```
         
-        [![](images/redolog-03.png)](http://qiniu.dev-share.top/image/redolog-03.png)
+        ![](images/redolog-03.png)
         
     5. **WHERE**条件的变化
         
@@ -359,7 +359,7 @@ categories:
         
     4. 查看 Redo SQL
         
-        [![](images/redolog-04.png)](http://qiniu.dev-share.top/image/redolog-04.png)
+        ![](images/redolog-04.png)
         
     5. 观察**WHERE**条件的变化
         

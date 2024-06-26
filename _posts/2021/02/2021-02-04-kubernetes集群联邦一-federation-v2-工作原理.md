@@ -77,25 +77,25 @@ categories:
 
 ### Federation V1 集群联邦 场景
 
-[![](images/Federation-v1.png)](http://qiniu.dev-share.top/image/Federation-v1.png)
+![](images/Federation-v1.png)
 
 * * *
 
 ### Federation V2 集群联邦 场景
 
-[![](images/Federation-v2.png)](http://qiniu.dev-share.top/image/Federation-v2.png)
+![](images/Federation-v2.png)
 
 * * *
 
 ### Federation V2 集群联邦 工作原理 中文版
 
-[![](images/Federation-3.png)](http://qiniu.dev-share.top/image/Federation-3.png)
+![](images/Federation-3.png)
 
 * * *
 
 ### Federation V2 集群联邦 工作原理 英文原版
 
-[![](images/Federation-v2-en.png)](http://qiniu.dev-share.top/image/Federation-v2-en.png)
+![](images/Federation-v2-en.png)
 
 * * *
 
@@ -164,7 +164,7 @@ spec:
 
 ### 对比 F5 GSLB
 
-[![](images/Federation-4.png)](http://qiniu.dev-share.top/image/Federation-4.png)
+![](images/Federation-4.png)
 
 * * *
 
