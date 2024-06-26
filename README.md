@@ -11,6 +11,10 @@
 │
 ├─search.html              # 搜索结果页面
 │
+├─output
+│  └─chtml
+│     └─fonts              # 数学公式依赖的字体文件
+│
 ├─.github                  # GitHub 特有的目录
 │  └─workflows             # GitHub Actions 工作流目录，存放自动化脚本
 │
