@@ -21,7 +21,7 @@
 ├─_layouts                 # Jekyll 布局文件目录
 │  └─default.html          # Jekyll 主题的布局文件（用来替换原主题文件）
 │
-├─_posts                   # Jekyll 文章目录，存放 Markdown 格式的博客文章（确保目录结构为：`/blog/年/月/文章标题/index.md`）
+├─_posts                   # Jekyll 文章目录，存放 Markdown 格式的博客文章（确保目录结构为：`/blog/年/月/文章标题/年-月-日-标题.md`）
 │
 └─images                   # 存放 Markdown 引用的所有图片
 
