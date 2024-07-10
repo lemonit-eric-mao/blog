@@ -1,7 +1,7 @@
 title: 技术博客
 description: 如若不能在实践中印证自己的能力，我们所谓的学会和懂得，都毫无意义。
 github_repo: "https://github.com/lemonit-eric-mao/blog"
-url: "http://lemonit-eric-mao.github.io/blog"
+url: "http://lemonit-eric-mao.github.io"
 baseurl: "/blog"
 links:
   - title: "主页"
@@ -14,8 +14,18 @@ remote_theme: pages-themes/cayman@v0.2.0
 plugins:
   - jekyll-remote-theme
   - jekyll-mathjax
+  - jekyll-sitemap
+  - jekyll-feed
+  - jekyll-jsonify
 
 collections:
   posts:
     output: true
     permalink: /:title
+
+mathjax:
+  path: /assets/js/MathJax.js
+  config:
+    tex2jax:
+      inlineMath: [["$", "$"], ["\\(", "\\)"]]
+      displayMath: [["$$", "$$"], ["\\[", "\\]"]]
