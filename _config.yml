@@ -24,7 +24,7 @@ collections:
     permalink: /:title
 
 mathjax:
-  path: /assets/js/MathJax.js
+  path: https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML
   config:
     tex2jax:
       inlineMath: [["$", "$"], ["\\(", "\\)"]]
