@@ -7,7 +7,7 @@ categories:
 
 [目前最新版](https://hub.docker.com/_/mysql?tab=tags "目前最新版")
 
-[安装 docker-compose](http://www.dev-share.top/2019/06/12/%e5%ae%89%e8%a3%85-docker-compose/ "安装 docker-compose")
+[安装 docker-compose](https://lemonit-eric-mao.github.io/blog/%E5%AE%89%E8%A3%85-docker-compose "安装 docker-compose")
 
 ##### docker-compose安装
 
