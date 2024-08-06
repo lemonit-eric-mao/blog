@@ -12,11 +12,11 @@ categories:
 ##### docker-compose安装
 
 ```ruby
-[root@dev1 deploy]# mkdir -p /home/deploy/mysqldb/config && cd /home/deploy/mysqldb/
+[root@dev1 deploy]# mkdir -p ./mysqldb/config && cd ./mysqldb/
 [root@dev1 deploy]#
 
 [root@dev1 mysqldb]# cat > docker-compose.yaml << ERIC
-version: '3.1'
+version: '3.6'
 
 services:
 
