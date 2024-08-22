@@ -664,6 +664,14 @@ class FunctionCall:
             if function:
                 result = function(**arguments)
                 history.append({"role": "tool", "tool_call_id": tool_call.id, "content": str(result)})
+                # 
+                # 提示使用者：
+                # 使用 str() 转换的字符串
+                # 需要使用 ast.literal_eval() 才能将字符串转换回原来的列表
+                # 
+                # str_data = "[{'a':'1', 'b':'2', 'c':'3'}]"
+                # import ast
+                # result = ast.literal_eval(str_data)
             else:
                 print(f"找不到方法 {self.METHOD_PATH}/{function_name}")
 
