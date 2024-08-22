@@ -663,8 +663,7 @@ class FunctionCall:
             # 动态执行函数
             if function:
                 result = function(**arguments)
-                #history.append({"role": "tool", "tool_call_id": tool_call.id, "content": str(result)})
-                history.append({"role": "tool", "tool_call_id": tool_call.id, "content": result})
+                history.append({"role": "tool", "tool_call_id": tool_call.id, "content": str(result)})
             else:
                 print(f"找不到方法 {self.METHOD_PATH}/{function_name}")
 
