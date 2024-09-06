@@ -242,3 +242,29 @@ ERIC
 [ES官方 JavaAPI](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/7.3/java-rest-high-document-index.html "ES 官方 JavaAPI")
 
 [Elasticsearch7.X为什么移除类型(Type)](https://www.cnblogs.com/wangzhen3798/p/10765202.html "Elasticsearch7.X为什么移除类型(Type)")
+
+
+---
+
+---
+
+---
+
+## 使用docker-compose部署`单节点`
+``` yaml
+cat docker-compose.yaml
+version: '3.6'
+services:
+  es01:
+    image: elasticsearch:7.17.23
+    container_name: es01
+    environment:
+      - node.name=es01
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - ./data01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+
+```
