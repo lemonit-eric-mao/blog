@@ -215,15 +215,15 @@ ERIC
 
 * * *
 
-###### [ElasticSearch 安装插件](http://www.dev-share.top/2019/10/24/elasticsearch-%E5%AE%89%E8%A3%85%E6%8F%92%E4%BB%B6/ "ElasticSearch 安装插件")
+###### [ElasticSearch 安装插件](https://lemonit-eric-mao.github.io/blog/elasticsearch-%E5%AE%89%E8%A3%85%E6%8F%92%E4%BB%B6 "ElasticSearch 安装插件")
 
-###### [部署 ElasticSearch 集群](http://www.dev-share.top/2019/10/17/ansible-playbook-%E9%83%A8%E7%BD%B2-elasticsearch-%E9%9B%86%E7%BE%A4/ "部署 ElasticSearch 集群")
+###### [部署 ElasticSearch 集群](https://lemonit-eric-mao.github.io/blog/ansible-playbook-%E9%83%A8%E7%BD%B2-elasticsearch-%E9%9B%86%E7%BE%A4 "部署 ElasticSearch 集群")
 
-###### [安装 elasticsearch-head](http://www.dev-share.top/2019/10/15/centos-7-%E5%AE%89%E8%A3%85-elasticsearch-head/ "安装 elasticsearch-head")
+###### [安装 elasticsearch-head](https://lemonit-eric-mao.github.io/blog/centos-7-%E5%AE%89%E8%A3%85-elasticsearch-head "安装 elasticsearch-head")
 
-###### [安装 ElasticHD](http://www.dev-share.top/2019/10/15/centos-7-%E5%AE%89%E8%A3%85-elastichd/ "安装 ElasticHD")
+###### [安装 ElasticHD](https://lemonit-eric-mao.github.io/blog/centos-7-%E5%AE%89%E8%A3%85-elastichd "安装 ElasticHD")
 
-###### [安装 kibana](http://www.dev-share.top/2019/10/15/centos-7-%E5%AE%89%E8%A3%85-kibana/ "安装 kibana")
+###### [安装 kibana](https://lemonit-eric-mao.github.io/blog/centos-7-%E5%AE%89%E8%A3%85-kibana "安装 kibana")
 
 * * *
 
