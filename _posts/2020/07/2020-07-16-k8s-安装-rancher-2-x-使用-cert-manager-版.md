@@ -5,7 +5,7 @@ categories:
   - "k8s"
 ---
 
-###### **[安装 Helm](http://www.dev-share.top/2020/07/16/helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8/ "安装 Helm")**
+###### **[安装 Helm](helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8 "安装 Helm")**
 
 * * *
 

@@ -5,7 +5,7 @@ categories:
   - "mq"
 ---
 
-##### **[理解RabbitMQ工作原理](http://www.dev-share.top/2022/09/09/%e7%90%86%e8%a7%a3-rabbitmq-%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86/ "理解RabbitMQ工作原理")**
+##### **[理解RabbitMQ工作原理](%e7%90%86%e8%a7%a3-rabbitmq-%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86 "理解RabbitMQ工作原理")**
 
 * * *
 
@@ -122,4 +122,4 @@ ERIC
 
 * * *
 
-##### **[配置RabbitMQ联邦](http://www.dev-share.top/2022/09/12/%e9%85%8d%e7%bd%aerabbitmq%e8%81%94%e9%82%a6/ "配置RabbitMQ联邦")**
+##### **[配置RabbitMQ联邦](%e9%85%8d%e7%bd%aerabbitmq%e8%81%94%e9%82%a6 "配置RabbitMQ联邦")**

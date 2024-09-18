@@ -7,9 +7,9 @@ categories:
 
 ##### 前置资料
 
-###### **[Flink-CDC 安装部署](http://www.dev-share.top/2022/06/29/flink-cdc-%e5%ae%89%e8%a3%85%e9%83%a8%e7%bd%b2/ "Flink-CDC 安装部署")**
+###### **[Flink-CDC 安装部署](flink-cdc-%e5%ae%89%e8%a3%85%e9%83%a8%e7%bd%b2 "Flink-CDC 安装部署")**
 
-**[参考 Oracle 数据库使用手册，开启归档日志](http://www.dev-share.top/2022/07/06/oracle-%e6%95%b0%e6%8d%ae%e5%ba%93%e4%bd%bf%e7%94%a8%e6%89%8b%e5%86%8c/ "参考 Oracle 数据库使用手册，开启归档日志")**
+**[参考 Oracle 数据库使用手册，开启归档日志](oracle-%e6%95%b0%e6%8d%ae%e5%ba%93%e4%bd%bf%e7%94%a8%e6%89%8b%e5%86%8c "参考 Oracle 数据库使用手册，开启归档日志")**
 
 * * *
 

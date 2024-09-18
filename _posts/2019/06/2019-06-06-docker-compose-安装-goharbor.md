@@ -37,9 +37,9 @@ categories:
 
 ##### 前置条件
 
-[安装 Docker](http://www.dev-share.top/2017/11/16/%e5%ae%89%e8%a3%85-docker/ "安装 Docker")
+[安装 Docker](%e5%ae%89%e8%a3%85-docker "安装 Docker")
 
-[安装 Docker-Compose](http://www.dev-share.top/2019/06/12/%e5%ae%89%e8%a3%85-docker-compose/ "安装 Docker-Compose")
+[安装 Docker-Compose](%e5%ae%89%e8%a3%85-docker-compose "安装 Docker-Compose")
 
 * * *
 
@@ -240,7 +240,7 @@ slim: digest: sha256:1b5871385c87ed5cc64e6a6f2a4b789a03266d29b4a0c72c4a740ed67f2
 
 * * *
 
-###### **[常见问题](http://www.dev-share.top/2021/03/06/docker-%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98/ "常见问题")**
+###### **[常见问题](docker-%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98 "常见问题")**
 
 * * *
 

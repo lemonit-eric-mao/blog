@@ -5,7 +5,7 @@ categories:
   - "helm"
 ---
 
-###### **[Helm 安装/使用](http://www.dev-share.top/2020/07/16/helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8/ "Helm 安装/使用")**
+###### **[Helm 安装/使用](helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8 "Helm 安装/使用")**
 
 * * *
 
@@ -400,4 +400,4 @@ helm install my-test-chart parentchart/ --dry-run --debug
 
 * * *
 
-### **[Helm3 推送文件到 Harbor仓库](http://www.dev-share.top/2020/09/14/helm3-%e6%8e%a8%e9%80%81%e6%96%87%e4%bb%b6%e5%88%b0-harbor%e4%bb%93%e5%ba%93/ "Helm3 推送文件到 Harbor仓库")**
+### **[Helm3 推送文件到 Harbor仓库](helm3-%e6%8e%a8%e9%80%81%e6%96%87%e4%bb%b6%e5%88%b0-harbor%e4%bb%93%e5%ba%93 "Helm3 推送文件到 Harbor仓库")**

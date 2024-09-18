@@ -7,11 +7,11 @@ categories:
 
 ##### 前置条件
 
-###### **[安装K8S](http://www.dev-share.top/2020/08/24/ansible-playbook-%e6%8e%a7%e5%88%b6-kubeadm%e9%83%a8%e7%bd%b2k8s-%e5%a0%86%e5%8f%a0etcd/ "安装K8S")**
+###### **[安装K8S](ansible-playbook-%e6%8e%a7%e5%88%b6-kubeadm%e9%83%a8%e7%bd%b2k8s-%e5%a0%86%e5%8f%a0etcd "安装K8S")**
 
 * * *
 
-###### **[拉取k8s集群.kube/config](http://www.dev-share.top/2020/09/29/k8s-%e5%a4%9a%e9%9b%86%e7%be%a4%e5%88%87%e6%8d%a2/ "拉取k8s集群.kube/config") 跳转链接**
+###### **[拉取k8s集群.kube/config](k8s-%e5%a4%9a%e9%9b%86%e7%be%a4%e5%88%87%e6%8d%a2 "拉取k8s集群.kube/config") 跳转链接**
 
 ```ruby
 ./generate-kube-config.sh \
@@ -43,7 +43,7 @@ CURRENT   NAME       CLUSTER    AUTHINFO   NAMESPACE
 
 * * *
 
-###### **[安装 MetalLB](http://www.dev-share.top/2020/08/14/%e4%bd%bf%e7%94%a8metallb%e6%9d%a5%e8%a7%a3%e5%86%b3k8s-service-loadbalancer%e9%97%ae%e9%a2%98/ "安装 MetalLB")**
+###### **[安装 MetalLB](%e4%bd%bf%e7%94%a8metallb%e6%9d%a5%e8%a7%a3%e5%86%b3k8s-service-loadbalancer%e9%97%ae%e9%a2%98 "安装 MetalLB")**
 
 ```ruby
 kubectl --context="${CTX_CLUSTER1}" apply -f - << ERIC

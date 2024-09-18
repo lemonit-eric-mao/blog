@@ -7,7 +7,7 @@ categories:
 
 ### 添加 远程Mysql监控
 
-[安装 Prometheus](http://www.dev-share.top/2019/06/25/%E4%BD%BF%E7%94%A8-docker-compose-%E5%AE%89%E8%A3%85-prometheusalertmanagergrafana/")
+[安装 Prometheus](%E4%BD%BF%E7%94%A8-docker-compose-%E5%AE%89%E8%A3%85-prometheusalertmanagergrafana")
 
 ###### 在要监控的Mysql中创建一个账户为 普罗米修斯使用
 

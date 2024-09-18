@@ -5,7 +5,7 @@ categories:
   - "kong"
 ---
 
-###### **[Kong lua 插件开发](http://www.dev-share.top/2022/08/08/kong-lua-%e6%8f%92%e4%bb%b6%e5%bc%80%e5%8f%91/ "Kong lua 插件开发")**
+###### **[Kong lua 插件开发](kong-lua-%e6%8f%92%e4%bb%b6%e5%bc%80%e5%8f%91 "Kong lua 插件开发")**
 
 * * *
 

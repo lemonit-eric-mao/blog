@@ -12,7 +12,7 @@ categories:
 > - Python版本: >= 3.8.5, < 3.11
 > - Cuda版本: >= 11.7, 且能顺利安装Python
 
-## **[安装conda](http://www.dev-share.top/2023/10/26/%e5%ae%89%e8%a3%85miniconda/ "安装conda")**
+## **[安装conda](%e5%ae%89%e8%a3%85miniconda "安装conda")**
 
 ```bash
 wget https://mirrors.bfsu.edu.cn/anaconda/archive/Anaconda3-2022.10-Linux-x86_64.sh --no-check-certificate | sudo bash

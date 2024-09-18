@@ -7,7 +7,7 @@ categories:
 
 ###### 前置条件
 
-CentOS 7.7+ 系统内核 5.11.6-1.el7.elrepo.x86\_64 硬盘 2块 K8S 1.20.x containerd 1.4.4 **[RookCeph 1.5.10](http://www.dev-share.top/2020/09/24/%e4%bd%bf%e7%94%a8-rook-%e5%ae%89%e8%a3%85%e7%ae%a1%e7%90%86-k8s%e6%8c%81%e4%b9%85%e5%8c%96%e5%ad%98%e5%82%a8/ "RookCeph 1.5.10")**
+CentOS 7.7+ 系统内核 5.11.6-1.el7.elrepo.x86\_64 硬盘 2块 K8S 1.20.x containerd 1.4.4 **[RookCeph 1.5.10](%e4%bd%bf%e7%94%a8-rook-%e5%ae%89%e8%a3%85%e7%ae%a1%e7%90%86-k8s%e6%8c%81%e4%b9%85%e5%8c%96%e5%ad%98%e5%82%a8 "RookCeph 1.5.10")**
 
 ```ruby
 [root@master01 rbd]#  kubectl -n rook-ceph get sc
@@ -24,7 +24,7 @@ rook-ceph-block   rook-ceph.rbd.csi.ceph.com   Delete          Immediate        
 
 ###### **[bitnami/kafka](https://github.com/bitnami/charts/tree/master/bitnami/kafka "bitnami/kafka")**
 
-###### **[安装Helm](http://www.dev-share.top/2020/07/16/helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8/ "安装Helm")**
+###### **[安装Helm](helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8 "安装Helm")**
 
 * * *
 
@@ -147,7 +147,7 @@ pod/kafka-3-2-3-zookeeper-0   0/1     ContainerCreating   0          4m14s
 
 * * *
 
-###### **[安装Web管理页面](http://www.dev-share.top/2021/05/07/helm-%e5%ae%89%e8%a3%85-kafka-web%e7%ae%a1%e7%90%86%e9%a1%b5%e9%9d%a2/ "安装Web管理页面")**
+###### **[安装Web管理页面](helm-%e5%ae%89%e8%a3%85-kafka-web%e7%ae%a1%e7%90%86%e9%a1%b5%e9%9d%a2 "安装Web管理页面")**
 
 * * *
 

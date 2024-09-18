@@ -7,7 +7,7 @@ categories:
 
 ##### 前置条件
 
-**[Docker-Compose 部署Nexus私服仓库](http://www.dev-share.top/2018/11/29/maven-%e7%b3%bb%e5%88%97%e4%ba%8c-docker-compose-%e9%83%a8%e7%bd%b2nexus%e7%a7%81%e6%9c%8d%e4%bb%93%e5%ba%93/ "Docker-Compose 部署Nexus私服仓库")**
+**[Docker-Compose 部署Nexus私服仓库](maven-%e7%b3%bb%e5%88%97%e4%ba%8c-docker-compose-%e9%83%a8%e7%bd%b2nexus%e7%a7%81%e6%9c%8d%e4%bb%93%e5%ba%93 "Docker-Compose 部署Nexus私服仓库")**
 
 * * *
 

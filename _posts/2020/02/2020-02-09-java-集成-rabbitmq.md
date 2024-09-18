@@ -5,7 +5,7 @@ categories:
   - "java"
 ---
 
-###### [安装部署RabbitMQ](http://www.dev-share.top/2020/02/09/docker-compose-%e5%ae%89%e8%a3%85-rabbitmq/ "安装部署RabbitMQ")
+###### [安装部署RabbitMQ](docker-compose-%e5%ae%89%e8%a3%85-rabbitmq "安装部署RabbitMQ")
 
 * * *
 

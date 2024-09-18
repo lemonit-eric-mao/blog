@@ -7,7 +7,7 @@ categories:
 
 ##### 前置资料
 
-**[理解 RabbitMQ 工作原理](http://www.dev-share.top/2022/09/09/%e7%90%86%e8%a7%a3-rabbitmq-%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86/ "理解 RabbitMQ 工作原理")**
+**[理解 RabbitMQ 工作原理](%e7%90%86%e8%a7%a3-rabbitmq-%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86 "理解 RabbitMQ 工作原理")**
 
 * * *
 
@@ -15,7 +15,7 @@ categories:
 
 > MQ 客户端分为两种：**推送者**、**接收者**
 
-**[安装RabbitMQ服务端](http://www.dev-share.top/2020/02/09/docker-compose-%e5%ae%89%e8%a3%85-rabbitmq/ "安装RabbitMQ服务端")**
+**[安装RabbitMQ服务端](docker-compose-%e5%ae%89%e8%a3%85-rabbitmq "安装RabbitMQ服务端")**
 
 * * *
 

@@ -7,13 +7,13 @@ categories:
 
 ##### 前置条件
 
-###### **[Flink-CDC 安装部署](http://www.dev-share.top/2022/06/29/flink-cdc-%e5%ae%89%e8%a3%85%e9%83%a8%e7%bd%b2/ "Flink-CDC 安装部署")**
+###### **[Flink-CDC 安装部署](flink-cdc-%e5%ae%89%e8%a3%85%e9%83%a8%e7%bd%b2 "Flink-CDC 安装部署")**
 
 > - 通俗的讲 **CDC** 是处理数据库**数据同步**的，那么我们就需要先有数据库
 
 * * *
 
-###### **[安装 mariadb](http://www.dev-share.top/2019/08/05/docker-%e5%ae%89%e8%a3%85-mariadb/ "安装 mariadb")** 注意: `源数据库需要开启binlog`
+###### **[安装 mariadb](docker-%e5%ae%89%e8%a3%85-mariadb "安装 mariadb")** 注意: `源数据库需要开启binlog`
 
 ##### 创建两个MariaDB数据库，并在每个数据库中创建两个表
 
@@ -209,4 +209,4 @@ INSERT INTO target_db_table_sink select * from source_db_table;
 
 * * *
 
-###### **[常见问题](http://www.dev-share.top/2022/07/05/flink-cdc-%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98/ "常见问题")**
+###### **[常见问题](flink-cdc-%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98 "常见问题")**

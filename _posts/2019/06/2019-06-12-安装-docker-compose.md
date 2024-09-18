@@ -7,7 +7,7 @@ categories:
 
 ##### 安装 docker-compose
 
-###### [安装 Docker](http://www.dev-share.top/2017/11/16/%e5%ae%89%e8%a3%85-docker/ "安装 Docker")
+###### [安装 Docker](%e5%ae%89%e8%a3%85-docker "安装 Docker")
 
 ###### [官网地址](https://docs.docker.com/compose/install/ "官网地址")
 

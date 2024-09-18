@@ -177,7 +177,7 @@ masterauth 123456
 
 * * *
 
-###### **[安装 Redis 客户端](http://www.dev-share.top/2020/03/12/centos7-redis-%e5%ae%a2%e6%88%b7%e7%ab%af/ "安装 Redis 客户端")**
+###### **[安装 Redis 客户端](centos7-redis-%e5%ae%a2%e6%88%b7%e7%ab%af "安装 Redis 客户端")**
 
 * * *
 

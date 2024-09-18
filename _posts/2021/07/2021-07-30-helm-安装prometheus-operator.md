@@ -8,7 +8,7 @@ categories:
 
 ###### **[官方github](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#kube-prometheus-stack "官方github")**
 
-###### **[K8S-配置文件安装-Prometheus监控](http://www.dev-share.top/2019/06/19/k8s-%e5%ae%89%e8%a3%85-prometheus%e7%9b%91%e6%8e%a7/ "K8S-配置文件安装-Prometheus监控")**
+###### **[K8S-配置文件安装-Prometheus监控](k8s-%e5%ae%89%e8%a3%85-prometheus%e7%9b%91%e6%8e%a7 "K8S-配置文件安装-Prometheus监控")**
 
 * * *
 
@@ -117,7 +117,7 @@ kubectl -n dhc-prometheus patch svc k8s-prometheus-stack-grafana -p '{
 
 * * *
 
-**[K8S场景下使用prometheus监控 JVM指标](http://www.dev-share.top/2021/08/02/k8s%e5%9c%ba%e6%99%af%e4%b8%8b%e4%bd%bf%e7%94%a8prometheus%e7%9b%91%e6%8e%a7-jvm%e6%8c%87%e6%a0%87/ "K8S场景下使用prometheus监控 JVM指标")**
+**[K8S场景下使用prometheus监控 JVM指标](k8s%e5%9c%ba%e6%99%af%e4%b8%8b%e4%bd%bf%e7%94%a8prometheus%e7%9b%91%e6%8e%a7-jvm%e6%8c%87%e6%a0%87 "K8S场景下使用prometheus监控 JVM指标")**
 
 * * *
 

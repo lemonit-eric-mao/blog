@@ -34,7 +34,7 @@ PONG
 
 * * *
 
-#### [只安装客户端](http://www.dev-share.top/2019/08/01/centos-7-%e5%8f%aa%e5%ae%89%e8%a3%85%e5%ae%a2%e6%88%b7%e7%ab%af/ "只安装客户端")
+#### [只安装客户端](centos-7-%e5%8f%aa%e5%ae%89%e8%a3%85%e5%ae%a2%e6%88%b7%e7%ab%af "只安装客户端")
 
 * * *
 

@@ -7,7 +7,7 @@ categories:
 
 ###### **前置条件**
 
-###### **[基于K8S部署Consul联邦](http://www.dev-share.top/2021/03/10/%e5%9f%ba%e4%ba%8ek8s%e9%83%a8%e7%bd%b2consul%e8%81%94%e9%82%a6/ "基于K8S部署Consul联邦")**
+###### **[基于K8S部署Consul联邦](%e5%9f%ba%e4%ba%8ek8s%e9%83%a8%e7%bd%b2consul%e8%81%94%e9%82%a6 "基于K8S部署Consul联邦")**
 
 * * *
 

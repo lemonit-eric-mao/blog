@@ -18,7 +18,7 @@ categories:
 
 * * *
 
-###### **[安装 DockerCompose](http://www.dev-share.top/2019/06/12/%e5%ae%89%e8%a3%85-docker-compose/ "安装 DockerCompose")**
+###### **[安装 DockerCompose](%e5%ae%89%e8%a3%85-docker-compose "安装 DockerCompose")**
 
 * * *
 

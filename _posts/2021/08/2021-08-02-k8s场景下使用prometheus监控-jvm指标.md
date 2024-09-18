@@ -8,9 +8,9 @@ categories:
 
 ##### 前置条件
 
-**[Helm 安装Prometheus-Operator](http://www.dev-share.top/2021/07/30/helm-%e5%ae%89%e8%a3%85prometheus-operator/ "Helm 安装Prometheus-Operator")**
+**[Helm 安装Prometheus-Operator](helm-%e5%ae%89%e8%a3%85prometheus-operator "Helm 安装Prometheus-Operator")**
 
-**[K8S 中使用 javaagent](http://www.dev-share.top/2021/06/30/k8s-%e4%b8%ad%e4%bd%bf%e7%94%a8-javaagent/ "K8S 中使用 javaagent")**
+**[K8S 中使用 javaagent](k8s-%e4%b8%ad%e4%bd%bf%e7%94%a8-javaagent "K8S 中使用 javaagent")**
 
 * * *
 

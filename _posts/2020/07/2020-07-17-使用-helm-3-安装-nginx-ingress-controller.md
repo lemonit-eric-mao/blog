@@ -8,9 +8,9 @@ categories:
 
 ## 资料
 
-- **[详解 Ingress](http://www.dev-share.top/2019/03/15/k8s-%e9%85%8d%e7%bd%ae-ingress%e5%ae%9a%e4%b9%89%e7%9a%84%e8%b7%af%e7%94%b1%e8%a7%84%e5%88%99%e9%9b%86/ "详解 Ingress")**
+- **[详解 Ingress](k8s-%e9%85%8d%e7%bd%ae-ingress%e5%ae%9a%e4%b9%89%e7%9a%84%e8%b7%af%e7%94%b1%e8%a7%84%e5%88%99%e9%9b%86 "详解 Ingress")**
 - **[K8s官网 Ingress 控制器](https://kubernetes.io/zh-cn/docs/concepts/services-networking/ingress-controllers/ "K8s官网 Ingress 控制器")**
-- **[安装 Helm](http://www.dev-share.top/2020/07/16/helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8/ "安装 Helm")**
+- **[安装 Helm](helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8 "安装 Helm")**
 - **[官网安装 Nginx Ingress Controller](https://kubernetes.github.io/ingress-nginx/deploy/#quick-start "官网安装 Nginx Ingress Controller")**
 - **[Github charts 源码（含values配置参数）](https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx)**
 - **[K8s和ingress-controller版本对照关系](https://github.com/kubernetes/ingress-nginx#supported-versions-table)**
@@ -24,7 +24,7 @@ categories:
 
 ## **前置条件依赖**
 
-### **[安装MetalLB](http://www.dev-share.top/2020/08/14/%e4%bd%bf%e7%94%a8metallb%e6%9d%a5%e8%a7%a3%e5%86%b3k8s-service-loadbalancer%e9%97%ae%e9%a2%98/ "安装MetalLB")**
+### **[安装MetalLB](%e4%bd%bf%e7%94%a8metallb%e6%9d%a5%e8%a7%a3%e5%86%b3k8s-service-loadbalancer%e9%97%ae%e9%a2%98 "安装MetalLB")**
 
 ## **安装**
 
@@ -75,7 +75,7 @@ export NGINX_ING_NAMESPACE=ingress-nginx-ns
 ## LoadBalancer 类型的 Service，可以自动调用云服务商在 IaaS 层面的接口(宿主机的接口)，并自动创建 LoadBalancer，将其指向该 Service
 ## 通俗的讲， 需要有外接的硬件设备，在通过设备访问80|443端口实现负载均衡访问；  或者使用 MetalLB实现软的负载均衡
 ## 安装MetalLB来解决K8S service LoadBalancer问题
-##   http://www.dev-share.top/2020/08/14/%e4%bd%bf%e7%94%a8metallb%e6%9d%a5%e8%a7%a3%e5%86%b3k8s-service-loadbalancer%e9%97%ae%e9%a2%98/
+##   %e4%bd%bf%e7%94%a8metallb%e6%9d%a5%e8%a7%a3%e5%86%b3k8s-service-loadbalancer%e9%97%ae%e9%a2%98
 ## --set controller.service.type=LoadBalancer
 
 ```
@@ -249,7 +249,7 @@ default backend - 404
 
 ```
 
-### **[将 https 证书， 添加到k8s中](http://www.dev-share.top/2020/07/19/%e4%bd%bf%e7%94%a8-openssl-%e7%ad%be%e5%8f%91-https-%e5%9f%9f%e5%90%8d%e8%af%81%e4%b9%a6%ef%bc%8c-%e5%b9%b6%e6%b7%bb%e5%8a%a0%e5%88%b0k8s%e4%b8%ad/ "将 https 证书， 添加到k8s中")**
+### **[将 https 证书， 添加到k8s中](%e4%bd%bf%e7%94%a8-openssl-%e7%ad%be%e5%8f%91-https-%e5%9f%9f%e5%90%8d%e8%af%81%e4%b9%a6%ef%bc%8c-%e5%b9%b6%e6%b7%bb%e5%8a%a0%e5%88%b0k8s%e4%b8%ad "将 https 证书， 添加到k8s中")**
 
 **给域名`nginx.dev-share.top`生成自签证书**
 
@@ -351,7 +351,7 @@ ERIC
 
 ### **创建测试程序**
 
-#### **[创建测试程序镜像](http://www.dev-share.top/2019/12/12/k8s-%e4%bd%bf%e7%94%a8centos-7-%e9%95%9c%e5%83%8f%ef%bc%8c%e6%9e%84%e5%bb%bak8s%e7%bd%91%e7%bb%9c%e6%b5%8b%e8%af%95%e5%ae%b9%e5%99%a8/ "创建测试程序镜像")**
+#### **[创建测试程序镜像](k8s-%e4%bd%bf%e7%94%a8centos-7-%e9%95%9c%e5%83%8f%ef%bc%8c%e6%9e%84%e5%bb%bak8s%e7%bd%91%e7%bb%9c%e6%b5%8b%e8%af%95%e5%ae%b9%e5%99%a8 "创建测试程序镜像")**
 
 #### **app-test-nginx-svc.yaml 文件**
 

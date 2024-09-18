@@ -129,7 +129,7 @@ eric
 
 ```
 
-###### [备节点](http://www.dev-share.top/2019/12/04/keepalived-%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2-%E5%A4%87%E8%8A%82%E7%82%B9/ "备节点")
+###### [备节点](keepalived-%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2-%E5%A4%87%E8%8A%82%E7%82%B9 "备节点")
 
 * * *
 

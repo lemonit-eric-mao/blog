@@ -8,8 +8,8 @@ categories:
 
 ##### 前置资料
 
-1. **[Kubernetes集群联邦(一)-Federation V2 工作原理](http://www.dev-share.top/2021/02/04/kubernetes%e9%9b%86%e7%be%a4%e8%81%94%e9%82%a6%e4%b8%80-federation-v2-%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86/)**
-2. **[Kubernetes集群联邦(二)-使用Helm部署Kubefed](http://www.dev-share.top/2022/06/16/kubernetes%e9%9b%86%e7%be%a4%e8%81%94%e9%82%a6%e4%ba%8c-%e4%bd%bf%e7%94%a8helm%e9%83%a8%e7%bd%b2kubefed/)**
+1. **[Kubernetes集群联邦(一)-Federation V2 工作原理](kubernetes%e9%9b%86%e7%be%a4%e8%81%94%e9%82%a6%e4%b8%80-federation-v2-%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86)**
+2. **[Kubernetes集群联邦(二)-使用Helm部署Kubefed](kubernetes%e9%9b%86%e7%be%a4%e8%81%94%e9%82%a6%e4%ba%8c-%e4%bd%bf%e7%94%a8helm%e9%83%a8%e7%bd%b2kubefed)**
 
 * * *
 
@@ -54,7 +54,7 @@ yum install -y kubectl-1.20.6
 
 ###### 配置在当前的机器中能够切换多个k8s集群
 
-**[拉取k8s集群.kube/config](http://www.dev-share.top/2020/09/29/k8s-%e5%a4%9a%e9%9b%86%e7%be%a4%e5%88%87%e6%8d%a2/ "拉取k8s集群.kube/config") 跳转链接**
+**[拉取k8s集群.kube/config](k8s-%e5%a4%9a%e9%9b%86%e7%be%a4%e5%88%87%e6%8d%a2 "拉取k8s集群.kube/config") 跳转链接**
 
 ```ruby
 ./generate-kube-config.sh \
@@ -186,7 +186,7 @@ kubectl get namespace $NS_NAME -o json | tr -d "\n" | sed "s/\"finalizers\": \[[
 
 > - 到此，使用kubefedctl注册集群联邦已经完成，接下来，需要了解，我们如何去使用它部署应用程序
 
-**[Kubernetes集群联邦(四)-使用kubefedctl统一管理联邦集群](http://www.dev-share.top/2022/06/16/kubernetes%e9%9b%86%e7%be%a4%e8%81%94%e9%82%a6%e5%9b%9b-%e4%bd%bf%e7%94%a8kubefedctl%e7%bb%9f%e4%b8%80%e7%ae%a1%e7%90%86%e8%81%94%e9%82%a6%e9%9b%86%e7%be%a4/)**
+**[Kubernetes集群联邦(四)-使用kubefedctl统一管理联邦集群](kubernetes%e9%9b%86%e7%be%a4%e8%81%94%e9%82%a6%e5%9b%9b-%e4%bd%bf%e7%94%a8kubefedctl%e7%bb%9f%e4%b8%80%e7%ae%a1%e7%90%86%e8%81%94%e9%82%a6%e9%9b%86%e7%be%a4)**
 
 * * *
 
@@ -196,10 +196,10 @@ kubectl get namespace $NS_NAME -o json | tr -d "\n" | sed "s/\"finalizers\": \[[
 
 ## 系列导航
 
-1. **[Kubernetes集群联邦(一)-Federation V2 工作原理](http://www.dev-share.top/2021/02/04/kubernetes%e9%9b%86%e7%be%a4%e8%81%94%e9%82%a6%e4%b8%80-federation-v2-%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86/)**
-2. **[Kubernetes集群联邦(二)-使用Helm部署Kubefed](http://www.dev-share.top/2022/06/16/kubernetes%e9%9b%86%e7%be%a4%e8%81%94%e9%82%a6%e4%ba%8c-%e4%bd%bf%e7%94%a8helm%e9%83%a8%e7%bd%b2kubefed/)**
-3. **[Kubernetes集群联邦(三)-使用kubefedctl注册集群联邦](http://www.dev-share.top/2022/06/16/kubernetes%e9%9b%86%e7%be%a4%e8%81%94%e9%82%a6%e4%b8%89-%e4%bd%bf%e7%94%a8kubefedctl%e6%b3%a8%e5%86%8c%e9%9b%86%e7%be%a4%e8%81%94%e9%82%a6/)**
-4. **[Kubernetes集群联邦(四)-使用kubefedctl统一管理联邦集群](http://www.dev-share.top/2022/06/16/kubernetes%e9%9b%86%e7%be%a4%e8%81%94%e9%82%a6%e5%9b%9b-%e4%bd%bf%e7%94%a8kubefedctl%e7%bb%9f%e4%b8%80%e7%ae%a1%e7%90%86%e8%81%94%e9%82%a6%e9%9b%86%e7%be%a4/)**
+1. **[Kubernetes集群联邦(一)-Federation V2 工作原理](kubernetes%e9%9b%86%e7%be%a4%e8%81%94%e9%82%a6%e4%b8%80-federation-v2-%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86)**
+2. **[Kubernetes集群联邦(二)-使用Helm部署Kubefed](kubernetes%e9%9b%86%e7%be%a4%e8%81%94%e9%82%a6%e4%ba%8c-%e4%bd%bf%e7%94%a8helm%e9%83%a8%e7%bd%b2kubefed)**
+3. **[Kubernetes集群联邦(三)-使用kubefedctl注册集群联邦](kubernetes%e9%9b%86%e7%be%a4%e8%81%94%e9%82%a6%e4%b8%89-%e4%bd%bf%e7%94%a8kubefedctl%e6%b3%a8%e5%86%8c%e9%9b%86%e7%be%a4%e8%81%94%e9%82%a6)**
+4. **[Kubernetes集群联邦(四)-使用kubefedctl统一管理联邦集群](kubernetes%e9%9b%86%e7%be%a4%e8%81%94%e9%82%a6%e5%9b%9b-%e4%bd%bf%e7%94%a8kubefedctl%e7%bb%9f%e4%b8%80%e7%ae%a1%e7%90%86%e8%81%94%e9%82%a6%e9%9b%86%e7%be%a4)**
 
 * * *
 

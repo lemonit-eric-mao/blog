@@ -89,7 +89,7 @@ categories:
 
 * * *
 
-###### Web Ide也可以使用 **[转到WebIde安装](http://www.dev-share.top/2021/10/08/%e5%ae%89%e8%a3%85vs-code-web-ide/ "转到WebIde安装")**
+###### Web Ide也可以使用 **[转到WebIde安装](%e5%ae%89%e8%a3%85vs-code-web-ide "转到WebIde安装")**
 
 ![](images/nh_11.png)
 

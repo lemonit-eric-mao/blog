@@ -74,7 +74,7 @@ categories:
 - 接下来，一起逐步的尝试使用一下
     
 
-## [安装 MetalLB](http://www.dev-share.top/2020/08/14/%e4%bd%bf%e7%94%a8metallb%e6%9d%a5%e8%a7%a3%e5%86%b3k8s-service-loadbalancer%e9%97%ae%e9%a2%98/)
+## [安装 MetalLB](%e4%bd%bf%e7%94%a8metallb%e6%9d%a5%e8%a7%a3%e5%86%b3k8s-service-loadbalancer%e9%97%ae%e9%a2%98)
 
 ## [安装 contour gateway](https://projectcontour.io/getting-started/)
 

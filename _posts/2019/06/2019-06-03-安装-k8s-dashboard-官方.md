@@ -7,11 +7,11 @@ categories:
 
 * * *
 
-##### **[K8S dashboard 创建多用户并授予不同权限](http://www.dev-share.top/2020/04/20/k8s-dashboard-%E5%88%9B%E5%BB%BA%E5%A4%9A%E7%94%A8%E6%88%B7%E5%B9%B6%E6%8E%88%E4%BA%88%E4%B8%8D%E5%90%8C%E6%9D%83%E9%99%90/ "K8S dashboard 创建多用户并授予不同权限")**
+##### **[K8S dashboard 创建多用户并授予不同权限](k8s-dashboard-%E5%88%9B%E5%BB%BA%E5%A4%9A%E7%94%A8%E6%88%B7%E5%B9%B6%E6%8E%88%E4%BA%88%E4%B8%8D%E5%90%8C%E6%9D%83%E9%99%90 "K8S dashboard 创建多用户并授予不同权限")**
 
 ##### **[安装 Kuboard(国产)](https://kuboard.cn/install/install-dashboard.html#%E5%AE%89%E8%A3%85 "安装 Kuboard(国产)")**
 
-##### **[安装 K8S Dashboard 2.0](http://www.dev-share.top/2020/06/04/%E5%AE%89%E8%A3%85-k8s-dashboard-2-0/ "安装 K8S Dashboard 2.0")**
+##### **[安装 K8S Dashboard 2.0](%E5%AE%89%E8%A3%85-k8s-dashboard-2-0 "安装 K8S Dashboard 2.0")**
 
 * * *
 

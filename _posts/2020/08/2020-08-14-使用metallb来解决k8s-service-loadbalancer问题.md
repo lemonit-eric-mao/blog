@@ -31,7 +31,7 @@ categories:
 
 ## 使用 Helm 安装
 
-###### **[安装 Helm](http://www.dev-share.top/2020/07/16/helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8/ "安装 Helm")**
+###### **[安装 Helm](helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8 "安装 Helm")**
 
 ###### 添加Chart源
 
@@ -237,7 +237,7 @@ projectcontour   gateway.gateway.networking.k8s.io/contour      contour     192.
 
 ### 常见问题
 
-> 要解决如下问题，要先把**[ARP](http://www.dev-share.top/2023/03/30/%e7%90%86%e8%a7%a3arp%e4%bd%9c%e7%94%a8%e4%b8%8e%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86/)**搞清楚
+> 要解决如下问题，要先把**[ARP](%e7%90%86%e8%a7%a3arp%e4%bd%9c%e7%94%a8%e4%b8%8e%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86)**搞清楚
 
 * * *
 

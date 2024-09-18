@@ -7,9 +7,9 @@ categories:
 
 ##### **前置条件**
 
-###### **[安装gitlab-ce](http://www.dev-share.top/2017/11/18/docker-compose-%e5%ae%89%e8%a3%85-gitlab-ce/ "安装gitlab-ce")**
+###### **[安装gitlab-ce](docker-compose-%e5%ae%89%e8%a3%85-gitlab-ce "安装gitlab-ce")**
 
-###### **[安装ldap](http://www.dev-share.top/2021/11/04/docker-compose-%e5%ae%89%e8%a3%85-ldap/ "安装ldap")**
+###### **[安装ldap](docker-compose-%e5%ae%89%e8%a3%85-ldap "安装ldap")**
 
 ###### **思路**
 

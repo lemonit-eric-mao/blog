@@ -7,7 +7,7 @@ categories:
 
 [目前最新版](https://hub.docker.com/_/mariadb?tab=tags "目前最新版")
 
-[安装 docker-compose](http://www.dev-share.top/2019/06/12/%e5%ae%89%e8%a3%85-docker-compose/ "安装 docker-compose")
+[安装 docker-compose](%e5%ae%89%e8%a3%85-docker-compose "安装 docker-compose")
 
 * * *
 

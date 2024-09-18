@@ -58,7 +58,7 @@ docker exec es-head bash -c "sed -i 's/application\/x-www-form-urlencoded/applic
 
 下载地址：https://github.com/mobz/elasticsearch-head
 
-###### [安装node.js](http://www.dev-share.top/2017/11/16/node-js-%E5%AE%89%E8%A3%85/ "安装node.js")
+###### [安装node.js](node-js-%E5%AE%89%E8%A3%85 "安装node.js")
 
 ##### 下载/解压
 

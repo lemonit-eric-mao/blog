@@ -21,7 +21,7 @@ categories:
 
 * * *
 
-###### [升级内核](http://www.dev-share.top/2019/07/10/linux-%e7%b3%bb%e7%bb%9f%e5%86%85%e6%a0%b8%e5%8d%87%e7%ba%a7/ "升级内核")
+###### [升级内核](linux-%e7%b3%bb%e7%bb%9f%e5%86%85%e6%a0%b8%e5%8d%87%e7%ba%a7 "升级内核")
 
 * * *
 
@@ -36,7 +36,7 @@ ceph 有三种存储方式：
 
 * * *
 
-###### [安装 Docker-Compose](http://www.dev-share.top/2019/06/12/%e5%ae%89%e8%a3%85-docker-compose/ "安装 Docker-Compose")
+###### [安装 Docker-Compose](%e5%ae%89%e8%a3%85-docker-compose "安装 Docker-Compose")
 
 * * *
 
@@ -300,7 +300,7 @@ ID CLASS WEIGHT  TYPE NAME      STATUS REWEIGHT PRI-AFF
 
 * * *
 
-###### [使用 K8S 挂载](http://www.dev-share.top/2019/12/27/k8s-pv-pvc-ceph-%E5%85%B1%E4%BA%AB%E5%8D%B7/ "使用 K8S 挂载")
+###### [使用 K8S 挂载](k8s-pv-pvc-ceph-%E5%85%B1%E4%BA%AB%E5%8D%B7 "使用 K8S 挂载")
 
 ###### **`注意`：如果想使用 k8s pv 进行挂载，如下的操作就不需要在做了，k8s pv 配置好以后，pod 启动时会自动挂载**
 

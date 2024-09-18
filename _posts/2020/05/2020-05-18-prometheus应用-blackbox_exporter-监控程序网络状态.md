@@ -9,7 +9,7 @@ categories:
 
 ###### [gitlab](https://github.com/prometheus/blackbox_exporter "gitlab")
 
-###### [安装 docker-compose](http://www.dev-share.top/2019/06/12/%E5%AE%89%E8%A3%85-docker-compose/ "安装 docker-compose")
+###### [安装 docker-compose](%E5%AE%89%E8%A3%85-docker-compose "安装 docker-compose")
 
 * * *
 

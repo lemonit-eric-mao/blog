@@ -49,7 +49,7 @@ categories:
 
 * * *
 
-###### **[安装 go 环境](http://www.dev-share.top/2018/09/20/go-%e8%af%ad%e8%a8%80%e5%85%a5%e9%97%a8/ "安装 go 环境")**
+###### **[安装 go 环境](go-%e8%af%ad%e8%a8%80%e5%85%a5%e9%97%a8 "安装 go 环境")**
 
 * * *
 

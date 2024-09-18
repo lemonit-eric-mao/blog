@@ -5,7 +5,7 @@ categories:
   - "istio"
 ---
 
-#### 迁移过程使用 **[gitlab-runner ci/cd](http://www.dev-share.top/2019/07/10/gitlab-ci-%e6%8c%81%e7%bb%ad%e9%9b%86%e6%88%90-%e7%94%9f%e4%ba%a7%e6%a1%88%e4%be%8b/ "gitlab-runner ci/cd")** 自动化部署 SpringBoot 到 k8s集群
+#### 迁移过程使用 **[gitlab-runner ci/cd](gitlab-ci-%e6%8c%81%e7%bb%ad%e9%9b%86%e6%88%90-%e7%94%9f%e4%ba%a7%e6%a1%88%e4%be%8b "gitlab-runner ci/cd")** 自动化部署 SpringBoot 到 k8s集群
 
 * * *
 

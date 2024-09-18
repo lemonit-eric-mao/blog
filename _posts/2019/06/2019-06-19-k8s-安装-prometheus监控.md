@@ -450,7 +450,7 @@ prometheus   NodePort   10.109.43.64   <none>        80:30909/TCP   32m   app=pr
 
 ###### 接下来就是 将prometheus配置到 grafana中
 
-###### [配置Grafana](http://www.dev-share.top/2019/06/25/%E4%BD%BF%E7%94%A8-docker-compose-%E5%AE%89%E8%A3%85-prometheusalertmanagergrafana/ "配置Grafana")
+###### [配置Grafana](%E4%BD%BF%E7%94%A8-docker-compose-%E5%AE%89%E8%A3%85-prometheusalertmanagergrafana "配置Grafana")
 
 * * *
 

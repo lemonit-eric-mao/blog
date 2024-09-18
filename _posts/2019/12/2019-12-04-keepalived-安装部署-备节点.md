@@ -5,7 +5,7 @@ categories:
   - "keepalived"
 ---
 
-###### [主节点安装](http://www.dev-share.top/2019/12/03/keepalived-%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2-%E4%B8%BB%E8%8A%82%E7%82%B9/ "主节点安装")
+###### [主节点安装](keepalived-%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2-%E4%B8%BB%E8%8A%82%E7%82%B9 "主节点安装")
 
 ##### 环境
 

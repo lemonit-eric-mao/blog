@@ -12,7 +12,7 @@ categories:
 
 * * *
 
-##### [持续集成 生产案例](http://www.dev-share.top/2019/07/10/gitlab-ci-%e6%8c%81%e7%bb%ad%e9%9b%86%e6%88%90-%e7%94%9f%e4%ba%a7%e6%a1%88%e4%be%8b/ "持续集成 生产案例")
+##### [持续集成 生产案例](gitlab-ci-%e6%8c%81%e7%bb%ad%e9%9b%86%e6%88%90-%e7%94%9f%e4%ba%a7%e6%a1%88%e4%be%8b "持续集成 生产案例")
 
 * * *
 
@@ -140,7 +140,7 @@ Runner registered successfully. Feel free to start it, but if it's running alrea
 
 * * *
 
-###### **[GitLab CI/CD 配置 .gitlab-ci.yml](http://www.dev-share.top/2019/06/14/gitlab-ci-cd-%e9%85%8d%e7%bd%ae-gitlab-ci-yml/ "GitLab CI/CD 配置 .gitlab-ci.yml")**
+###### **[GitLab CI/CD 配置 .gitlab-ci.yml](gitlab-ci-cd-%e9%85%8d%e7%bd%ae-gitlab-ci-yml "GitLab CI/CD 配置 .gitlab-ci.yml")**
 
 * * *
 
@@ -165,7 +165,7 @@ gitlab-runner: Service is running!
 
 `此作业被卡住，因为没有任何该项目指定标签的 runner 在线` 这个原因就是在创建 .gitlab-ci.yml的时候没有给任务指定标签，或者指定的标签不存在而导致的
 
-###### [常见问题](http://www.dev-share.top/2019/07/17/gitlab-runner%e7%94%a8%e6%88%b7%e6%89%a7%e8%a1%8c-docker-compose-%e5%91%bd%e4%bb%a4%e6%97%b6%e5%bc%82%e5%b8%b8/ "常见问题")
+###### [常见问题](gitlab-runner%e7%94%a8%e6%88%b7%e6%89%a7%e8%a1%8c-docker-compose-%e5%91%bd%e4%bb%a4%e6%97%b6%e5%bc%82%e5%b8%b8 "常见问题")
 
 * * *
 

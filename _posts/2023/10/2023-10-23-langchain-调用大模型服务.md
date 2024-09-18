@@ -7,7 +7,7 @@ categories:
 
 ## 前置条件
 
-**[准备Chatglm2-6b](http://www.dev-share.top/2023/10/19/chatglm2-6b%e8%b0%83%e7%a0%94%e6%96%87%e6%a1%a3/ "准备Chatglm2-6b")**
+**[准备Chatglm2-6b](chatglm2-6b%e8%b0%83%e7%a0%94%e6%96%87%e6%a1%a3 "准备Chatglm2-6b")**
 
 # 安装LangChain
 

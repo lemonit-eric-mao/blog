@@ -8,9 +8,9 @@ categories:
 
 ##### 前提条件
 
-###### **[详解 Ingress](http://www.dev-share.top/2019/03/15/k8s-%e9%85%8d%e7%bd%ae-ingress%e5%ae%9a%e4%b9%89%e7%9a%84%e8%b7%af%e7%94%b1%e8%a7%84%e5%88%99%e9%9b%86/ "详解 Ingress")**
+###### **[详解 Ingress](k8s-%e9%85%8d%e7%bd%ae-ingress%e5%ae%9a%e4%b9%89%e7%9a%84%e8%b7%af%e7%94%b1%e8%a7%84%e5%88%99%e9%9b%86 "详解 Ingress")**
 
-###### **[安装 Helm](http://www.dev-share.top/2020/07/16/helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8/ "安装 Helm")**
+###### **[安装 Helm](helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8 "安装 Helm")**
 
 ###### **[官方安装 Kong Ingress Controller](https://github.com/Kong/kubernetes-ingress-controller#get-started "官方安装 Kong Ingress Controller")**
 

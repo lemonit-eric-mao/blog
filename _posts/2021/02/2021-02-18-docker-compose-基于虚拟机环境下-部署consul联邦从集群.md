@@ -5,7 +5,7 @@ categories:
   - "consul"
 ---
 
-###### **[单节点部署及说明](http://www.dev-share.top/2021/02/10/docker-compose-%e9%83%a8%e7%bd%b2-consul-%e5%8d%95%e8%8a%82%e7%82%b9/ "单节点部署及说明")**
+###### **[单节点部署及说明](docker-compose-%e9%83%a8%e7%bd%b2-consul-%e5%8d%95%e8%8a%82%e7%82%b9 "单节点部署及说明")**
 
 * * *
 
@@ -776,7 +776,7 @@ curl -sk https://localhost:8501/v1/catalog/service/mesh-gateway | jq ".[].Servic
 
 * * *
 
-###### **[测试](http://www.dev-share.top/2021/09/03/%e5%b0%86%e8%99%9a%e6%8b%9f%e6%9c%ba%e4%b8%ad%e5%ba%94%e7%94%a8%e7%a8%8b%e5%ba%8f%e5%8a%a0%e5%85%a5%e5%88%b0%e8%81%94%e9%82%a6%e6%9c%8d%e5%8a%a1%e7%bd%91%e6%a0%bc/ "测试")**
+###### **[测试](%e5%b0%86%e8%99%9a%e6%8b%9f%e6%9c%ba%e4%b8%ad%e5%ba%94%e7%94%a8%e7%a8%8b%e5%ba%8f%e5%8a%a0%e5%85%a5%e5%88%b0%e8%81%94%e9%82%a6%e6%9c%8d%e5%8a%a1%e7%bd%91%e6%a0%bc "测试")**
 
 * * *
 

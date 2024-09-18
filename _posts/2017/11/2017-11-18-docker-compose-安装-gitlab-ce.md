@@ -6,7 +6,7 @@ categories:
   - "git"
 ---
 
-###### **[安装 docker-compose](http://www.dev-share.top/2019/06/12/%e5%ae%89%e8%a3%85-docker-compose/ "安装 docker-compose")**
+###### **[安装 docker-compose](%e5%ae%89%e8%a3%85-docker-compose "安装 docker-compose")**
 
 ###### **[DockerHub](https://hub.docker.com/r/gitlab/gitlab-ce "DockerHub")**
 
@@ -118,7 +118,7 @@ ERIC
 
 * * *
 
-###### **[数据备份与恢复](http://www.dev-share.top/2019/03/06/gitlab-%e6%95%b0%e6%8d%ae%e5%a4%87%e4%bb%bd%e4%b8%8e%e6%81%a2%e5%a4%8d/ "数据备份与恢复")**
+###### **[数据备份与恢复](gitlab-%e6%95%b0%e6%8d%ae%e5%a4%87%e4%bb%bd%e4%b8%8e%e6%81%a2%e5%a4%8d "数据备份与恢复")**
 
 * * *
 

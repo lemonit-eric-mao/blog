@@ -76,7 +76,7 @@ cat /etc/fstab_bak | grep -v swap > /etc/fstab
 
 * * *
 
-##### **[containerd 常用命令](http://www.dev-share.top/2021/03/20/containerd-%e5%b8%b8%e7%94%a8%e5%91%bd%e4%bb%a4/ "containerd 常用命令")**
+##### **[containerd 常用命令](containerd-%e5%b8%b8%e7%94%a8%e5%91%bd%e4%bb%a4 "containerd 常用命令")**
 
 * * *
 

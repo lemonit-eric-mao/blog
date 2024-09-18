@@ -43,7 +43,7 @@ categories:
 
 * * *
 
-###### 1 **[搭建 NFS 服务器](http://www.dev-share.top/2019/12/18/nfs%e5%ae%9e%e7%8e%b0%e7%bd%91%e7%bb%9c%e5%85%b1%e4%ba%ab%e5%8d%b7/ "搭建 NFS 服务器")**
+###### 1 **[搭建 NFS 服务器](nfs%e5%ae%9e%e7%8e%b0%e7%bd%91%e7%bb%9c%e5%85%b1%e4%ba%ab%e5%8d%b7 "搭建 NFS 服务器")**
 
 * * *
 
@@ -258,7 +258,7 @@ eric
 
 ##### 测试
 
-**[构建 httpd 服务器镜像](http://www.dev-share.top/2019/12/12/k8s-%e4%bd%bf%e7%94%a8centos-7-%e9%95%9c%e5%83%8f%ef%bc%8c%e6%9e%84%e5%bb%bak8s%e7%bd%91%e7%bb%9c%e6%b5%8b%e8%af%95%e5%ae%b9%e5%99%a8/ "构建 httpd 服务器镜像")**
+**[构建 httpd 服务器镜像](k8s-%e4%bd%bf%e7%94%a8centos-7-%e9%95%9c%e5%83%8f%ef%bc%8c%e6%9e%84%e5%bb%bak8s%e7%bd%91%e7%bb%9c%e6%b5%8b%e8%af%95%e5%ae%b9%e5%99%a8 "构建 httpd 服务器镜像")**
 
 ###### 1 使用k8s部署httpd服务器，这里只修改 deploy 配置文件, 从PVC映射服务器配置文件
 

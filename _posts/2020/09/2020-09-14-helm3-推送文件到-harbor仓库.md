@@ -6,9 +6,9 @@ categories:
   - "k8s"
 ---
 
-###### **[安装 Helm3](http://www.dev-share.top/2020/07/16/helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8/ "安装 Helm3")**
+###### **[安装 Helm3](helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8 "安装 Helm3")**
 
-###### **[安装 Harbor](http://www.dev-share.top/2019/06/06/docker-compose-%e5%ae%89%e8%a3%85-goharbor/ "安装 Harbor")**
+###### **[安装 Harbor](docker-compose-%e5%ae%89%e8%a3%85-goharbor "安装 Harbor")**
 
 * * *
 

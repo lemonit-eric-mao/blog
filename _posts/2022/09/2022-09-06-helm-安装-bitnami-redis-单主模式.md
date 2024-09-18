@@ -8,7 +8,7 @@ categories:
 
 #### 前置资料
 
-###### **[安装 Helm](http://www.dev-share.top/2020/07/16/helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8/ "安装 Helm")**
+###### **[安装 Helm](helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8 "安装 Helm")**
 
 * * *
 
@@ -34,7 +34,7 @@ export REDIS_VERSION=17.1.3
 helm pull bitnami/redis --version $REDIS_VERSION
 ```
 
-| **[Redis](http://www.dev-share.top/2022/09/06/helm-%e5%ae%89%e8%a3%85-bitnami-redis/ "Redis")** | **[Redis 集群](http://www.dev-share.top/2020/07/13/helm-%e5%ae%89%e8%a3%85-bitnami-redis-%e9%9b%86%e7%be%a4/ "Redis 集群")** |
+| **[Redis](helm-%e5%ae%89%e8%a3%85-bitnami-redis "Redis")** | **[Redis 集群](helm-%e5%ae%89%e8%a3%85-bitnami-redis-%e9%9b%86%e7%be%a4 "Redis 集群")** |
 | :-: | :-: |
 | 支持多个数据库 | 仅支持一个数据库。如果你有一个大数据集更好 |
 | 单写点（单主） | 多个写入点（多个主控） |

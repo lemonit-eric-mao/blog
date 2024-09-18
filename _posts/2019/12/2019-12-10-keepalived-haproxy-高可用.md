@@ -7,7 +7,7 @@ categories:
 
 ##### 前置条件
 
-[KeepAlived 安装部署-主节点](http://www.dev-share.top/2019/12/03/keepalived-%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2-%E4%B8%BB%E8%8A%82%E7%82%B9/ "KeepAlived 安装部署-主节点") [KeepAlived 安装部署-备节点](http://www.dev-share.top/2019/12/04/keepalived-%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2-%E5%A4%87%E8%8A%82%E7%82%B9/ "KeepAlived 安装部署-备节点") [使用HAProxy 为TiDB-Server 做负载均衡](http://www.dev-share.top/2019/09/25/%E4%BD%BF%E7%94%A8-docker-compose-%E5%81%9A-tidb-server-%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1-haproxy/ "使用HAProxy 为TiDB-Server 做负载均衡")
+[KeepAlived 安装部署-主节点](keepalived-%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2-%E4%B8%BB%E8%8A%82%E7%82%B9 "KeepAlived 安装部署-主节点") [KeepAlived 安装部署-备节点](keepalived-%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2-%E5%A4%87%E8%8A%82%E7%82%B9 "KeepAlived 安装部署-备节点") [使用HAProxy 为TiDB-Server 做负载均衡](%E4%BD%BF%E7%94%A8-docker-compose-%E5%81%9A-tidb-server-%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1-haproxy "使用HAProxy 为TiDB-Server 做负载均衡")
 
 ##### 只需要添加一段对HAProxy的监控脚本即可
 

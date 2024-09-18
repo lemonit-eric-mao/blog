@@ -7,7 +7,7 @@ categories:
 
 ##### **[官方地址](https://github.com/bitnami/charts/tree/master/bitnami/mariadb "官方地址")**
 
-##### **[安装 Helm3](http://www.dev-share.top/2020/07/16/helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8/ "安装 Helm3")**
+##### **[安装 Helm3](helm-%e5%ae%89%e8%a3%85-%e4%bd%bf%e7%94%a8 "安装 Helm3")**
 
 ```ruby
 # 添加库
@@ -60,7 +60,7 @@ helm template mariadb ./mariadb-9.3.14.tgz --output-dir . \
 
 * * *
 
-##### **[安装客户端](http://www.dev-share.top/2019/08/01/centos-7-%e5%8f%aa%e5%ae%89%e8%a3%85%e5%ae%a2%e6%88%b7%e7%ab%af/ "安装客户端")**
+##### **[安装客户端](centos-7-%e5%8f%aa%e5%ae%89%e8%a3%85%e5%ae%a2%e6%88%b7%e7%ab%af "安装客户端")**
 
 * * *
 

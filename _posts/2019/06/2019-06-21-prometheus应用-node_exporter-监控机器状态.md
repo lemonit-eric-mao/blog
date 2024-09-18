@@ -5,7 +5,7 @@ categories:
   - "linux服务器"
 ---
 
-[安装 Prometheus](http://www.dev-share.top/2019/06/25/%e4%bd%bf%e7%94%a8-docker-compose-%e5%ae%89%e8%a3%85-prometheusalertmanagergrafana/ "安装 Prometheus")
+[安装 Prometheus](%e4%bd%bf%e7%94%a8-docker-compose-%e5%ae%89%e8%a3%85-prometheusalertmanagergrafana "安装 Prometheus")
 
 为了熟悉Prometheus使用插件的方式，我们重复上面的流程在添加一个 `node_exporter` 监控模块
 

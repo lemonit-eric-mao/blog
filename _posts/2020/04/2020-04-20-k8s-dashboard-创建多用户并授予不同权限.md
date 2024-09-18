@@ -7,7 +7,7 @@ categories:
 
 * * *
 
-##### **[安装 K8S Dashboard](http://www.dev-share.top/2019/06/03/%E5%AE%89%E8%A3%85-k8s-%E4%BB%AA%E8%A1%A8%E7%9B%98/ "安装 K8S Dashboard")**
+##### **[安装 K8S Dashboard](%E5%AE%89%E8%A3%85-k8s-%E4%BB%AA%E8%A1%A8%E7%9B%98 "安装 K8S Dashboard")**
 
 * * *
 
