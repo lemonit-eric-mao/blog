@@ -215,6 +215,7 @@ ERIC
 
 * * *
 
+<<<<<<< HEAD
 ###### [ElasticSearch 安装插件](elasticsearch-%E5%AE%89%E8%A3%85%E6%8F%92%E4%BB%B6 "ElasticSearch 安装插件")
 
 ###### [部署 ElasticSearch 集群](ansible-playbook-%E9%83%A8%E7%BD%B2-elasticsearch-%E9%9B%86%E7%BE%A4 "部署 ElasticSearch 集群")
@@ -224,6 +225,17 @@ ERIC
 ###### [安装 ElasticHD](centos-7-%E5%AE%89%E8%A3%85-elastichd "安装 ElasticHD")
 
 ###### [安装 kibana](centos-7-%E5%AE%89%E8%A3%85-kibana "安装 kibana")
+=======
+###### [ElasticSearch 安装插件](https://lemonit-eric-mao.github.io/blog/elasticsearch-%E5%AE%89%E8%A3%85%E6%8F%92%E4%BB%B6 "ElasticSearch 安装插件")
+
+###### [部署 ElasticSearch 集群](https://lemonit-eric-mao.github.io/blog/ansible-playbook-%E9%83%A8%E7%BD%B2-elasticsearch-%E9%9B%86%E7%BE%A4 "部署 ElasticSearch 集群")
+
+###### [安装 elasticsearch-head](https://lemonit-eric-mao.github.io/blog/centos-7-%E5%AE%89%E8%A3%85-elasticsearch-head "安装 elasticsearch-head")
+
+###### [安装 ElasticHD](https://lemonit-eric-mao.github.io/blog/centos-7-%E5%AE%89%E8%A3%85-elastichd "安装 ElasticHD")
+
+###### [安装 kibana](https://lemonit-eric-mao.github.io/blog/centos-7-%E5%AE%89%E8%A3%85-kibana "安装 kibana")
+>>>>>>> d7a855637cc3c55ad4475e4c22e15057b73790ee
 
 * * *
 
@@ -242,3 +254,29 @@ ERIC
 [ES官方 JavaAPI](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/7.3/java-rest-high-document-index.html "ES 官方 JavaAPI")
 
 [Elasticsearch7.X为什么移除类型(Type)](https://www.cnblogs.com/wangzhen3798/p/10765202.html "Elasticsearch7.X为什么移除类型(Type)")
+
+
+---
+
+---
+
+---
+
+## 使用docker-compose部署`单节点`
+``` yaml
+cat docker-compose.yaml
+version: '3.6'
+services:
+  es01:
+    image: elasticsearch:7.17.23
+    container_name: es01
+    environment:
+      - node.name=es01
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - ./data01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+
+```

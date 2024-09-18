@@ -525,3 +525,227 @@ if __name__ == "__main__":
             print(new_response, end="\n", flush=True)
 
 ```
+
+---
+
+---
+
+---
+
+# 封装成适用于在项目中使用的工具类
+``` python
+import inspect
+import json
+from types import GenericAlias
+from typing import get_origin, Annotated
+
+
+class FunctionCall:
+    def __init__(self):
+        # 获取调用 FunctionCall 的模块信息并赋值给 METHOD_PATH
+        self.METHOD_PATH = inspect.getmodule(inspect.stack()[1][0])
+        self._TOOL_DESCRIPTIONS = {}
+
+    # 定义一个装饰器函数，用于注册工具函数
+    def register_tool(self, func: callable):
+        # 获取工具函数的名称
+        tool_name = func.__name__
+        # 获取工具函数的文档字符串并去除首尾空白字符
+        tool_description = inspect.getdoc(func).strip()
+        # 获取工具函数的参数信息
+        python_params = inspect.signature(func).parameters
+        # 用于存储工具函数的参数信息的列表
+        tool_params = []
+        # 遍历工具函数的参数
+        for name, param in python_params.items():
+            # 跳过函数的关键字参数 'self' 和 'cls'
+            if name in ('self', 'cls'):
+                continue
+            # 获取参数的注释类型
+            annotation = param.annotation
+            # 检查参数的注释类型是否为空
+            if annotation is inspect.Parameter.empty:
+                # 如果为空，抛出类型错误，指示参数缺少类型注释
+                raise TypeError(f"参数 `{name}` 缺少类型注释")
+            # 检查参数的注释类型是否为 Annotated
+            if get_origin(annotation) != Annotated:
+                # 如果不是，抛出类型错误，指示参数的注释类型必须为 typing.Annotated
+                raise TypeError(f"`{name}` 的注释类型必须为 typing.Annotated")
+
+            # 获取参数的实际类型和元数据
+            typ, (description, required) = annotation.__origin__, annotation.__metadata__
+            # 将参数的实际类型转换为字符串，如果是泛型则使用GenericAlias生成别名
+            typ: str = str(typ) if isinstance(typ, GenericAlias) else typ.__name__
+            # 检查参数的描述是否为字符串
+            if not isinstance(description, str):
+                # 如果不是，抛出类型错误，指示参数的描述必须为字符串
+                raise TypeError(f"`{name}` 的描述必须为字符串")
+            # 检查参数的必需性是否为布尔值
+            if not isinstance(required, bool):
+                # 如果不是，抛出类型错误，指示参数的必需性必须为布尔值
+                raise TypeError(f"`{name}` 的必需性必须为布尔值")
+
+            # 将参数的信息添加到工具参数列表中
+            tool_params.append({
+                "name": name,
+                "description": description,
+                "type": typ,
+                "required": required
+            })
+        # 构建工具描述信息的字典
+        tool_def = {
+            "name": tool_name,
+            "description": tool_description,
+            "params": tool_params
+        }
+        # 将工具描述信息存储在全局字典中，以工具名称为键
+        self._TOOL_DESCRIPTIONS[tool_name] = tool_def
+
+        # 返回原始的工具函数
+        return func
+
+    # 获取工具方法列表
+    def get_tools(self) -> list:
+        tools_list = []
+        for tool_name, tool_info in self._TOOL_DESCRIPTIONS.items():
+            parameters = []
+            for param_info in tool_info["params"]:
+                parameters.append({
+                    "name": param_info["name"],
+                    "type": param_info["type"],
+                    "description": param_info["description"],
+                    "required": param_info["required"],  # 添加此行以包含参数的必需性信息
+                })
+
+            tool_data = {
+                "type": "function",
+                "function": {
+                    "name": tool_name,
+                    "description": tool_info["description"],
+                    "parameters": {
+                        "type": "object",
+                        "properties": {param["name"]: {"type": param["type"], "description": param["description"]} for param in parameters},
+                        "required": [param["name"] for param in parameters if param["required"]]
+                    }
+                }
+            }
+            tools_list.append(tool_data)
+        return tools_list
+
+    # 执行模型返回的工具方法
+    def exec_tools(self, tool_calls, history, clazz=None):
+        """
+        执行模型返回的工具方法。
+
+        Args:
+            tool_calls (list): 模型返回的工具方法列表。
+            history (list): 对话历史列表。
+            clazz (object): 类对象，如果注释的方法属于类内方法，就需要传入类对象。
+
+        Returns:
+            list: 更新后的对话历史列表。
+        """
+        # 根据返回的工具信息，动态执行工具并获取执行结果; 如果 tool_calls 为空就不执行
+        for tool_call in tool_calls or []:
+            function = tool_call.function
+
+            function_name = function.name
+            arguments = json.loads(function.arguments)
+
+            # 使用getattr动态获取函数
+            if clazz:
+                # 以类对象的方式执行
+                function = getattr(clazz, function_name, None)
+            else:
+                # 以独立函数的方式执行
+                function = getattr(self.METHOD_PATH, function_name, None)
+
+            # 动态执行函数
+            if function:
+                result = function(**arguments)
+                history.append({"role": "tool", "tool_call_id": tool_call.id, "content": str(result)})
+                # 
+                # 提示使用者：
+                # 使用 str() 转换的字符串
+                # 需要使用 ast.literal_eval() 才能将字符串转换回原来的列表
+                # 
+                # str_data = "[{'a':'1', 'b':'2', 'c':'3'}]"
+                # import ast
+                # result = ast.literal_eval(str_data)
+            else:
+                print(f"找不到方法 {self.METHOD_PATH}/{function_name}")
+
+        return history
+
+# @register_tool
+# def get_cpu_usage():
+#     """
+#     获取CPU使用情况。
+#
+#     Returns: 包含CPU使用率的字典。
+#     """
+#     import psutil
+#     return {"CPU使用率": psutil.cpu_percent(interval=1)}
+#
+#
+# @register_tool
+# def get_lunar_date(year: Annotated[int, "农历年份", True], month: Annotated[int, "农历月份", True], day: Annotated[int, "农历日", False]):
+#     """
+#     获取指定年份、月份和日期的农历日期
+#
+#     Args:
+#         year (int): 年份
+#         month (int): 月份
+#         day (int): 日
+#
+#     Returns:
+#         dict: 农历日期
+#     """
+#     from lunardate import LunarDate
+#     lunar_date = LunarDate.fromSolarDate(year, month, day)
+#     return {
+#         "year": lunar_date.year,
+#         "month": lunar_date.month,
+#         "day": lunar_date.day
+#     }
+
+
+# if __name__ == '__main__':
+#     from zhipuai import ZhipuAI
+#
+#     client = ZhipuAI(
+#         api_key="your_api_key"
+#     )
+#
+#     # Step 1: 准备，用户的问题
+#     system_info = {"role": "system", "content": "尽可能回答以下问题。您可以访问以下工具："}
+#     messages = {"role": "user", "content": "获取CPU使用情况"}
+#     history = [system_info, messages]
+#
+#     # Step 2: 告诉模型用户有哪些工具可以使用，用户的问题又是什么
+#     response = client.chat.completions.create(
+#         model="glm-3-turbo",
+#         components=get_tools(),
+#         messages=history,
+#         stream=False,
+#     )
+#
+#     # Step 3: 解析模型返回的JSON字符串
+#     assistant_content = response.choices[0].message
+#
+#     # Step 4: 获取工具方法列表
+#     tool_calls = assistant_content.tool_calls
+#
+#     # Step 5: 执行模型返回的工具方法
+#     new_messages = exec_tools(tool_calls, history)
+#
+#     # Step 6: 再次调用模型，将新的对话历史传递给模型
+#     second_response = client.chat.completions.create(
+#         model="glm-3-turbo",
+#         messages=new_messages,
+#         stream=False,
+#         temperature=0.1,
+#     )
+#     print(second_response.choices[0].message.content)
+
+```
