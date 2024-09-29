@@ -9,6 +9,7 @@ categories:
 
 ```javascript
 class ajax {
+    // 基础URL
     static baseURL = '';
 
     /**
@@ -19,20 +20,21 @@ class ajax {
      */
     static async request(url, options) {
         let response = await fetch(`${ajax.baseURL}${url}`, options);
-        return response.json();
+        return response; // 返回原始响应
     }
 
     /**
-     *
+     * GET 请求
      * @param url
      * @returns {Promise<*>}
      */
     static async get(url) {
-        return ajax.request(url, {});
+        let response = await ajax.request(url, {});
+        return response.json();
     }
 
     /**
-     *
+     * POST 请求
      * @param url
      * @param data
      * @returns {Promise<*>}
@@ -45,11 +47,12 @@ class ajax {
             },
             body: JSON.stringify(data),
         };
-        return ajax.request(url, options);
+        let response = await ajax.request(url, options);
+        return response.json();
     }
 
     /**
-     *
+     * PUT 请求
      * @param url
      * @param data
      * @returns {Promise<*>}
@@ -62,11 +65,12 @@ class ajax {
             },
             body: JSON.stringify(data),
         };
-        return ajax.request(url, options);
+        let response = await ajax.request(url, options);
+        return response.json();
     }
 
     /**
-     *
+     * DELETE 请求
      * @param url
      * @returns {Promise<*>}
      */
@@ -74,7 +78,41 @@ class ajax {
         let options = {
             method: 'DELETE',
         };
-        return ajax.request(url, options);
+        let response = await ajax.request(url, options);
+        return response.json();
+    }
+
+    /**
+     * 流式 POST 请求
+     * @param url
+     * @returns {Promise<*>}
+     */
+    static async postStream(url, data) {
+        let options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        };
+        const response = await ajax.request(url, options);
+        
+        // 处理流
+        const stream = response.body;
+        const reader = stream.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let result = '';
+
+        const readStream = async () => {
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                result += decoder.decode(value, { stream: true });
+            }
+            return result; // 返回完整的结果
+        };
+
+        return readStream(); // 返回读取流的 Promise
     }
 }
 
