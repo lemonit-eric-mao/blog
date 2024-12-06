@@ -2,6 +2,12 @@
 
 
 
+> 场景：
+>
+> 
+>
+> 
+>
 > 需求是构建一个**同义词扩展词典**，其中包含了类似`“普拉多”`和`“霸道SUV”`这样的`同义词`或`近义词`对，并希望利用这些信息来增强词嵌入模型的能力。
 
 ### 如何利用这个同义词扩展词典提升模型能力
@@ -234,3 +240,182 @@
 >### 总结
 >
 >虽然使用嵌入模型进行检索和使用 Rerank 模型进行优化排序的过程有一定的联系，但它们并不完全等价于“对称语义检索”和“非对称语义检索”。“对称”与“非对称”的核心差别在于查询和文档的处理方式是否相同。对于嵌入模型和 Rerank 模型的应用，这两个步骤的作用和目标是不同的，但它们的结合能实现更高效、更准确的检索效果。
+
+
+
+
+
+---
+
+
+
+# 微调BAAI/bge-m3模型
+
+
+
+> pip install sentence-transformers torch datasets
+
+
+
+#### train_bge_m3_model.py
+
+``` python
+# 安装必要的依赖
+!pip install sentence-transformers torch datasets
+
+# 导入相关库
+from sentence_transformers import SentenceTransformer, util
+from datasets import Dataset
+import torch
+from torch.utils.data import DataLoader
+from sentence_transformers import losses
+from sentence_transformers import SentencesDataset
+from torch.optim import AdamW
+
+# 加载BGE-M3或其他预训练模型
+model_name = "your-bge-m3-model-path"  # 替换为你使用的模型路径
+model = SentenceTransformer(model_name)  # 加载预训练模型
+
+# 准备训练数据
+# 数据格式：{'text1': 句子1, 'text2': 句子2, 'label': 标签（0或1）}
+train_data = [
+    {"text1": "普拉多对比车型使用手册", "text2": "霸道SUV对比车型使用手册", "label": 1},  # 相似
+    {"text1": "普拉多对比车型使用手册", "text2": "凯迪拉克SUV对比手册", "label": 0},  # 不相似
+    {"text1": "宝马X5对比车型手册", "text2": "奔驰GLS对比车型手册", "label": 1},  # 相似
+    # 更多数据...
+]
+
+# 将数据转化为 Dataset 格式
+train_dataset = Dataset.from_dict(train_data)
+
+# 计算句子嵌入并预测相似度
+def compute_embeddings(batch):
+    """
+    计算句子对的嵌入向量，并计算两段文本之间的余弦相似度
+    """
+    embeddings1 = model.encode(batch['text1'], convert_to_tensor=True, show_progress_bar=True)  # 编码第一个句子
+    embeddings2 = model.encode(batch['text2'], convert_to_tensor=True, show_progress_bar=True)  # 编码第二个句子
+    
+    # 计算两段文本之间的余弦相似度
+    similarities = util.pytorch_cos_sim(embeddings1, embeddings2)
+    
+    # 根据相似度阈值判断相似性（例如：相似度大于0.5认为是相似，反之为不相似）
+    predictions = [1 if sim > 0.5 else 0 for sim in similarities.diagonal().tolist()]
+    batch['predictions'] = predictions  # 保存预测结果
+    return batch
+
+# 将相似度计算函数应用到训练数据集
+train_dataset = train_dataset.map(compute_embeddings, batched=True)
+
+# 转换数据为 SentenceDataset 格式
+train_sentences = [(item['text1'], item['text2'], item['label']) for item in train_dataset]
+
+# 创建SentenceDataset，训练模型需要这个格式
+train_data = SentencesDataset(train_sentences, model)
+train_dataloader = DataLoader(train_data, shuffle=True, batch_size=16)  # 设置批次大小
+
+# 定义优化器和损失函数
+optimizer = AdamW(model.parameters(), lr=2e-5)  # 设置学习率
+
+# 定义训练损失函数，这里我们使用CosineSimilarityLoss
+loss_function = losses.CosineSimilarityLoss(model)
+
+# 训练模型
+def train(model, train_dataloader, optimizer, loss_function, epochs=3):
+    """
+    训练模型，微调模型以提高相似度计算精度
+    """
+    model.train()  # 将模型设置为训练模式
+    for epoch in range(epochs):
+        total_loss = 0
+        for batch in train_dataloader:
+            optimizer.zero_grad()  # 清空梯度
+            sentence1, sentence2, labels = batch  # 提取句子对和标签
+            labels = torch.tensor(labels).to(torch.float32)  # 将标签转为浮点数类型
+
+            # 计算模型输出并获取损失
+            loss = loss_function(sentence1, sentence2, labels)
+            total_loss += loss.item()  # 累计损失
+
+            # 反向传播并更新参数
+            loss.backward()
+            optimizer.step()
+
+        print(f"Epoch {epoch + 1}, Loss: {total_loss / len(train_dataloader)}")  # 打印每轮的平均损失
+
+# 训练模型
+train(model, train_dataloader, optimizer, loss_function)
+
+# 保存微调后的模型
+model_save_path = "fine_tuned_bge_m3_model"  # 保存的路径
+model.save(model_save_path)
+print(f"模型已保存到: {model_save_path}")
+
+```
+
+
+
+#### evaluate_bge_m3_model.py
+
+``` python
+# 安装必要的依赖（如果还没有安装）
+!pip install sentence-transformers torch datasets
+
+# 导入相关库
+from sentence_transformers import SentenceTransformer, util
+from datasets import Dataset
+import torch
+from sklearn.metrics import accuracy_score, classification_report
+
+# 加载训练好的BGE-M3或其他预训练模型
+model_name = "your-bge-m3-model-path"  # 你的训练好的模型路径
+model = SentenceTransformer(model_name)  # 加载模型
+
+# 准备评估数据（评估数据与训练数据不同）
+# 假设测试数据是以下格式
+# 格式：{'text1': 句子1, 'text2': 句子2, 'label': 标签（0或1）}
+eval_data = [
+    {"text1": "普拉多对比车型使用手册", "text2": "霸道SUV对比车型使用手册", "label": 1},  # 相似
+    {"text1": "普拉多对比车型使用手册", "text2": "凯迪拉克SUV对比手册", "label": 0},  # 不相似
+    {"text1": "宝马X5对比车型手册", "text2": "奔驰GLS对比车型手册", "label": 1},  # 相似
+    # 更多数据...
+]
+
+# 将数据转化为 Dataset 格式
+eval_dataset = Dataset.from_dict(eval_data)
+
+# 计算句子嵌入并预测相似度
+def compute_predictions(batch):
+    """
+    计算句子对的嵌入并预测相似度
+    """
+    # 编码句子对
+    embeddings1 = model.encode(batch['text1'], convert_to_tensor=True, show_progress_bar=True)
+    embeddings2 = model.encode(batch['text2'], convert_to_tensor=True, show_progress_bar=True)
+    
+    # 计算余弦相似度
+    similarities = util.pytorch_cos_sim(embeddings1, embeddings2)
+    
+    # 根据相似度阈值判断相似性（例如：相似度大于0.5认为是相似，反之为不相似）
+    predictions = [1 if sim > 0.5 else 0 for sim in similarities.diagonal().tolist()]
+    batch['predictions'] = predictions  # 保存预测结果
+    return batch
+
+# 计算预测结果
+eval_dataset = eval_dataset.map(compute_predictions, batched=True)
+
+# 获取真实标签和预测结果
+y_true = eval_dataset['label']
+y_pred = eval_dataset['predictions']
+
+# 计算准确率和分类报告
+accuracy = accuracy_score(y_true, y_pred)
+report = classification_report(y_true, y_pred, target_names=["不相似", "相似"])
+
+# 输出评估结果
+print(f"准确率: {accuracy}")
+print("分类报告:")
+print(report)
+
+```
+
