@@ -13,23 +13,35 @@ categories:
 
 ###### 官网下载地址(较慢)
 
-```ruby
+``` bash
+# 1.x
 curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+# 2.x
+curl -L "https://github.com/docker/compose/releases/download/v2.32.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
 ```
 
 ###### 使用自己的七牛云
 
-```rby
-# 下载V1
+``` bash
+# 下载 V1
 curl http://qiniu.dev-share.top/docker-compose-1.26.2-Linux-x86_64 -o /usr/local/bin/docker-compose && chmod -R 777 /usr/local/bin/docker-compose
 
-# 下载V2
+# 下载 V2
 curl http://qiniu.dev-share.top/docker-compose-2.23.3-linux-x86_64 -o /usr/local/bin/docker-compose && chmod -R 777 /usr/local/bin/docker-compose
 ```
 
 ##### 常用命令
 
-```ruby
+``` bash
+#  V2 版本支持指定服务名 down
+
+docker-compose --profile frontend down
+
+```
+
+``` bash
 # 启动容器
 [root@k8s-master ~]# docker-compose up
 # 后台启动容器
