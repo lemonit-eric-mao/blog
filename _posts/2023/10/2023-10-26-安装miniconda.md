@@ -21,16 +21,18 @@ categories:
 - 或 使用七牛云下载
 - ```bash
     ## 使用七牛云下载
-    mkdir -p ~/miniconda3
-    wget http://qiniu.dev-share.top/file/Miniconda3-py311_23.9.0-0-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
-    bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+    ### 安装到指定目录
+    mkdir -p /data/miniconda3
+    wget http://qiniu.dev-share.top/file/Miniconda3-py311_23.9.0-0-Linux-x86_64.sh -O /data/miniconda3/miniconda.sh
+    bash /data/miniconda3/miniconda.sh -b -u -p /data/miniconda3
+    rm -rf /data/miniconda3/miniconda.sh
     ```
     
     安装后，初始化新安装的 Miniconda。以下命令针对 bash 和 zsh shell 进行初始化：
     
 - ```bash
-    ~/miniconda3/bin/conda init bash
-    ~/miniconda3/bin/conda init zsh
+    /data/miniconda3/bin/conda init bash
+    /data/miniconda3/bin/conda init zsh
     ```
     
 - **`重启终端`**
