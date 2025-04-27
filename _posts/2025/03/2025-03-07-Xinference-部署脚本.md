@@ -1,6 +1,6 @@
 ---
 title: "Xinference-部署脚本"
-date: "2025-01-08"
+date: "2025-03-07"
 categories: 
   - "Xinference"
 ---
