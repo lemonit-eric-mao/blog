@@ -18,7 +18,7 @@ categories:
 curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 
 # 2.x
-curl -L "https://github.com/docker/compose/releases/download/v2.32.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+curl -L "https://github.com/docker/compose/releases/download/v2.39.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 
 ```
 
@@ -29,7 +29,7 @@ curl -L "https://github.com/docker/compose/releases/download/v2.32.2/docker-comp
 curl http://qiniu.dev-share.top/docker-compose-1.26.2-Linux-x86_64 -o /usr/local/bin/docker-compose && chmod -R 777 /usr/local/bin/docker-compose
 
 # 下载 V2
-curl http://qiniu.dev-share.top/docker-compose-2.23.3-linux-x86_64 -o /usr/local/bin/docker-compose && chmod -R 777 /usr/local/bin/docker-compose
+curl http://qiniu.dev-share.top/docker-compose-2.39.3-linux-x86_64 -o /usr/local/bin/docker-compose && chmod -R 777 /usr/local/bin/docker-compose
 ```
 
 ##### 常用命令
