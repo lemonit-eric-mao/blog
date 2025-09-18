@@ -23,7 +23,7 @@ categories:
     ## 使用七牛云下载
     ### 安装到指定目录
     mkdir -p /data/miniconda3
-    wget http://qiniu.dev-share.top/file/Miniconda3-py311_23.9.0-0-Linux-x86_64.sh -O /data/miniconda3/miniconda.sh
+    wget http://qiniu.dev-share.top/file/Miniconda3-py313_25.7.0-2-Linux-x86_64.sh -O /data/miniconda3/miniconda.sh
     bash /data/miniconda3/miniconda.sh -b -u -p /data/miniconda3
     rm -rf /data/miniconda3/miniconda.sh
     ```
