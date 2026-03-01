@@ -105,20 +105,6 @@ fi
 
 * * *
 
-##### 添加定时任务，每分钟执行一次
-
-```bash
-crontab -e
-
-*/1 * * * * /root/secure_ssh.sh
-```
-
-* * *
-
-* * *
-
-* * *
-
 # 适用于：openEuler 22.03 SP4 系统
 
 ###### 创建脚本文件 `vim /root/secure_ssh.sh`
@@ -127,104 +113,94 @@ crontab -e
 #!/bin/bash
 
 # --- 配置区 ---
-SET_NAME="ssh_blacklist"       # ipset 集合名称
-BLOCK_DAYS=30                  # 封禁天数
-FAILED_THRESHOLD=3             # 失败次数阈值
-LOG_FILE="/var/log/secure"     # 日志路径
-WHITELIST_FILE="/root/ssh_whitelist.txt"
-LOG_RECORD="/root/ssh_block.log"
-DB_FILE="/root/ssh_block_db.txt" # 存储 IP 和 时间戳，用于过期清理
+SET_NAME="blackhole"
+TABLE_NAME="filter_ssh"
+BLOCK_TIMEOUT="30d"        # 封禁时间：30天
+FAILED_THRESHOLD=3         # 失败次数阈值
+LOG_FILE="/var/log/secure"
 
-NOW=$(date +%s)
-
-# 1. 环境初始化：检查 ipset 是否安装并创建集合
-if ! command -v ipset &>/dev/null; then
-    echo "正在安装 ipset..."
-    dnf install ipset -y &>/dev/null
+# --- 1. 内核环境自动初始化 ---
+# 检查表是否存在，不存在则创建全套拦截体系
+if ! nft list table inet $TABLE_NAME &>/dev/null; then
+    echo "正在初始化内核级防护框架..."
+    # 创建表
+    nft add table inet $TABLE_NAME
+    # 创建集合（带自动过期功能）
+    nft add set inet $TABLE_NAME $SET_NAME { type ipv4_addr\; flags timeout\; }
+    # 创建输入链，优先级设为 -10 (在 firewalld 之前拦截)
+    nft add chain inet $TABLE_NAME input { type filter hook input priority -10\; policy accept\; }
+    # 添加拦截规则
+    nft add rule inet $TABLE_NAME input ip saddr @$SET_NAME counter drop
+    echo "初始化完成。"
 fi
 
-# 创建 ipset 集合（如果不存在），timeout 0 表示由脚本手动控制清理
-ipset list $SET_NAME &>/dev/null
-if [ $? -ne 0 ]; then
-    ipset create $SET_NAME hash:ip hashsize 4096 maxelem 65536
-    # 将 ipset 关联到 firewalld 的 drop 区域
-    firewall-cmd --permanent --zone=drop --add-source=ipset:$SET_NAME
-    firewall-cmd --reload &>/dev/null
-fi
+# --- 2. 提取白名单 ---
+# 自动获取当前登录 IP，防止把自己封了
+CURRENT_IP=$(who am i | awk '{print $NF}' | sed 's/[()]//g' | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b")
+# 你也可以在这里手动添加固定白名单，例如 WHITELIST="1.1.1.1 2.2.2.2"
+WHITELIST="127.0.0.1 $CURRENT_IP"
 
-# 2. 读取白名单
-WHITELIST=()
-if [ -f "$WHITELIST_FILE" ]; then
-    while read -r line; do
-        [[ "$line" =~ ^#.*$ || -z "$line" ]] && continue
-        WHITELIST+=("$line")
-    done < "$WHITELIST_FILE"
-fi
-
-# 自动加入当前登录 IP (防止误封自己)
-CURRENT_IP=$(who am i | awk '{print $NF}' | sed 's/[()]//g')
-if [[ $CURRENT_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    WHITELIST+=("$CURRENT_IP")
-fi
-
-# 3. 提取失败 IP
-# 兼容 "Failed password" 和 "authentication failure" 两种日志格式
+# --- 3. 扫描日志并执行封禁 ---
+echo "正在扫描攻击源..."
 BAD_IPS=$(grep -E "Failed password|authentication failure" "$LOG_FILE" \
     | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" \
     | sort | uniq -c \
     | awk -v t=$FAILED_THRESHOLD '$1>=t {print $2}')
 
-# 4. 白名单判断函数 (支持网段)
-is_whitelisted() {
-    local ip=$1
-    for wip in "${WHITELIST[@]}"; do
-        if [[ "$wip" == */* ]]; then
-            # 如果是网段，使用 ipcalc 验证
-            if command -v ipcalc &>/dev/null; then
-                ipcalc -c "$ip" "$wip" &>/dev/null && return 0
-            fi
-        else
-            [[ "$ip" == "$wip" ]] && return 0
-        fi
-    done
-    return 1
-}
-
-# 5. 执行封禁逻辑
 for ip in $BAD_IPS; do
-    is_whitelisted "$ip" && continue
+    # 白名单校验
+    if [[ $WHITELIST =~ $ip ]]; then
+        continue
+    fi
 
-    # 检查 ipset 中是否已存在
-    ipset test $SET_NAME "$ip" &>/dev/null
-    if [ $? -ne 0 ]; then
-        ipset add $SET_NAME "$ip"
-        # 记录到数据库文件供过期清理
-        echo "$ip $NOW" >> "$DB_FILE"
-        echo "$(date '+%Y-%m-%d %H:%M:%S') Blocked $ip" >> "$LOG_RECORD"
+    # 尝试将 IP 加入内核黑名单
+    # 如果 IP 已存在，nft 会报错但没关系，我们重定向掉
+    nft add element inet $TABLE_NAME $SET_NAME { $ip timeout $BLOCK_TIMEOUT } 2>/dev/null
+    
+    if [ $? -eq 0 ]; then
+        echo "[$(date)] 成功封禁攻击者: $ip，有效期 $BLOCK_TIMEOUT" >> /var/log/ssh_shield.log
     fi
 done
 
-# 6. 过期清理逻辑
-if [ -f "$DB_FILE" ]; then
-    TMP_FILE=$(mktemp)
-    while read -r ip timestamp; do
-        AGE=$(( (NOW - timestamp) / 86400 ))
-        if [ "$AGE" -ge "$BLOCK_DAYS" ]; then
-            ipset del $SET_NAME "$ip" &>/dev/null
-            echo "$(date '+%Y-%m-%d %H:%M:%S') Unblocked $ip (Expired)" >> "$LOG_RECORD"
-        else
-            echo "$ip $timestamp" >> "$TMP_FILE"
-        fi
-    done < "$DB_FILE"
-    mv "$TMP_FILE" "$DB_FILE"
-fi
-
-exit 0
+# --- 4. 统计信息 ---
+COUNT=$(nft list set inet $TABLE_NAME $SET_NAME | grep -c "timeout")
+echo "当前内核黑名单中共有 $COUNT 个活跃 IP。"
 ```
 
-##### 查看当前封禁列表：
+######
 ``` bash
-ipset list ssh_blacklist
+# 将当前的内核规则导出为配置文件
+nft list ruleset > /etc/nftables/ssh_shield.nft
+
+# 修改 nftables 主配置文件，让它开机加载这个 shield 文件
+# 如果文件不存在，可以直接创建
+echo 'include "/etc/nftables/ssh_shield.nft"' > /etc/sysconfig/nftables.conf
+
+# 设置服务自启动
+systemctl enable nftables
+```
+
+###### 查看当前封禁列表：
+``` bash
+# 1. 先将命令别名化
+alias banlist='nft list set inet filter_ssh blackhole'
+
+# 2. 查看黑名单 IP
+banlist
+```
+
+* * *
+
+* * *
+
+* * *
+
+##### 添加定时任务，每分钟执行一次
+
+```bash
+crontab -e
+
+*/1 * * * * /root/secure_ssh.sh
 ```
 
 * * *
