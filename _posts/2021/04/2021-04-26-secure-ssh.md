@@ -105,9 +105,82 @@ fi
 
 * * *
 
+# 适用于：openEuler 22.03 SP4 系统
+
+###### 创建脚本文件 `vim /root/secure_ssh.sh`
+
+```bash
+#!/bin/bash
+
+### ===== 基本配置 =====
+LOG_FILE="/var/log/secure"
+FAILED_THRESHOLD=5
+BLOCK_DAYS=30
+DROP_ZONE="drop"
+DB_FILE="/root/ssh_block_db.txt"
+LOG_RECORD="/root/ssh_block.log"
+
+# 白名单（永不封禁）
+WHITELIST=("127.0.0.1" "你的公网IP")
+
+### ===== 自动检测当前登录IP加入白名单 =====
+CURRENT_IP=$(who | awk '{print $5}' | sed 's/[()]//g')
+WHITELIST+=("$CURRENT_IP")
+
+### ===== 获取暴力破解IP =====
+BAD_IPS=$(grep "Failed password" $LOG_FILE \
+    | awk '{for(i=1;i<=NF;i++) if($i=="from") print $(i+1)}' \
+    | sort | uniq -c \
+    | awk -v t=$FAILED_THRESHOLD '$1>=t {print $2}')
+
+NOW=$(date +%s)
+
+for ip in $BAD_IPS
+do
+    # 跳过白名单
+    if [[ " ${WHITELIST[@]} " =~ " ${ip} " ]]; then
+        continue
+    fi
+
+    # 是否已存在
+    firewall-cmd --zone=$DROP_ZONE --query-source=$ip &>/dev/null
+    if [ $? -ne 0 ]; then
+        firewall-cmd --permanent --zone=$DROP_ZONE --add-source=$ip
+        echo "$ip $NOW" >> $DB_FILE
+        echo "$(date) Blocked $ip" >> $LOG_RECORD
+    fi
+done
+
+### ===== 清理过期IP =====
+if [ -f $DB_FILE ]; then
+    TMP_FILE="/tmp/ssh_block_tmp.txt"
+    > $TMP_FILE
+    while read ip timestamp
+    do
+        AGE=$(( (NOW - timestamp) / 86400 ))
+        if [ $AGE -ge $BLOCK_DAYS ]; then
+            firewall-cmd --permanent --zone=$DROP_ZONE --remove-source=$ip &>/dev/null
+            echo "$(date) Unblocked $ip" >> $LOG_RECORD
+        else
+            echo "$ip $timestamp" >> $TMP_FILE
+        fi
+    done < $DB_FILE
+    mv $TMP_FILE $DB_FILE
+fi
+
+firewall-cmd --reload &>/dev/null
+
+```
+
+* * *
+
+* * *
+
+* * *
+
 ##### 添加定时任务，每分钟执行一次
 
-```ruby
+```bash
 crontab -e
 
 */1 * * * * /root/secure_ssh.sh
