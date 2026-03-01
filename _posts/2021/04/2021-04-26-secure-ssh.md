@@ -105,6 +105,20 @@ fi
 
 * * *
 
+##### 添加定时任务，每分钟执行一次
+
+```bash
+crontab -e
+
+*/1 * * * * /root/secure_ssh.sh
+```
+
+* * *
+
+* * *
+
+* * *
+
 # 适用于：openEuler 22.03 SP4 系统
 
 ###### 创建脚本文件 `vim /root/secure_ssh.sh`
@@ -208,18 +222,9 @@ fi
 exit 0
 ```
 
-* * *
-
-* * *
-
-* * *
-
-##### 添加定时任务，每分钟执行一次
-
-```bash
-crontab -e
-
-*/1 * * * * /root/secure_ssh.sh
+##### 查看当前封禁列表：
+``` bash
+ipset list ssh_blacklist
 ```
 
 * * *
