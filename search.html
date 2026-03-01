@@ -7,96 +7,137 @@ layout: default
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ site.title }} - 搜索</title>
+    <title>{{ site.title }} - 全文搜索</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
+        body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { width: 90%; max-width: 800px; margin: 0 auto; padding: 20px; }
+        
+        /* 搜索框样式 */
+        .search-header { margin-bottom: 30px; text-align: center; }
+        #search-input {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            outline: none;
+            transition: border-color 0.3s;
         }
+        #search-input:focus { border-color: #007bff; }
 
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-        }
+        /* 状态提示 */
+        #search-status { font-size: 14px; color: #888; margin: 10px 0; min-height: 20px; }
 
-        .search-box {
-            margin-top: 20px;
+        /* 结果列表 */
+        .search-results { list-style: none; padding: 0; }
+        .result-item {
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+            animation: fadeIn 0.3s ease-in;
         }
+        .result-title { font-size: 20px; margin: 0 0 10px 0; }
+        .result-title a { color: #007bff; text-decoration: none; }
+        .result-meta { font-size: 13px; color: #999; margin-bottom: 10px; }
+        .result-excerpt { font-size: 14px; color: #666; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        /* 高亮关键词 */
+        .highlight { background-color: yellow; font-weight: bold; }
 
-        .search-results {
-            list-style: none;
-            padding: 0;
-        }
-
-        .search-results li {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .search-results li:last-child {
-            border-bottom: none;
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
+
 <main class="container">
-    <section>
-        <h3>搜索</h3>
-        <div class="search-box">
-            <input type="text" id="search-input" placeholder="输入关键字进行自动搜索" oninput="delaySearch()">
-        </div>
-        <ul id="search-results" class="search-results"></ul>
+    <section class="search-header">
+        <h1>搜索文章</h1>
+        <input type="text" id="search-input" placeholder="支持搜索标题或正文内容..." disabled>
+        <div id="search-status">正在初始化搜索索引，请稍候...</div>
     </section>
+
+    <ul id="search-results" class="search-results"></ul>
 </main>
 
 <script>
-    let db;
-    let request = indexedDB.open('blogDB', 1);
+    let searchData = [];
+    const searchInput = document.getElementById('search-input');
+    const searchStatus = document.getElementById('search-status');
+    const resultsList = document.getElementById('search-results');
 
-    request.onerror = function (event) {
-        console.error('IndexedDB error:', event.target.errorCode);
-    };
+    // 1. 获取并加载 search.json
+    // 使用 relative_url 确保在 GitHub Pages 的二级目录下也能正确访问
+    fetch('{{ "/search.json" | relative_url }}')
+        .then(response => {
+            if (!response.ok) throw new Error('无法加载搜索索引');
+            return response.json();
+        })
+        .then(data => {
+            searchData = data;
+            searchInput.disabled = false;
+            searchInput.placeholder = "输入关键字搜索（标题、正文）";
+            searchStatus.innerText = `已准备就绪，共索引 ${data.length} 篇文章`;
+        })
+        .catch(err => {
+            console.error(err);
+            searchStatus.innerText = "搜索索引加载失败，请刷新重试。";
+        });
 
-    request.onsuccess = function (event) {
-        db = event.target.result;
-        console.log('IndexedDB opened successfully');
-    };
+    // 2. 搜索逻辑（带防抖，防止频繁触发）
+    let timeout = null;
+    searchInput.addEventListener('input', () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(executeSearch, 300);
+    });
 
-    request.onupgradeneeded = function (event) {
-        db = event.target.result;
-        let objectStore = db.createObjectStore('titles', {keyPath: 'id', autoIncrement: true});
-        objectStore.createIndex('title', 'title', {unique: false});
-        objectStore.createIndex('url', 'url', {unique: false});
-    };
+    function executeSearch() {
+        const query = searchInput.value.trim().toLowerCase();
+        resultsList.innerHTML = '';
+        
+        if (query.length < 1) {
+            searchStatus.innerText = `已准备就绪，共索引 ${searchData.length} 篇文章`;
+            return;
+        }
 
-    let searchTimeout;
+        const filtered = searchData.filter(item => {
+            return item.title.toLowerCase().includes(query) || 
+                   item.content.toLowerCase().includes(query);
+        });
 
-    function delaySearch() {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(search, 500); // 等待1秒后执行搜索
+        searchStatus.innerText = `找到 ${filtered.length} 条相关结果`;
+
+        if (filtered.length > 0) {
+            filtered.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'result-item';
+                
+                // 简单的关键词高亮（可选）
+                const displayTitle = item.title.replace(new RegExp(query, 'gi'), match => `<span class="highlight">${match}</span>`);
+                
+                li.innerHTML = `
+                    <h3 class="result-title"><a href="${item.url}">${displayTitle}</a></h3>
+                    <div class="result-meta">发布日期：${item.date}</div>
+                    <div class="result-excerpt">${truncateContent(item.content, query)}</div>
+                `;
+                resultsList.appendChild(li);
+            });
+        } else {
+            resultsList.innerHTML = '<p style="text-align:center; color:#999;">没有找到匹配的内容</p>';
+        }
     }
 
-    function search() {
-        let searchInput = document.getElementById('search-input').value.trim().toLowerCase();
-        let transaction = db.transaction(['titles'], 'readonly');
-        let objectStore = transaction.objectStore('titles');
-        let resultsList = document.getElementById('search-results');
-        resultsList.innerHTML = '';
-
-        objectStore.openCursor().onsuccess = function (event) {
-            let cursor = event.target.result;
-            if (cursor) {
-                if (cursor.value.title.toLowerCase().includes(searchInput)) {
-                    let li = document.createElement('li');
-                    li.innerHTML = `<a href="${cursor.value.url}" target="_blank">${cursor.value.title}</a>`;
-                    resultsList.appendChild(li);
-                }
-                cursor.continue();
-            }
-        };
+    // 3. 辅助函数：截取包含关键词的正文片段
+    function truncateContent(content, query) {
+        const index = content.toLowerCase().indexOf(query);
+        if (index === -1) return content.substring(0, 150) + '...';
+        
+        const start = Math.max(0, index - 50);
+        const end = Math.min(content.length, index + 100);
+        let excerpt = content.substring(start, end);
+        
+        // 高亮摘要里的关键词
+        excerpt = excerpt.replace(new RegExp(query, 'gi'), match => `<span class="highlight">${match}</span>`);
+        
+        return (start > 0 ? '...' : '') + excerpt + (end < content.length ? '...' : '');
     }
 </script>
 
