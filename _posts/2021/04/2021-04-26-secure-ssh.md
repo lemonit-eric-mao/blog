@@ -112,64 +112,100 @@ fi
 ```bash
 #!/bin/bash
 
-### ===== 基本配置 =====
-LOG_FILE="/var/log/secure"
-FAILED_THRESHOLD=5
-BLOCK_DAYS=30
-DROP_ZONE="drop"
-DB_FILE="/root/ssh_block_db.txt"
+# --- 配置区 ---
+SET_NAME="ssh_blacklist"       # ipset 集合名称
+BLOCK_DAYS=30                  # 封禁天数
+FAILED_THRESHOLD=3             # 失败次数阈值
+LOG_FILE="/var/log/secure"     # 日志路径
+WHITELIST_FILE="/root/ssh_whitelist.txt"
 LOG_RECORD="/root/ssh_block.log"
-
-# 白名单（永不封禁）
-WHITELIST=("127.0.0.1" "你的公网IP")
-
-### ===== 自动检测当前登录IP加入白名单 =====
-CURRENT_IP=$(who | awk '{print $5}' | sed 's/[()]//g')
-WHITELIST+=("$CURRENT_IP")
-
-### ===== 获取暴力破解IP =====
-BAD_IPS=$(grep "Failed password" $LOG_FILE \
-    | awk '{for(i=1;i<=NF;i++) if($i=="from") print $(i+1)}' \
-    | sort | uniq -c \
-    | awk -v t=$FAILED_THRESHOLD '$1>=t {print $2}')
+DB_FILE="/root/ssh_block_db.txt" # 存储 IP 和 时间戳，用于过期清理
 
 NOW=$(date +%s)
 
-for ip in $BAD_IPS
-do
-    # 跳过白名单
-    if [[ " ${WHITELIST[@]} " =~ " ${ip} " ]]; then
-        continue
-    fi
+# 1. 环境初始化：检查 ipset 是否安装并创建集合
+if ! command -v ipset &>/dev/null; then
+    echo "正在安装 ipset..."
+    dnf install ipset -y &>/dev/null
+fi
 
-    # 是否已存在
-    firewall-cmd --zone=$DROP_ZONE --query-source=$ip &>/dev/null
+# 创建 ipset 集合（如果不存在），timeout 0 表示由脚本手动控制清理
+ipset list $SET_NAME &>/dev/null
+if [ $? -ne 0 ]; then
+    ipset create $SET_NAME hash:ip hashsize 4096 maxelem 65536
+    # 将 ipset 关联到 firewalld 的 drop 区域
+    firewall-cmd --permanent --zone=drop --add-source=ipset:$SET_NAME
+    firewall-cmd --reload &>/dev/null
+fi
+
+# 2. 读取白名单
+WHITELIST=()
+if [ -f "$WHITELIST_FILE" ]; then
+    while read -r line; do
+        [[ "$line" =~ ^#.*$ || -z "$line" ]] && continue
+        WHITELIST+=("$line")
+    done < "$WHITELIST_FILE"
+fi
+
+# 自动加入当前登录 IP (防止误封自己)
+CURRENT_IP=$(who am i | awk '{print $NF}' | sed 's/[()]//g')
+if [[ $CURRENT_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    WHITELIST+=("$CURRENT_IP")
+fi
+
+# 3. 提取失败 IP
+# 兼容 "Failed password" 和 "authentication failure" 两种日志格式
+BAD_IPS=$(grep -E "Failed password|authentication failure" "$LOG_FILE" \
+    | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" \
+    | sort | uniq -c \
+    | awk -v t=$FAILED_THRESHOLD '$1>=t {print $2}')
+
+# 4. 白名单判断函数 (支持网段)
+is_whitelisted() {
+    local ip=$1
+    for wip in "${WHITELIST[@]}"; do
+        if [[ "$wip" == */* ]]; then
+            # 如果是网段，使用 ipcalc 验证
+            if command -v ipcalc &>/dev/null; then
+                ipcalc -c "$ip" "$wip" &>/dev/null && return 0
+            fi
+        else
+            [[ "$ip" == "$wip" ]] && return 0
+        fi
+    done
+    return 1
+}
+
+# 5. 执行封禁逻辑
+for ip in $BAD_IPS; do
+    is_whitelisted "$ip" && continue
+
+    # 检查 ipset 中是否已存在
+    ipset test $SET_NAME "$ip" &>/dev/null
     if [ $? -ne 0 ]; then
-        firewall-cmd --permanent --zone=$DROP_ZONE --add-source=$ip
-        echo "$ip $NOW" >> $DB_FILE
-        echo "$(date) Blocked $ip" >> $LOG_RECORD
+        ipset add $SET_NAME "$ip"
+        # 记录到数据库文件供过期清理
+        echo "$ip $NOW" >> "$DB_FILE"
+        echo "$(date '+%Y-%m-%d %H:%M:%S') Blocked $ip" >> "$LOG_RECORD"
     fi
 done
 
-### ===== 清理过期IP =====
-if [ -f $DB_FILE ]; then
-    TMP_FILE="/tmp/ssh_block_tmp.txt"
-    > $TMP_FILE
-    while read ip timestamp
-    do
+# 6. 过期清理逻辑
+if [ -f "$DB_FILE" ]; then
+    TMP_FILE=$(mktemp)
+    while read -r ip timestamp; do
         AGE=$(( (NOW - timestamp) / 86400 ))
-        if [ $AGE -ge $BLOCK_DAYS ]; then
-            firewall-cmd --permanent --zone=$DROP_ZONE --remove-source=$ip &>/dev/null
-            echo "$(date) Unblocked $ip" >> $LOG_RECORD
+        if [ "$AGE" -ge "$BLOCK_DAYS" ]; then
+            ipset del $SET_NAME "$ip" &>/dev/null
+            echo "$(date '+%Y-%m-%d %H:%M:%S') Unblocked $ip (Expired)" >> "$LOG_RECORD"
         else
-            echo "$ip $timestamp" >> $TMP_FILE
+            echo "$ip $timestamp" >> "$TMP_FILE"
         fi
-    done < $DB_FILE
-    mv $TMP_FILE $DB_FILE
+    done < "$DB_FILE"
+    mv "$TMP_FILE" "$DB_FILE"
 fi
 
-firewall-cmd --reload &>/dev/null
-
+exit 0
 ```
 
 * * *
