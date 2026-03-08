@@ -105,40 +105,55 @@ fi
 
 * * *
 
+
+###### 添加定时任务，每分钟执行一次
+
+```bash
+crontab -e
+
+*/1 * * * * /root/secure_ssh.sh
+```
+
+* * *
+
+* * *
+
+* * *
+
 # 适用于：openEuler 22.03 SP4 系统
 
 ###### 创建脚本文件 `vim /root/secure_ssh.sh`
 
+###### `/root/secure_ssh.sh`
+
 ```bash
 #!/bin/bash
+
+# 适用于：openEuler 22.03 SP4 + Docker 环境
+# 功能：自动封禁 SSH 暴力破解 IP，不影响 Docker 网络
 
 # --- 配置区 ---
 SET_NAME="blackhole"
 TABLE_NAME="filter_ssh"
-BLOCK_TIMEOUT="30d"        # 封禁时间：30天
-FAILED_THRESHOLD=3         # 失败次数阈值
+BLOCK_TIMEOUT="30d"
+FAILED_THRESHOLD=3
 LOG_FILE="/var/log/secure"
 
 # --- 1. 内核环境自动初始化 ---
-# 检查表是否存在，不存在则创建全套拦截体系
 if ! nft list table inet $TABLE_NAME &>/dev/null; then
     echo "正在初始化内核级防护框架..."
-    # 创建表
     nft add table inet $TABLE_NAME
-    # 创建集合（带自动过期功能）
     nft add set inet $TABLE_NAME $SET_NAME { type ipv4_addr\; flags timeout\; }
-    # 创建输入链，优先级设为 -10 (在 firewalld 之前拦截)
-    nft add chain inet $TABLE_NAME input { type filter hook input priority -10\; policy accept\; }
-    # 添加拦截规则
-    nft add rule inet $TABLE_NAME input ip saddr @$SET_NAME counter drop
+    nft add chain inet $TABLE_NAME input { type filter hook input priority -5\; policy accept\; }
+    # ✅ 只封 SSH 端口，不影响其他流量（包括 Docker）
+    nft add rule inet $TABLE_NAME input tcp dport 22 ip saddr @$SET_NAME counter drop
     echo "初始化完成。"
 fi
 
 # --- 2. 提取白名单 ---
-# 自动获取当前登录 IP，防止把自己封了
 CURRENT_IP=$(who am i | awk '{print $NF}' | sed 's/[()]//g' | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b")
-# 你也可以在这里手动添加固定白名单，例如 WHITELIST="1.1.1.1 2.2.2.2"
-WHITELIST="127.0.0.1 $CURRENT_IP"
+ENV_IP=$(echo "$SSH_CLIENT" | awk '{print $1}')
+WHITELIST="127.0.0.1 $CURRENT_IP $ENV_IP"
 
 # --- 3. 扫描日志并执行封禁 ---
 echo "正在扫描攻击源..."
@@ -147,37 +162,79 @@ BAD_IPS=$(grep -E "Failed password|authentication failure" "$LOG_FILE" \
     | sort | uniq -c \
     | awk -v t=$FAILED_THRESHOLD '$1>=t {print $2}')
 
+BLOCKED=0
 for ip in $BAD_IPS; do
-    # 白名单校验
-    if [[ $WHITELIST =~ $ip ]]; then
+    if [[ $WHITELIST =~ (^|[[:space:]])"$ip"($|[[:space:]]) ]]; then
+        echo "[白名单] 跳过: $ip"
         continue
     fi
-
-    # 尝试将 IP 加入内核黑名单
-    # 如果 IP 已存在，nft 会报错但没关系，我们重定向掉
     nft add element inet $TABLE_NAME $SET_NAME { $ip timeout $BLOCK_TIMEOUT } 2>/dev/null
-    
     if [ $? -eq 0 ]; then
-        echo "[$(date)] 成功封禁攻击者: $ip，有效期 $BLOCK_TIMEOUT" >> /var/log/ssh_shield.log
+        echo "[$(date '+%F %T')] 封禁攻击者: $ip，有效期 $BLOCK_TIMEOUT" >> /var/log/ssh_shield.log
+        ((BLOCKED++))
     fi
 done
 
 # --- 4. 统计信息 ---
-COUNT=$(nft list set inet $TABLE_NAME $SET_NAME | grep -c "timeout")
-echo "当前内核黑名单中共有 $COUNT 个活跃 IP。"
+COUNT=$(nft list set inet $TABLE_NAME $SET_NAME 2>/dev/null | grep -c "timeout")
+echo "本次新增封禁: $BLOCKED 个 IP，当前黑名单共 $COUNT 个活跃 IP。"
 ```
 
-######
-``` bash
-# 将当前的内核规则导出为配置文件
-nft list ruleset > /etc/nftables/ssh_shield.nft
+---
 
-# 修改 nftables 主配置文件，让它开机加载这个 shield 文件
-# 如果文件不存在，可以直接创建
-echo 'include "/etc/nftables/ssh_shield.nft"' > /etc/sysconfig/nftables.conf
+###### 首次安装
 
-# 设置服务自启动
+```bash
+# 创建脚本
+vim /root/secure_ssh.sh
+# 粘贴上面内容，保存退出
+
+# 赋予执行权限
+chmod +x /root/secure_ssh.sh
+
+# 执行一次，完成初始化 + 首次扫描封禁
+bash /root/secure_ssh.sh
+```
+
+###### 设置定时任务（每小时自动扫描）
+
+```bash
+echo "0 * * * * root bash /root/secure_ssh.sh >> /var/log/ssh_shield.log 2>&1" > /etc/cron.d/ssh_shield
+```
+
+###### 开机持久化
+
+```bash
+# 保存规则（只保存 SSH 防护表，不捕获 Docker 规则）
+mkdir -p /etc/nftables
+nft list table inet filter_ssh > /etc/nftables/ssh_shield.nft
+
+# 写入主配置
+cat > /etc/sysconfig/nftables.conf << 'EOF'
+include "/etc/nftables/ssh_shield.nft"
+EOF
+
+# 开机自启
 systemctl enable nftables
+```
+
+###### 日常管理命令
+
+```bash
+# 查看黑名单
+nft list set inet filter_ssh blackhole
+
+# 手动封禁某个 IP
+nft add element inet filter_ssh blackhole { 1.2.3.4 timeout 30d }
+
+# 手动解封某个 IP
+nft delete element inet filter_ssh blackhole { 1.2.3.4 }
+
+# 查看封禁日志
+tail -f /var/log/ssh_shield.log
+
+# 查看当前封禁数量
+nft list set inet filter_ssh blackhole | grep -c timeout
 ```
 
 ###### 查看当前封禁列表：
@@ -187,20 +244,6 @@ alias banlist='nft list set inet filter_ssh blackhole'
 
 # 2. 查看黑名单 IP
 banlist
-```
-
-* * *
-
-* * *
-
-* * *
-
-##### 添加定时任务，每分钟执行一次
-
-```bash
-crontab -e
-
-*/1 * * * * /root/secure_ssh.sh
 ```
 
 * * *
