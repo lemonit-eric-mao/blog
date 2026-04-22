@@ -317,3 +317,11 @@ chmod +x install-uv.sh
 ./install-uv.sh
 ```
 
+效果
+``` bash
+======================================
+ uv 离线安装完成!
+路径: /usr/local/bin/uv
+版本: uv 0.11.7 (aarch64-unknown-linux-gnu)
+======================================
+```
