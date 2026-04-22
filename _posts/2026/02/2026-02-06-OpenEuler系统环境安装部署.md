@@ -265,21 +265,24 @@ install-uv.sh（离线版）
 #!/bin/bash
 set -e
 
-UV_BIN="./uv-aarch64-unknown-linux-gnu"
+UV_ARCHIVE="./uv-aarch64-unknown-linux-gnu.tar.gz"
+UV_DIR="./uv-aarch64-unknown-linux-gnu"
 
 echo "==> 检查本地文件..."
-
-if [ ! -f "$UV_BIN" ]; then
-    echo "❌ 找不到文件: $UV_BIN"
-    echo "请确认 uv-aarch64-unknown-linux-gnu 已下载到当前目录"
+if [ ! -f "$UV_ARCHIVE" ]; then
+    echo "❌ 找不到文件: $UV_ARCHIVE"
     exit 1
 fi
 
 echo "==> 解压 uv..."
-tar -xzf "$UV_BIN"
+tar -xzf "$UV_ARCHIVE"
 
-UV_EXEC="./uv"   # 解压后的可执行文件路径
+if [ ! -d "$UV_DIR" ]; then
+    echo "❌ 解压后未找到目录: $UV_DIR"
+    exit 1
+fi
 
+UV_EXEC="$UV_DIR/uv"
 if [ ! -f "$UV_EXEC" ]; then
     echo "❌ 解压后未找到 uv 可执行文件!"
     exit 1
@@ -294,6 +297,9 @@ sudo chmod +x /usr/local/bin/uv
 echo "==> 创建软链接到 /usr/bin ..."
 sudo ln -sf /usr/local/bin/uv /usr/bin/uv
 
+echo "==> 刷新环境变量..."
+hash -r
+
 echo "==> 验证安装..."
 uv --version
 
@@ -302,7 +308,6 @@ echo "🎉 uv 离线安装完成!"
 echo "路径: $(which uv)"
 echo "版本: $(uv --version)"
 echo "======================================"
-
 ```
 
 执行：
