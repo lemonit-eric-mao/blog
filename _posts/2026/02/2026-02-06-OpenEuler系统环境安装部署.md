@@ -325,3 +325,74 @@ chmod +x install-uv.sh
 版本: uv 0.11.7 (aarch64-unknown-linux-gnu)
 ======================================
 ```
+
+---
+
+---
+
+---
+
+# 安装 nvm
+
+``` bash
+# 下载并重命名
+curl -o install-nvm.sh https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh
+
+# 确认权限可执行（可选）
+chmod +x install-nvm.sh
+
+# 执行安装
+bash install-nvm.sh
+
+```
+
+手动执行
+``` bash
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+```
+
+效果
+``` bash
+[root@localhost deploy]# nvm --version
+0.40.4
+```
+
+---
+
+## 安装 Node.js
+
+``` bash
+# 安装 Node.js 最新 LTS
+nvm install 22.22.2
+
+# 使用该版本
+nvm use 22.22.2
+
+# 设置为默认版本，每次打开终端自动生效
+nvm alias default 22.22.2
+
+# 验证安装
+node -v
+npm -v
+```
+
+效果
+``` bash
+[root@localhost deploy]# nvm install 22.22.2
+Downloading and installing node v22.22.2...
+......
+Computing checksum with sha256sum
+Checksums matched!
+Now using node v22.22.2 (npm v10.9.7)
+Creating default alias: default -> 22.22.2 (-> v22.22.2 *)
+[root@localhost deploy]# nvm use 22.22.2
+Now using node v22.22.2 (npm v10.9.7)
+[root@localhost deploy]# nvm alias default 22.22.2
+default -> 22.22.2 (-> v22.22.2)
+[root@localhost deploy]# node -v
+v22.22.2
+[root@localhost deploy]# npm -v
+10.9.7
+```
