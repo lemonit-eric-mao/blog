@@ -156,7 +156,7 @@ chmod +x install-docker.sh
 
 ```bash
 COMPOSE_VERSION="v5.0.0"
-https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-linux-aarch64
+wget https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-linux-aarch64
 ```
 
 创建脚本：
